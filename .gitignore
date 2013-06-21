@@ -1,0 +1,10 @@
+Berksfile.lock
+validation.pem
+metadata.json
+*~
+.bundle/
+cookbooks/
+.cookbooks
+.vagrant
+*.swp
+
