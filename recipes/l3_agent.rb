@@ -39,9 +39,7 @@ platform_options["quantum_l3_packages"].each do |pkg|
   package pkg do
     action :install
     # The providers below do not use the generic L3 agent...
-    not_if {
-      ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
-    }
+    not_if { ["nicira", "plumgrid", "bigswitch"].include?(main_plugin) }
   end
 end
 

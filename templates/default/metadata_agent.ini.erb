@@ -1,5 +1,4 @@
-B
-bsbrbÂode["openstack"]["network"]["custom_template_banner"] %>
+<%= node["openstack"]["network"]["custom_template_banner"] %>
 
 [DEFAULT]
 # Show debugging output in log (sets DEBUG log level output)
@@ -16,7 +15,7 @@ admin_password = %SERVICE_PASSWORD%
 nova_metadata_ip = <%= node["openstack"]["network"]["metadata"]["nova_metadata_ip"] %>
 
 # TCP Port used by Nova metadata server
-# nova_metadata_port = 8775
+nova_metadata_port = <%= node["openstack"]["network"]["metadata"]["nova_metadata_port"] %>
 
 # When proxying metadata requests, Quantum signs the Instance-ID header with a
 # shared secret to prevent spoofing.  You may select any string for a secret,

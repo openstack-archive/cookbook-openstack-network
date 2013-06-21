@@ -29,6 +29,11 @@ default["openstack"]["network"]["debug"] = "False"
 
 # Gets set in the Network Endpoint when registering with Keystone
 default["openstack"]["network"]["region"] = "RegionOne"
+default["openstack"]["network"]["service_user"] = "quantum"
+default["openstack"]["network"]["service_role"] = "admin"
+default["openstack"]["network"]["service_name"] = "quantum"
+default["openstack"]["network"]["service_type"] = "network"
+default["openstack"]["network"]["description"] = "OpenStack Networking service"
 
 # The name of the Chef role that knows about the message queue server
 # that Quantum uses
@@ -180,11 +185,23 @@ default["openstack"]["network"]["l3"]["periodic_fuzzy_delay"] = 5
 
 # The location of the Nova Metadata API service to proxy to.
 default["openstack"]["network"]["metadata"]["nova_metadata_ip"] = "127.0.0.1"
+default["openstack"]["network"]["metadata"]["nova_metadata_port"] = 8775
 
 # ============================= LBaaS Agent Configuration ==================
 
+# Enable or disable quantum loadbalancer
+default["openstack"]["network"]["quantum_loadbalancer"] = false
+
+# Plugin configuration path
+default["openstack"]["network"]["lbaas_config_path"] = "/etc/quantum/plugins/services/agent_loadbalancer"
+
 # Number of seconds between sync of LBaaS agent with Quantum API server
 default["openstack"]["network"]["lbaas"]["periodic_interval"] = 10
+
+# Set lbaas plugin
+# Supported types are: "ovs" (ovs based plugins(OVS, Ryu, NEC, NVP, BigSwitch/Floodlight))
+# and "linuxbridge".
+default["openstack"]["network"]["lbaas_plugin"] = "ovs"
 
 # ============================= OVS Plugin Configuration ===================
 
@@ -250,6 +267,9 @@ default["openstack"]["network"]["openvswitch"]["local_ip"] = ""
 #
 # Example: bridge_mappings = physnet1:br-eth1
 default["openstack"]["network"]["openvswitch"]["bridge_mappings"] = ""
+
+# Firewall driver for realizing quantum security group function
+default["openstack"]["network"]["openvswitch"]["fw_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
 
 # ============================= LinuxBridge Plugin Configuration ===========
 
@@ -364,7 +384,7 @@ default["openstack"]["network"]["cisco"]["nexus_driver"] = "quantum.plugins.cisc
 # node["openstack"]["network"]["cisco"]["nexus_switches"] Hash,
 # using the switch's IP address as the outer Hash key with each
 # hash containing this information:
-# 
+#
 # - ssh_port=<ssh port>
 # - username=<credential username>
 # - password=<credential password>
@@ -663,6 +683,7 @@ when "ubuntu"
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "nova_network_packages" => [ "nova-network" ],
     "quantum_packages" => [ "quantum-server", "python-quantumclient", "python-pyparsing", "python-cliff" ],
+    "quantum_lb_packages" => ["quantum-lbaas-agent", "haproxy"],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
     "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],

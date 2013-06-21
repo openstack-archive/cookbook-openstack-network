@@ -39,8 +39,8 @@ service_role = node["openstack"]["network"]["service_role"]
 openstack_identity_register "Register Network API Service" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
-  service_name "quantum"
-  service_type "network"
+  service_name node["openstack"]["network"]["service_name"]
+  service_type node["openstack"]["network"]["service_type"]
   service_description "OpenStack Network Service"
 
   action :create_service
@@ -49,7 +49,7 @@ end
 openstack_identity_register "Register Network Endpoint" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
-  service_type "network"
+  service_type node["openstack"]["network"]["service_type"]
   endpoint_region node["openstack"]["network"]["region"]
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
