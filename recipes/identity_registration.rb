@@ -1,8 +1,9 @@
 #
 # Cookbook Name:: openstack-network
-# Recipe:: keystone_registration
+# Recipe:: identity_registration
 #
 # Copyright 2013, AT&T
+# Copyright 2013, SUSE Linux GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@ end
 
 identity_admin_endpoint = endpoint "identity-admin"
 
-bootstrap_token = secret "secrets", "keystone_bootstrap_token"
+bootstrap_token = secret "secrets", "openstack_identity_bootstrap_token"
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 api_endpoint = endpoint "network-api"
@@ -35,7 +36,7 @@ service_tenant_name = node["openstack"]["network"]["service_tenant_name"]
 service_user = node["openstack"]["network"]["service_user"]
 service_role = node["openstack"]["network"]["service_role"]
 
-keystone_register "Register Network API Service" do
+openstack_identity_register "Register Network API Service" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   service_name "quantum"
@@ -45,7 +46,7 @@ keystone_register "Register Network API Service" do
   action :create_service
 end
 
-keystone_register "Register Network Endpoint" do
+openstack_identity_register "Register Network Endpoint" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   service_type "network"
@@ -57,7 +58,7 @@ keystone_register "Register Network Endpoint" do
   action :create_endpoint
 end
 
-keystone_register "Register Service Tenant" do
+openstack_identity_register "Register Service Tenant" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name
@@ -66,7 +67,7 @@ keystone_register "Register Service Tenant" do
   action :create_tenant
 end
 
-keystone_register "Register #{service_user} User" do
+openstack_identity_register "Register #{service_user} User" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name
@@ -76,7 +77,7 @@ keystone_register "Register #{service_user} User" do
   action :create_user
 end
 
-keystone_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
+openstack_identity_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name

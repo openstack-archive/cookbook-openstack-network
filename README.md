@@ -53,7 +53,7 @@ l3\_agent
 
 - Installs the L3 agent and metadata agent
 
-keystone-registration
+Identity-registration
 ---------------------
 
 - Registers the OpenStack Network API endpoint and service user with Keystone
