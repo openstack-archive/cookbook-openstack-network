@@ -8,11 +8,12 @@ recipe            "openstack-network::server", "Installs packages required for a
 recipe            "openstack-network::db", "Creates the OpenStack Network database"
 recipe            "openstack-network::identity_registration", "Registers OpenStack Network endpoints and service user with Keystone"
 
-%w{ ubuntu fedora redhat centos }.each do |os|
+%w{ ubuntu fedora redhat centos suse }.each do |os|
   supports os
 end
 
 depends           "database"
 depends           "openstack-identity", "~> 7.0"
-depends           "mysql"
 depends           "openstack-common", "~> 0.3.0"
+depends           "mysql"
+depends           "postgresql"

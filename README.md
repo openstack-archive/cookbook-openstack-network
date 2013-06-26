@@ -18,12 +18,6 @@ Requirements
 
 Chef 11.4.4 or higher required (for Chef environment use)
 
-Platform
---------
-
-* Ubuntu-12.04+
-* Fedora-17+
-
 Cookbooks
 ---------
 
@@ -31,7 +25,7 @@ The following cookbooks are dependencies:
 
 * database
 * identity
-* mysql
+* mysql or postgresql
 * openstack-common `>= 2.0.0`
 
 Recipes

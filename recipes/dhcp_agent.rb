@@ -20,14 +20,14 @@
 # This will copy recursively all the files in
 # /files/default/etc/quantum/rootwrap.d
 remote_directory "/etc/quantum/rootwrap.d" do
-  files_owner node["openstack"]["network"]["user"]
-  files_group node["openstack"]["network"]["group"]
+  files_owner node["openstack"]["network"]["platform"]["user"]
+  files_group node["openstack"]["network"]["platform"]["group"]
   files_mode 00700
 end
 
 directory "/etc/quantum/plugins" do
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00700
 end
 
@@ -60,8 +60,8 @@ end
 
 template "/etc/quantum/dhcp_agent.ini" do
   source "dhcp_agent.ini.erb"
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode   00644
 
   notifies :restart, "service[quantum-dhcp-agent]", :immediately

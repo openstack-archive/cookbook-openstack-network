@@ -27,9 +27,6 @@ default["openstack"]["network"]["custom_template_banner"] = "
 default["openstack"]["network"]["verbose"] = "False"
 default["openstack"]["network"]["debug"] = "False"
 
-default["openstack"]["network"]["user"] = "quantum"
-default["openstack"]["network"]["group"] = "quantum"
-
 # Gets set in the Network Endpoint when registering with Keystone
 default["openstack"]["network"]["region"] = "RegionOne"
 
@@ -60,6 +57,8 @@ default["openstack"]["network"]["syslog"]["config_facility"] = "local2"
 # the plugins to install on the server.  this will be
 # quantum-plugin-%plugin% and the first plugin in the
 # list should match the core plugin below
+# N.B. this will be ignored on SUSE as all plugins are installed by
+# default by the main openstack-quantum package
 default["openstack"]["network"]["plugins"] = ['openvswitch', 'openvswitch-agent' ]
 
 # the core plugin to use for quantum
@@ -588,7 +587,10 @@ default["openstack"]["network"]["ryu"]["polling_interval"] = 2
 case platform
 when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["openstack"]["network"]["platform"] = {
+    "user" => "quantum",
+    "group" => "quantum",
     "mysql_python_packages" => [ "MySQL-python" ],
+    "postgresql_python_packages" => ["python-psycopg2"],
     "nova_network_packages" => [ "openstack-nova-network" ],
     "quantum_packages" => [ "openstack-quantum" ],
     "quantum_dhcp_packages" => [ "openstack-quantum" ],
@@ -601,9 +603,31 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
     "package_overrides" => ""
   }
+when "suse"
+  default["openstack"]["network"]["platform"] = {
+    "user" => "openstack-quantum",
+    "group" => "openstack-quantum",
+    "mysql_python_packages" => ["python-mysql"],
+    "postgresql_python_packages" => ["python-psycopg2"],
+    "nova_network_packages" => ["openstack-nova-network"],
+    "quantum_packages" => ["openstack-quantum"],
+    "quantum_dhcp_packages" => ["openstack-quantum-dhcp-agent"],
+    "quantum_l3_packages" => ["openstack-quantum-l3-agent"],
+    "quantum_plugin_package" => "openstack-quantum-%plugin%",
+    "quantum_openvswitch_packages" => ["openstack-quantum-openvswitch-agent"],
+    "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
+    "quantum_server_service" => "openstack-quantum",
+    "quantum_openvswitch_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
+    "quantum_l3_agent_service" => "openstack-quantum-l3-agent",
+    "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent"
+  }
 when "ubuntu"
   default["openstack"]["network"]["platform"] = {
+    "user" => "quantum",
+    "group" => "quantum",
     "mysql_python_packages" => [ "python-mysqldb" ],
+    "postgresql_python_packages" => [ "python-psycopg2" ],
     "nova_network_packages" => [ "nova-network" ],
     "quantum_packages" => [ "quantum-server", "python-quantumclient", "python-pyparsing", "python-cliff" ],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],

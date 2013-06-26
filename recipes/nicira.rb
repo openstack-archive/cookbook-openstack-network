@@ -19,8 +19,8 @@
 
 template "/etc/quantum/plugins/nicira/nvp.ini" do
   source "plugins/nicira/nvp.ini.erb"
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00644
   variables(
     :sql_connection => sql_connection
