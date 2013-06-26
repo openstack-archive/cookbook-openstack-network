@@ -3,6 +3,7 @@
 # Recipe:: server
 #
 # Copyright 2013, AT&T
+# Copyright 2013, SUSE Linux GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -143,7 +144,7 @@ service_user = node["openstack"]["network"]["service_user"]
 if node["openstack"]["network"]["api"]["bind_interface"].nil?
   bind_address = api_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["openstack"]["network"]["api"]["bind_interface"]}"]
+  bind_address = address_for node["openstack"]["network"]["api"]["bind_interface"]
 end
 
 # Here is where we set up the appropriate plugin INI files

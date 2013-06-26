@@ -15,4 +15,4 @@ end
 depends           "database"
 depends           "openstack-identity", "~> 7.0"
 depends           "mysql"
-depends           "openstack-common", "~> 0.2.0"
+depends           "openstack-common", "~> 0.3.0"
