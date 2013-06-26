@@ -94,6 +94,7 @@ end
 # This will copy recursively all the files in
 # /files/default/etc/quantum/rootwrap.d
 remote_directory "/etc/quantum/rootwrap.d" do
+  source "etc/quantum/rootwrap.d"
   files_owner node["openstack"]["network"]["user"]
   files_group node["openstack"]["network"]["group"]
   files_mode 00700
