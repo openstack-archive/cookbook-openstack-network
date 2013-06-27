@@ -16,8 +16,7 @@ L3 networking for various hardware vendors and standards.
 Requirements
 ============
 
-* Chef 11.4.4 or higher required (for Chef environment use)
-* [Network Addr](https://gist.github.com/jtimberman/1040543) Ohai plugin.
+Chef 11.4.4 or higher required (for Chef environment use)
 
 Platform
 --------
@@ -85,8 +84,10 @@ License and Author
 |:---------------------|:---------------------------------------------------|
 | **Authors**          |  Alan Meadows (<alan.meadows@gmail.com>)           |
 |                      |  Jay Pipes (<jaypipes@gmail.com>)                  |
+|                      |  Ionuț Arțăriși (<iartarisi@suse.cz>)              |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
+|                      |  Copyright (c) 2013, SUSE Linux GmbH               |
 |                      |  Copyright (c) 2012, Rackspace US, Inc.            |
 
 Licensed under the Apache License, Version 2.0 (the "License");
