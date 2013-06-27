@@ -63,6 +63,12 @@ platform_options["quantum_dhcp_packages"].each do |pkg|
   end
 end
 
+platform_options["quantum_metadata_agent_packages"].each do |pkg|
+  package pkg do
+    action :install
+  end
+end
+
 service "quantum-server" do
   service_name platform_options["quantum_server_service"]
   supports :status => true, :restart => true
