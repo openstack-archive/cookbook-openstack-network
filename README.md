@@ -23,9 +23,7 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-* database
 * identity
-* mysql or postgresql
 * openstack-common `>= 2.0.0`
 
 Recipes
@@ -50,11 +48,6 @@ Identity-registration
 ---------------------
 
 - Registers the OpenStack Network API endpoint and service user with Keystone
-
-db
---
-
-- Creates the OpenStack Network database
 
 Attributes
 ==========
