@@ -24,7 +24,9 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-main_plugin = node["openstack"]["network"]["plugins"].first.downcase
+platform_options = node["openstack"]["network"]["platform"]
+driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
+main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
 core_plugin = node["openstack"]["network"]["core_plugin"]
 
 if node["openstack"]["network"]["syslog"]["use"]

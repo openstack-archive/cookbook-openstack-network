@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-# Some plugins have L3 functionality, so we install the plugin
-# Python package and include the plugin-specific recipe here...
-main_plugin = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
+platform_options = node["openstack"]["network"]["platform"]
+driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
+main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
 
 # This will copy recursively all the files in
 # /files/default/etc/quantum/rootwrap.d
@@ -70,7 +70,6 @@ template "/etc/quantum/l3_agent.ini" do
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
-
   notifies :restart, "service[quantum-l3-agent]", :immediately
 end
 

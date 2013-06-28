@@ -74,6 +74,12 @@ default["openstack"]["network"]["core_plugin"] = "quantum.plugins.openvswitch.ov
 
 default["openstack"]["network"]["interface_driver"] = 'quantum.agent.linux.interface.OVSInterfaceDriver'
 
+# maps the above driver to a plugin name
+default["openstack"]["network"]["interface_driver_map"] = {
+   'ovsinterfacedriver' => 'openvswitch',
+   'bridgeinterfacedriver' => 'linuxbridge'
+}
+
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
 default["openstack"]["network"]["dhcp_driver"] = 'quantum.agent.linux.dhcp.Dnsmasq'
@@ -105,6 +111,29 @@ default["openstack"]["network"]["dhcp"]["enable_isolated_metadata"] = "False"
 # they will be able to reach 169.254.169.254 through a router.
 # This option requires enable_isolated_metadata = True
 default["openstack"]["network"]["dhcp"]["enable_metadata_network"] = "False"
+
+# On ubuntu precise, we build dnsmasq from source to fetch a more recent
+# version of dnsmasq since a backport is not available. For any other
+# platform, dnsmasq will be installed as a package
+#
+# See https://lists.launchpad.net/openstack/msg11696.html
+default["openstack"]["network"]["dhcp"]["dnsmasq_url"] = "https://github.com/guns/dnsmasq/archive/v2.65.tar.gz"
+
+# The name of the file we will fetch
+default["openstack"]["network"]["dhcp"]["dnsmasq_filename"] = "v2.65.tar.gz"
+
+# The checksum of the remote file we fetched
+default["openstack"]["network"]["dhcp"]["dnsmasq_checksum"] = "f6cab8c64cb612089174f50927a05e2b"
+
+# The package architecture that will be built which should match the
+# archecture of the server this cookbook will run on which will be
+# amd64 or i386
+default["openstack"]["network"]["dhcp"]["dnsmasq_architecture"] = "amd64"
+
+# The debian package version that the above tarball will produce
+default["openstack"]["network"]["dhcp"]["dnsmasq_dpkgversion"] = "2.65-1"
+
+
 
 # ============================= L3 Agent Configuration =====================
 
@@ -595,6 +624,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "quantum_packages" => [ "openstack-quantum" ],
     "quantum_dhcp_packages" => [ "openstack-quantum" ],
     "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
+    "quantum_dhcp_build_packages" => [],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_plugin_package" => "openstack-quantum-%plugin%",
     "quantum_server_service" => "quantum-server",
@@ -612,6 +642,7 @@ when "suse"
     "nova_network_packages" => ["openstack-nova-network"],
     "quantum_packages" => ["openstack-quantum"],
     "quantum_dhcp_packages" => ["openstack-quantum-dhcp-agent"],
+    "quantum_dhcp_build_packages" => [],
     "quantum_l3_packages" => ["openstack-quantum-l3-agent"],
     "quantum_plugin_package" => "openstack-quantum-%plugin%",
     "quantum_openvswitch_packages" => ["openstack-quantum-openvswitch-agent"],
@@ -631,6 +662,7 @@ when "ubuntu"
     "nova_network_packages" => [ "nova-network" ],
     "quantum_packages" => [ "quantum-server", "python-quantumclient", "python-pyparsing", "python-cliff" ],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
+    "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],

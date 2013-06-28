@@ -1,3 +1,4 @@
+Vagrantfile
 Berksfile.lock
 validation.pem
 metadata.json
