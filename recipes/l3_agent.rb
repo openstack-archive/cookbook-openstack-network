@@ -39,7 +39,9 @@ platform_options["quantum_l3_packages"].each do |pkg|
   package pkg do
     action :install
     # The providers below do not use the generic L3 agent...
-    not_if { ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
+    not_if {
+      ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
+    }
   end
 end
 
@@ -72,7 +74,7 @@ template "/etc/quantum/l3_agent.ini" do
   notifies :restart, "service[quantum-l3-agent]", :immediately
 end
 
-if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin) do
+if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
   # See http://docs.openstack.org/trunk/openstack-network/admin/content/install_quantum-l3.html
   ext_bridge = node["openstack"]["network"]["l3"]["external_network_bridge"]
   ext_bridge_iface = node["openstack"]["network"]["l3"]["external_network_bridge_interface"]
