@@ -84,7 +84,7 @@ License and Author
 |:---------------------|:---------------------------------------------------|
 | **Authors**          |  Alan Meadows (<alan.meadows@gmail.com>)           |
 |                      |  Jay Pipes (<jaypipes@gmail.com>)                  |
-|                      |  Ionuț Arțăriși (<iartarisi@suse.cz>)              |
+|                      |  Ionut Artarisi (<iartarisi@suse.cz>)              |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013, SUSE Linux GmbH               |
@@ -101,4 +101,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and⋅
 limitations under the License.
-
