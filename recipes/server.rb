@@ -39,7 +39,8 @@ platform_options["nova_network_packages"].each do |pkg|
   end
 end
 
-platform_options["mysql_python_packages"].each do |pkg|
+db_type = node["openstack"]["db"]["network"]["db_type"]
+platform_options["#{db_type}_python_packages"].each do |pkg|
   package pkg do
     action :install
   end
@@ -102,20 +103,20 @@ end
 # /files/default/etc/quantum/rootwrap.d
 remote_directory "/etc/quantum/rootwrap.d" do
   source "etc/quantum/rootwrap.d"
-  files_owner node["openstack"]["network"]["user"]
-  files_group node["openstack"]["network"]["group"]
+  files_owner node["openstack"]["network"]["platform"]["user"]
+  files_group node["openstack"]["network"]["platform"]["group"]
   files_mode 00700
 end
 
 directory "/etc/quantum/plugins" do
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00700
 end
 
 directory ::File.dirname node["openstack"]["network"]["api"]["auth"]["cache_dir"] do
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00700
 
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
@@ -123,8 +124,8 @@ end
 
 template "/etc/quantum/policy.json" do
   source "policy.json.erb"
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00644
 
   notifies :restart, "service[quantum-server]", :immediately
@@ -163,6 +164,9 @@ node["openstack"]["network"]["plugins"].each do |pkg|
   pkg = plugin_fmt.gsub("%plugin%", pkg)
   package pkg do
     action :install
+    # on SUSE, all plugins get installed by default with the main
+    # openstack-quantum package
+    not_if { platform_family? "suse" }
   end
 end
 
@@ -174,8 +178,8 @@ end
 
 template "/etc/quantum/quantum.conf" do
   source "quantum.conf.erb"
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode   00644
   variables(
     :bind_address => bind_address,
@@ -193,8 +197,8 @@ end
 
 template "/etc/quantum/api-paste.ini" do
   source "api-paste.ini.erb"
-  owner node["openstack"]["network"]["user"]
-  group node["openstack"]["network"]["group"]
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode   00644
   variables(
     "identity_endpoint" => identity_endpoint,
@@ -205,8 +209,7 @@ template "/etc/quantum/api-paste.ini" do
 end
 
 directory "/var/cache/quantum" do
-  owner "quantum"
-  group "quantum"
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
   mode 00700
 end
-

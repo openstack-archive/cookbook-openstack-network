@@ -42,7 +42,7 @@ GEM
       ohai (>= 0.6.0)
       rest-client (>= 1.0.4, < 1.7.0)
       yajl-ruby (~> 1.1)
-    chefspec (1.2.0)
+    chefspec (1.3.1)
       chef (>= 10.0)
       erubis
       fauxhai (>= 0.1.1, < 2.0)
@@ -94,7 +94,7 @@ GEM
       little-plugger (>= 1.1.3)
     mime-types (1.23)
     minitar (0.5.4)
-    minitest (4.7.4)
+    minitest (4.7.5)
     minitest-chef-handler (1.0.1)
       chef
       ci_reporter
@@ -196,7 +196,7 @@ PLATFORMS
 DEPENDENCIES
   berkshelf (~> 1.4.5)
   chef (~> 11.4.4)
-  chefspec (~> 1.2.0)
+  chefspec (~> 1.3.0)
   foodcritic
   json (<= 1.7.7)
   strainer
