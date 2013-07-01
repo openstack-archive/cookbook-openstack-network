@@ -592,11 +592,13 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "nova_network_packages" => [ "openstack-nova-network" ],
     "quantum_packages" => [ "openstack-quantum" ],
     "quantum_dhcp_packages" => [ "openstack-quantum" ],
+    "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_plugin_package" => "openstack-quantum-%plugin%",
     "quantum_server_service" => "quantum-server",
     "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
     "quantum_l3_agent_service" => "quantum-l3-agent",
+    "quantum_metadata_agent_service" => "quantum-metadata-agent",
     "package_overrides" => ""
   }
 when "ubuntu"
@@ -608,10 +610,12 @@ when "ubuntu"
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
+    "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
     "quantum_openvswitch_service" => "openvswitch-switch",
     "quantum_server_service" => "quantum-server",
     "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
     "quantum_l3_agent_service" => "quantum-l3-agent",
+    "quantum_metadata_agent_service" => "quantum-metadata-agent",
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

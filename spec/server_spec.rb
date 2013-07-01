@@ -19,6 +19,12 @@ describe 'openstack-network::server' do
       expect(@chef_run).to install_package "quantum-server"
     end
 
-  end
+    it "installs metadata packages" do
+      expect(@chef_run).to install_package "quantum-metadata-agent"
+    end
 
+    it "starts metadata service" do
+      expect(@chef_run).to enable_service "quantum-metadata-agent"
+    end
+  end
 end
