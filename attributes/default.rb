@@ -42,6 +42,8 @@ default["openstack"]["network"]["db"]["username"] = "quantum"
 # Used in the Keystone authtoken middleware configuration
 default["openstack"]["network"]["service_tenant_name"] = "service"
 default["openstack"]["network"]["service_user"] = "quantum"
+default["openstack"]["network"]["service_role"] = "admin"
+
 # Keystone PKI signing directory.
 default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/quantum/api"
 
