@@ -61,8 +61,18 @@ Templates
 * `quantum.conf.erb` - Config file for OpenStack Network server
 * `policy.json.erb` - Configuration of ACLs for glance API server
 
-License and Author
-==================
+Testing
+=======
+
+This cookbook uses [bundler](http://gembundler.com/), [berkshelf](http://berkshelf.com/), and [strainer](https://github.com/customink/strainer) to isolate dependencies and run tests.
+
+Tests are defined in Strainerfile.
+
+To run tests:
+
+    $ bundle install # install gem dependencies
+    $ bundle exec berks install # install cookbook dependencies
+    $ bundle exec strainer test # run tests
 
 License and Author
 ==================
