@@ -3,29 +3,27 @@
     "openstack-network": {
       "path": "."
     },
-    "apt": {
-      "locked_version": "2.0.1",
-      "git": "https://github.com/opscode-cookbooks/apt.git",
-      "ref": "489d2e2d60cb08a4d2424b40f83a60b4c3a8df65"
-    },
     "openstack-identity": {
       "locked_version": "7.0.0",
       "git": "https://github.com/stackforge/cookbook-openstack-identity.git",
-      "ref": "029fe8a648939f832f844562d0e18af2a951c783"
+      "ref": "54e05e5f2e6f57934310c10d418ab263a9eb14bf"
     },
     "openstack-common": {
-      "locked_version": "0.3.0",
+      "locked_version": "0.3.5",
       "git": "https://github.com/stackforge/cookbook-openstack-common.git",
-      "ref": "25b183f2362fa501cfee4db331491b3d984a5c05"
+      "ref": "4af229d56319b44945fe9e8ebd2ab2aa87b29c83"
     },
     "database": {
-      "locked_version": "1.3.12"
+      "locked_version": "1.4.0"
     },
     "mysql": {
       "locked_version": "3.0.0"
     },
     "postgresql": {
-      "locked_version": "2.4.0"
+      "locked_version": "3.0.2"
+    },
+    "apt": {
+      "locked_version": "2.0.0"
     },
     "build-essential": {
       "locked_version": "1.3.4"

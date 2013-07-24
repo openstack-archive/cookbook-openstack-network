@@ -33,9 +33,9 @@ describe "openstack-network::identity_registration" do
       :bootstrap_token => "bootstrap-token",
       :service_type => "network",
       :endpoint_region => "RegionOne",
-      :endpoint_adminurl => "https://127.0.0.1:9696/v2",
-      :endpoint_internalurl => "https://127.0.0.1:9696/v2",
-      :endpoint_publicurl => "https://127.0.0.1:9696/v2",
+      :endpoint_adminurl => "https://127.0.0.1:9696",
+      :endpoint_internalurl => "https://127.0.0.1:9696",
+      :endpoint_publicurl => "https://127.0.0.1:9696",
       :action => [:create_endpoint]
     )
   end
