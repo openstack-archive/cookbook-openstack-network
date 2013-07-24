@@ -48,6 +48,12 @@ platform_options["quantum_openvswitch_packages"].each do |pkg|
   end
 end
 
+service "quantum-server" do
+  service_name node["openstack"]["network"]["platform"]["quantum_server_service"]
+  supports :status => true, :restart => true
+  action :nothing
+end
+
 service "quantum-openvswitch-switch" do
   service_name platform_options["quantum_openvswitch_service"]
   supports :status => true, :restart => true

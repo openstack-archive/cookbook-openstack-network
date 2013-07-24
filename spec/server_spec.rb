@@ -185,5 +185,13 @@ describe 'openstack-network::server' do
           @file.name, "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini")
       end
     end
+
+    it "does not install sysconfig template" do
+      chef_run = ::ChefSpec::ChefRunner.new(
+        ::UBUNTU_OPTS.merge(:evaluate_guards => true))
+      chef_run.stub_command(/python/, true)
+      chef_run.converge "openstack-network::server"
+      expect(chef_run).not_to create_file "/etc/sysconfig/quantum"
+    end
   end
 end

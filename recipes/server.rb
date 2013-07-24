@@ -62,3 +62,17 @@ if node["openstack"]["network"]["quantum_ha_cmd_cron"]
     command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
   end
 end
+
+# the default SUSE initfile uses this sysconfig file to determine the
+# quantum plugin to use
+template "/etc/sysconfig/quantum" do
+  only_if { platform? "suse" }
+  source "quantum.sysconfig.erb"
+  owner "root"
+  group "root"
+  mode 00644
+  variables(
+    :plugin_conf => node["openstack"]["network"]["plugin_conf_map"][driver_name]
+  )
+  notifies :restart, "service[quantum-server]"
+end
