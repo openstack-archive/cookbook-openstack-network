@@ -17,6 +17,16 @@
 # limitations under the License.
 #
 
+db_user = node["openstack"]["network"]["db"]["username"]
+db_pass = db_password "quantum"
+sql_connection = db_uri("network", db_user, db_pass)
+
+service "quantum-server" do
+  service_name node["openstack"]["network"]["platform"]["quantum_server_service"]
+  supports :status => true, :restart => true
+  action :nothing
+end
+
 template "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini" do
   source "plugins/linuxbridge/linuxbridge_conf.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
