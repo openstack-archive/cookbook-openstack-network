@@ -18,6 +18,9 @@ lock_path = $state_path/lock
 
 # use_syslog                           -> syslog
 # log_file and log_dir                 -> log_dir/log_file
+<% if node["openstack"]["network"]["syslog"]["use"] %>
+log_config = /etc/openstack/logging.conf
+<% end %>
 # (not log_file) and log_dir           -> log_dir/{binary_name}.log
 # use_stderr                           -> stderr
 # (not user_stderr) and (not log_file) -> stdout

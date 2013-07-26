@@ -53,8 +53,6 @@ default["openstack"]["network"]["api"]["bind_interface"] = nil
 
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
-default["openstack"]["network"]["syslog"]["facility"] = "LOG_LOCAL2"
-default["openstack"]["network"]["syslog"]["config_facility"] = "local2"
 
 # the plugins to install on the server.  this will be
 # quantum-plugin-%plugin% and the first plugin in the
