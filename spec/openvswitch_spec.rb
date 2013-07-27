@@ -6,7 +6,9 @@ describe 'openstack-network::openvswitch' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
+        n.set["release"] = "1.2.3"
+      end
       @chef_run.converge "openstack-network::openvswitch"
     end
 
@@ -20,7 +22,7 @@ describe 'openstack-network::openvswitch' do
       expect(@chef_run).to install_package "bridge-utils"
     end
     it "installs linux kernel headers" do
-      expect(@chef_run).to execute_bash_script "installing linux headers to compile openvswitch module"
+      expect(@chef_run).to install_package "linux-headers-1.2.3"
     end
     it "sets the openvswitch service to start on boot" do
       expect(@chef_run).to set_service_to_start_on_boot 'openvswitch-switch'
