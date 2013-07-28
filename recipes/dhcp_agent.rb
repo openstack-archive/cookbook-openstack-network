@@ -17,24 +17,11 @@
 # limitations under the License.
 #
 
+include_recipe "openstack-network::common"
+
 platform_options = node["openstack"]["network"]["platform"]
 driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
 main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
-
-# This will copy recursively all the files in
-# /files/default/etc/quantum/rootwrap.d
-remote_directory "/etc/quantum/rootwrap.d" do
-  source "etc/quantum/rootwrap.d"
-  files_owner node["openstack"]["network"]["platform"]["user"]
-  files_group node["openstack"]["network"]["platform"]["group"]
-  files_mode 00700
-end
-
-directory "/etc/quantum/plugins" do
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
-  mode 00700
-end
 
 platform_options["quantum_dhcp_packages"].each do |pkg|
   package pkg do
@@ -56,8 +43,6 @@ package platform_options["quantum_plugin_package"].gsub("%plugin%", main_plugin)
   options platform_options["package_overrides"]
   action :install
 end
-
-include_recipe "openstack-network::#{main_plugin}"
 
 execute "quantum-dhcp-setup --plugin #{main_plugin}" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this

@@ -11,18 +11,20 @@ describe 'openstack-network::server' do
     @chef_run.converge "openstack-network::server"
   end
 
-  describe "package and servicess" do
+  describe "package and services" do
 
     it "installs quantum packages" do
       expect(@chef_run).to install_package "quantum-server"
     end
 
-    it "installs metadata packages" do
-      expect(@chef_run).to install_package "quantum-metadata-agent"
+    it "starts server service" do
+      expect(@chef_run).to enable_service "quantum-server"
     end
 
-    it "starts metadata service" do
-      expect(@chef_run).to enable_service "quantum-metadata-agent"
+    it "does not install openvswitch package or the agent" do
+      expect(@chef_run).not_to install_package "openvswitch"
+      expect(@chef_run).not_to install_package "quantum-plugin-openvswitch-agent"
+      expect(@chef_run).not_to enable_service "quantum-plugin-openvswitch-agent"
     end
 
   end
@@ -156,5 +158,26 @@ describe 'openstack-network::server' do
           "rabbit_port=5672"
       end
     end
+
+    describe "/etc/default/quantum-server" do
+      before do
+        @file = @chef_run.template(
+          "/etc/default/quantum-server")
+      end
+
+      it "has proper owner" do
+        expect(@file).to be_owned_by "root", "root"
+      end
+
+      it "has proper modes" do
+        expect(sprintf("%o", @file.mode)).to eq "644"
+      end
+
+      it "has a correct plugin config path" do
+        expect(@chef_run).to create_file_with_content(
+          @file.name, "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini")
+      end
+    end
+
   end
 end

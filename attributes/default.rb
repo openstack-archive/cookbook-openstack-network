@@ -234,7 +234,7 @@ default["openstack"]["network"]["openvswitch"]["tenant_network_type"] = 'local'
 # All physical networks listed are available for flat and VLAN provider network
 # creation. Specified ranges of VLAN IDs are available for tenant network
 # allocation if tenant_network_type is 'vlan'. If empty, only gre and local
-# networks may be created.
+# networks may be created
 #
 # Example: network_vlan_ranges = physnet1:1000:2999
 default["openstack"]["network"]["openvswitch"]["network_vlan_ranges"] = nil
@@ -255,13 +255,12 @@ default["openstack"]["network"]["openvswitch"]["tunnel_id_ranges"] = nil
 # This is the name of the OVS integration bridge. There is one per hypervisor.
 # The integration bridge acts as a virtual "patch bay". All VM VIFs are
 # attached to this bridge and then "patched" according to their network
-# connectivity (nil uses default)
-default["openstack"]["network"]["openvswitch"]["integration_bridge"] = nil
+# connectivity
+default["openstack"]["network"]["openvswitch"]["integration_bridge"] = 'br-int'
 
 # Only used for the agent if tunnel_id_ranges (above) is not empty for
-# the server.  In most cases, the default value should be fine (nil
-# uses default)
-default["openstack"]["network"]["openvswitch"]["tunnel_bridge"] = nil
+# the server.  In most cases, the default value should be fine
+default["openstack"]["network"]["openvswitch"]["tunnel_bridge"] = "br-tun"
 
 # Peer patch port in integration bridge for tunnel bridge (nil uses default)
 default["openstack"]["network"]["openvswitch"]["int_peer_patch_port"] = nil
@@ -665,14 +664,19 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "nova_network_packages" => [ "openstack-nova-network" ],
     "quantum_packages" => [ "openstack-quantum" ],
     "quantum_dhcp_packages" => [ "openstack-quantum" ],
-    "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
     "quantum_dhcp_build_packages" => [],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
+    "quantum_openvswitch_packages" => ["openvswitch"],
+    "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
+    "quantum_metadata_agent_packages" => [],
     "quantum_plugin_package" => "openstack-quantum-%plugin%",
-    "quantum_server_service" => "quantum-server",
+    "quantum_server_packages" => [],
     "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
     "quantum_l3_agent_service" => "quantum-l3-agent",
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
+    "quantum_openvswitch_service" => "openvswitch",
+    "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_server_service" => "quantum-server",
     "package_overrides" => ""
   }
 when "suse"
@@ -686,14 +690,19 @@ when "suse"
     "quantum_dhcp_packages" => ["openstack-quantum-dhcp-agent"],
     "quantum_dhcp_build_packages" => [],
     "quantum_l3_packages" => ["openstack-quantum-l3-agent"],
-    "quantum_plugin_package" => "openstack-quantum-%plugin%",
-    "quantum_openvswitch_packages" => ["openstack-quantum-openvswitch-agent"],
     "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
-    "quantum_server_service" => "openstack-quantum",
-    "quantum_openvswitch_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_openvswitch_packages" => ["openvswitch-switch"],
+    "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
+    "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
+    "quantum_plugin_package" => "openstack-quantum-%plugin%",
+    "quantum_server_packages" => [],
     "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
     "quantum_l3_agent_service" => "openstack-quantum-l3-agent",
-    "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent"
+    "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent",
+    "quantum_openvswitch_service" => "openvswitch",
+    "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_server_service" => "openstack-quantum",
+    "package_overrides" => ""
   }
 when "ubuntu"
   default["openstack"]["network"]["platform"] = {
@@ -702,19 +711,23 @@ when "ubuntu"
     "mysql_python_packages" => [ "python-mysqldb" ],
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "nova_network_packages" => [ "nova-network" ],
-    "quantum_packages" => [ "quantum-server", "python-quantumclient", "python-pyparsing", "python-cliff" ],
     "quantum_lb_packages" => ["quantum-lbaas-agent", "haproxy"],
+    "quantum_packages" => [ "quantum-common", "python-quantumclient", "python-pyparsing", "python-cliff" ],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
     "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
-    "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
+    "quantum_openvswitch_agent_packages" => [ "quantum-plugin-openvswitch", "quantum-plugin-openvswitch-agent" ],
     "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
-    "quantum_openvswitch_service" => "openvswitch-switch",
-    "quantum_server_service" => "quantum-server",
+    "quantum_plugin_package" => "quantum-plugin-%plugin%",
+    "quantum_server_packages" => ["quantum-server"],
+    "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
     "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
     "quantum_l3_agent_service" => "quantum-l3-agent",
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
+    "quantum_openvswitch_service" => "openvswitch-switch",
+    "quantum_openvswitch_agent_service" => "quantum-plugin-openvswitch-agent",
+    "quantum_server_service" => "quantum-server",
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

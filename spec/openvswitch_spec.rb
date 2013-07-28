@@ -25,6 +25,12 @@ describe 'openstack-network::openvswitch' do
   it "sets the openvswitch service to start on boot" do
     expect(@chef_run).to set_service_to_start_on_boot 'openvswitch-switch'
   end
+  it "installs openvswitch agent" do
+    expect(@chef_run).to install_package "quantum-plugin-openvswitch-agent"
+  end
+  it "sets the openvswitch service to start on boot" do
+    expect(@chef_run).to set_service_to_start_on_boot "quantum-plugin-openvswitch-agent"
+  end
 
   describe "ovs_quantum_plugin.ini" do
 
@@ -49,12 +55,12 @@ describe 'openstack-network::openvswitch' do
         /^tunnel_id_ranges =/
     end
     it "uses default integration_bridge" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^integration_bridge =/
+      expect(@chef_run).to create_file_with_content @file.name,
+        "integration_bridge = br-int"
     end
     it "uses default tunnel bridge" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^tunnel_bridge =/
+      expect(@chef_run).to create_file_with_content @file.name,
+        "tunnel_bridge = br-tun"
     end
     it "uses default int_peer_patch_port" do
       expect(@chef_run).not_to create_file_with_content @file.name,

@@ -17,24 +17,11 @@
 # limitations under the License.
 #
 
+include_recipe "openstack-network::common"
+
 platform_options = node["openstack"]["network"]["platform"]
 driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
 main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
-
-# This will copy recursively all the files in
-# /files/default/etc/quantum/rootwrap.d
-remote_directory "/etc/quantum/rootwrap.d" do
-  files_owner node["openstack"]["network"]["platform"]["user"]
-  files_group node["openstack"]["network"]["platform"]["group"]
-  files_mode 00700
-  action :nothing
-end
-
-directory "/etc/quantum/plugins" do
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
-  mode 00700
-end
 
 identity_endpoint = endpoint "identity-api"
 service_pass = service_password "openstack-network"

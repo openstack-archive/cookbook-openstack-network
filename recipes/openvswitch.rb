@@ -23,12 +23,12 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-platform_options = node["openstack"]["network"]["platform"]
+include_recipe "openstack-network::common"
 
-# discover database attributes
-db_user = node["openstack"]["network"]["db"]["username"]
-db_pass = db_password "quantum"
-sql_connection = db_uri("network", db_user, db_pass)
+platform_options = node["openstack"]["network"]["platform"]
+driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
+main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
+core_plugin = node["openstack"]["network"]["core_plugin"]
 
 if platform?("ubuntu", "debian")
 
@@ -54,33 +54,48 @@ service "quantum-openvswitch-switch" do
   action :enable
 end
 
-execute "quantum-node-setup --plugin openvswitch" do
-  only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
-end
-
-# retrieve the local interface for tunnels
-if node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
-  local_ip = address_for node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
-else
-  local_ip = node["openstack"]["network"]["openvswitch"]["local_ip"]
-end
-
 service "quantum-server" do
   service_name platform_options["quantum_server_service"]
   supports :status => true, :restart => true
   ignore_failure true
-
   action :nothing
 end
 
-template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini" do
-  source "plugins/openvswitch/ovs_quantum_plugin.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
-  mode 00644
-  variables(
-    :sql_connection => sql_connection,
-    :local_ip => local_ip
-  )
-  notifies :restart, "service[quantum-server]", :immediately
+platform_options["quantum_openvswitch_agent_packages"].each do |pkg|
+  package pkg do
+    action :install
+    options platform_options["package_overrides"]
+  end
+end
+
+service "quantum-plugin-openvswitch-agent" do
+  service_name platform_options["quantum_openvswitch_agent_service"]
+  supports :status => true, :restart => true
+  action :enable
+end
+
+execute "quantum-node-setup --plugin openvswitch" do
+  only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
+end
+
+if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
+  int_bridge = node["openstack"]["network"]["openvswitch"]["integration_bridge"]
+  execute "create internal network bridge" do
+    ignore_failure true
+    command "ovs-vsctl add-br #{int_bridge}"
+    action :run
+    not_if "ovs-vsctl show | grep 'Bridge #{int_bridge}'"
+    notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+  end
+end
+
+if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
+  tun_bridge = node["openstack"]["network"]["openvswitch"]["tunnel_bridge"]
+  execute "create tunnel network bridge" do
+    ignore_failure true
+    command "ovs-vsctl add-br #{tun_bridge}"
+    action :run
+    not_if "ovs-vsctl show | grep 'Bridge #{tun_bridge}'"
+    notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+  end
 end

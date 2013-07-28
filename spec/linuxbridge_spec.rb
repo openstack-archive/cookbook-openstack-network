@@ -5,7 +5,9 @@ describe 'openstack-network::linuxbridge' do
   describe "ubuntu" do
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["network"]["interface_driver"] = "quantum.agent.linux.interface.BridgeInterfaceDriver"
+      end
       @chef_run.converge "openstack-network::linuxbridge"
     end
 
@@ -26,26 +28,6 @@ describe 'openstack-network::linuxbridge' do
       it "has a correct sql_connection value" do
         expect(@chef_run).to create_file_with_content(
           @file.name, "mysql://quantum:quantum-pass@127.0.0.1:3306/quantum")
-      end
-    end
-
-    describe "/etc/default/quantum-server" do
-      before do
-        @file = @chef_run.template(
-          "/etc/default/quantum-server")
-      end
-
-      it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
-      end
-
-      it "has proper modes" do
-        expect(sprintf("%o", @file.mode)).to eq "600"
-      end
-
-      it "has a correct plugin config path" do
-        expect(@chef_run).to create_file_with_content(
-          @file.name, "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini")
       end
     end
   end

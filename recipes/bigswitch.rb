@@ -17,14 +17,4 @@
 # limitations under the License.
 #
 
-template "/etc/quantum/plugins/bigswitch/restproxy.ini" do
-  source "plugins/bigswitch/restproxy.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
-  mode 00644
-  variables(
-    :sql_connection => sql_connection
-  )
-
-  notifies :restart, "service[quantum-server]", :immediately
-end
+include_recipe "openstack-network::common"

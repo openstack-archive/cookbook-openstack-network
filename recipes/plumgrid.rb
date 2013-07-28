@@ -17,14 +17,4 @@
 # limitations under the License.
 #
 
-template "/etc/quantum/plugins/plumgrid/plumgrid.ini" do
-  source "plugins/plumgrid/plumgrid.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
-  mode 00644
-  variables(
-    :sql_connection => sql_connection
-  )
-
-  notifies :restart, "service[quantum-server]", :immediately
-end
+include_recipe "openstack-network::common"
