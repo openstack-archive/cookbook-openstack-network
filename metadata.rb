@@ -5,6 +5,7 @@ description       "Installs and configures the OpenStack Network API Service and
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version           "7.0.0"
 recipe            "openstack-network::server", "Installs packages required for a OpenStack Network server"
+recipe            "openstack-network::metadata_agent", "Installs packages required for a OpenStack Network Metadata Agent"
 recipe            "openstack-network::identity_registration", "Registers OpenStack Network endpoints and service user with Keystone"
 
 %w{ ubuntu fedora redhat centos suse }.each do |os|

@@ -195,9 +195,13 @@ default["openstack"]["network"]["l3"]["periodic_fuzzy_delay"] = 5
 
 # ============================= Metadata Agent Configuration ===============
 
-# The location of the Nova Metadata API service to proxy to.
+# The location of the Nova Metadata API service to proxy to (nil uses default)
 default["openstack"]["network"]["metadata"]["nova_metadata_ip"] = "127.0.0.1"
 default["openstack"]["network"]["metadata"]["nova_metadata_port"] = 8775
+
+# The name of the secret databag containing the metadata secret
+default["openstack"]["network"]["metadata"]["secret_name"] = "quantum_metadata_secret"
+
 
 # ============================= LBaaS Agent Configuration ==================
 
