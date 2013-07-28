@@ -54,6 +54,12 @@ default["openstack"]["network"]["service_tenant_name"] = "service"
 default["openstack"]["network"]["service_user"] = "quantum"
 default["openstack"]["network"]["service_role"] = "admin"
 
+# The default agent reporting interval
+default["openstack"]["network"]["api"]["agent"]["agent_report_interval"] = 4
+
+# The agent signing directory for api server
+default["openstack"]["network"]["api"]["agent"]["signing_dir"] = "/var/lib/quantum/keystone-signing"
+
 # Keystone PKI signing directory.
 default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/quantum/api"
 
@@ -97,6 +103,9 @@ default["openstack"]["network"]["dhcp_driver"] = 'quantum.agent.linux.dhcp.Dnsma
 # Allow overlapping IP (Must have kernel build with CONFIG_NET_NS=y and
 # iproute2 package that supports namespaces).
 default["openstack"]["network"]["use_namespaces"] = "True"
+
+# use quantum root wrap
+default["openstack"]["network"]["use_rootwrap"] = true
 
 # ============================= DHCP Agent Configuration ===================
 
@@ -149,13 +158,13 @@ default["openstack"]["network"]["dhcp"]["dnsmasq_dpkgversion"] = "2.65-1"
 
 # If use_namespaces is set as False then the agent can only configure one router.
 # This is done by setting the specific router_id.
-default["openstack"]["network"]["l3"]["router_id"] = ""
+default["openstack"]["network"]["l3"]["router_id"] = nil
 
 # Each L3 agent can be associated with at most one external network.  This
 # value should be set to the UUID of that external network.  If empty,
 # the agent will enforce that only a single external networks exists and
 # use that external network id
-default["openstack"]["network"]["l3"]["gateway_external_network_id"] = ""
+default["openstack"]["network"]["l3"]["gateway_external_network_id"] = nil
 
 # Indicates that this L3 agent should also handle routers that do not have
 # an external network gateway configured.  This option should be True only
@@ -224,7 +233,7 @@ default["openstack"]["network"]["openvswitch"]["tenant_network_type"] = 'local'
 # networks may be created.
 #
 # Example: network_vlan_ranges = physnet1:1000:2999
-default["openstack"]["network"]["openvswitch"]["network_vlan_ranges"] = ""
+default["openstack"]["network"]["openvswitch"]["network_vlan_ranges"] = nil
 
 # Set to True in the server and the agents to enable support
 # for GRE networks. Requires kernel support for OVS patch ports and
@@ -236,29 +245,33 @@ default["openstack"]["network"]["openvswitch"]["enable_tunneling"] = "False"
 # network allocation if tenant_network_type is 'gre'.
 #
 # Example: tunnel_id_ranges = 1:1000
-default["openstack"]["network"]["openvswitch"]["tunnel_id_ranges"] = ""
+default["openstack"]["network"]["openvswitch"]["tunnel_id_ranges"] = nil
 
 # Do not change this parameter unless you have a good reason to.
 # This is the name of the OVS integration bridge. There is one per hypervisor.
 # The integration bridge acts as a virtual "patch bay". All VM VIFs are
 # attached to this bridge and then "patched" according to their network
-# connectivity.
-default["openstack"]["network"]["openvswitch"]["integration_bridge"] = "br-int"
+# connectivity (nil uses default)
+default["openstack"]["network"]["openvswitch"]["integration_bridge"] = nil
 
 # Only used for the agent if tunnel_id_ranges (above) is not empty for
-# the server.  In most cases, the default value should be fine
-default["openstack"]["network"]["openvswitch"]["tunnel_bridge"] = "br-tun"
+# the server.  In most cases, the default value should be fine (nil
+# uses default)
+default["openstack"]["network"]["openvswitch"]["tunnel_bridge"] = nil
 
-# Peer patch port in integration bridge for tunnel bridge
-default["openstack"]["network"]["openvswitch"]["int_peer_patch_port"] = "patch-tun"
+# Peer patch port in integration bridge for tunnel bridge (nil uses default)
+default["openstack"]["network"]["openvswitch"]["int_peer_patch_port"] = nil
 
-# Peer patch port in tunnel bridge for integration bridge
-default["openstack"]["network"]["openvswitch"]["tun_peer_patch_port"] = "patch-int"
+# Peer patch port in tunnel bridge for integration bridge (nil uses default)
+default["openstack"]["network"]["openvswitch"]["tun_peer_patch_port"] = nil
 
 # Uncomment this line for the agent if tunnel_id_ranges (above) is not
-# empty for the server. Set local-ip to be the local IP address of
-# this hypervisor
-default["openstack"]["network"]["openvswitch"]["local_ip"] = ""
+# empty for the server. Set local_ip to be the local IP address of
+# this hypervisor or set the local_ip_interface parameter to use the IP
+# address of the specified interface.  If local_ip_interface is set
+# it will take precedence.
+default["openstack"]["network"]["openvswitch"]["local_ip"] = "127.0.0.1"
+default["openstack"]["network"]["openvswitch"]["local_ip_interface"] = nil
 
 # Comma-separated list of <physical_network>:<bridge> tuples
 # mapping physical network names to the agent's node-specific OVS
@@ -269,7 +282,7 @@ default["openstack"]["network"]["openvswitch"]["local_ip"] = ""
 # server should have mappings to appropriate bridges on each agent.
 #
 # Example: bridge_mappings = physnet1:br-eth1
-default["openstack"]["network"]["openvswitch"]["bridge_mappings"] = ""
+default["openstack"]["network"]["openvswitch"]["bridge_mappings"] = nil
 
 # Firewall driver for realizing quantum security group function
 default["openstack"]["network"]["openvswitch"]["fw_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"

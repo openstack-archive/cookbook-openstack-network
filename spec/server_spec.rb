@@ -62,6 +62,36 @@ describe 'openstack-network::server' do
      expect(sprintf("%o", @file.mode)).to eq "644"
     end
 
+    it "it sets root_helper" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        'root_helper = "sudo quantum-rootwrap /etc/quantum/rootwrap.conf"'
+    end
+
+    it "binds to appropriate api ip" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "bind_host = 127.0.0.1"
+    end
+
+    it "binds to appropriate api port" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "bind_port = 9696"
+    end
+
+    it "has appropriate auth host for agents"  do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "auth_host = 127.0.0.1"
+    end
+
+    it "has appropriate auth port for agents"  do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "auth_port = 5000"
+    end
+
+    it "has appropriate admin password for agents"  do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "admin_password = quantum-pass"
+    end
+
     it "has rabbit_host" do
       expect(@chef_run).to create_file_with_content @file.name,
         "rabbit_host=127.0.0.1"
@@ -105,22 +135,22 @@ describe 'openstack-network::server' do
         end
         @chef_run.converge "openstack-network::server"
       end
-  
+
       it "has rabbit_hosts" do
         expect(@chef_run).to create_file_with_content @file.name,
           "rabbit_hosts=1.1.1.1:5672,2.2.2.2:5672"
       end
-  
+
       it "has rabbit_ha_queues" do
         expect(@chef_run).to create_file_with_content @file.name,
           "rabbit_ha_queues=True"
       end
-  
+
       it "does not have rabbit_host" do
         expect(@chef_run).not_to create_file_with_content @file.name,
           "rabbit_host=127.0.0.1"
       end
-  
+
       it "does not have rabbit_port" do
         expect(@chef_run).not_to create_file_with_content @file.name,
           "rabbit_port=5672"

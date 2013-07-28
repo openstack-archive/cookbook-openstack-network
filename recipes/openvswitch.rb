@@ -58,15 +58,29 @@ execute "quantum-node-setup --plugin openvswitch" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
-if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::server")
-  template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini" do
-    source "plugins/openvswitch/ovs_quantum_plugin.ini.erb"
-    owner node["openstack"]["network"]["platform"]["user"]
-    group node["openstack"]["network"]["platform"]["group"]
-    mode 00644
-    variables(
-      :sql_connection => sql_connection
-    )
-    notifies :restart, "service[quantum-server]", :immediately
-  end
+# retrieve the local interface for tunnels
+if node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
+  local_ip = address_for node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
+else
+  local_ip = node["openstack"]["network"]["openvswitch"]["local_ip"]
+end
+
+service "quantum-server" do
+  service_name platform_options["quantum_server_service"]
+  supports :status => true, :restart => true
+  ignore_failure true
+
+  action :nothing
+end
+
+template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini" do
+  source "plugins/openvswitch/ovs_quantum_plugin.ini.erb"
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
+  mode 00644
+  variables(
+    :sql_connection => sql_connection,
+    :local_ip => local_ip
+  )
+  notifies :restart, "service[quantum-server]", :immediately
 end

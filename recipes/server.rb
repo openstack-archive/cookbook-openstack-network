@@ -153,8 +153,10 @@ service_user = node["openstack"]["network"]["service_user"]
 
 if node["openstack"]["network"]["api"]["bind_interface"].nil?
   bind_address = api_endpoint.host
+  bind_port = api_endpoint.port
 else
   bind_address = address_for node["openstack"]["network"]["api"]["bind_interface"]
+  bind_port = node["openstack"]["network"]["api"]["bind_port"]
 end
 
 # Here is where we set up the appropriate plugin INI files
@@ -175,7 +177,7 @@ end
 begin
   include_recipe "openstack-network::#{main_plugin}"
 rescue Chef::Exceptions::RecipeNotFound
-   Chef::Log.warn "Could not find recipe openstack-network::#{main_plugin} for inclusion"
+  Chef::Log.warn "Could not find recipe openstack-network::#{main_plugin} for inclusion"
 end
 
 template "/etc/quantum/quantum.conf" do
@@ -185,10 +187,12 @@ template "/etc/quantum/quantum.conf" do
   mode   00644
   variables(
     :bind_address => bind_address,
-    :bind_port => api_endpoint.port,
+    :bind_port => bind_port,
     :rabbit_pass => rabbit_pass,
     :rabbit_hosts => rabbit_hosts,
-    :core_plugin => core_plugin
+    :core_plugin => core_plugin,
+    :identity_endpoint => identity_endpoint,
+    :service_pass => service_pass
   )
 
   notifies :restart, "service[quantum-server]", :immediately
@@ -200,8 +204,8 @@ template "/etc/quantum/api-paste.ini" do
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
   variables(
-    "identity_endpoint" => identity_endpoint,
-    "service_pass" => service_pass
+    :identity_endpoint => identity_endpoint,
+    :service_pass => service_pass
   )
 
   notifies :restart, "service[quantum-server]", :immediately

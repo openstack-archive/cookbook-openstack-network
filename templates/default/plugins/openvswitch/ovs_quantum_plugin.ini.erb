@@ -45,7 +45,9 @@ tenant_network_type = <%= node["openstack"]["network"]["openvswitch"]["tenant_ne
 #
 # Default: network_vlan_ranges =
 # Example: network_vlan_ranges = physnet1:1000:2999
+<% if node["openstack"]["network"]["openvswitch"]["network_vlan_ranges"] -%>
 network_vlan_ranges = <%= node["openstack"]["network"]["openvswitch"]["network_vlan_ranges"] %>
+<% end -%>
 
 # (BoolOpt) Set to True in the server and the agents to enable support
 # for GRE networks. Requires kernel support for OVS patch ports and
@@ -60,7 +62,9 @@ enable_tunneling = <%= node["openstack"]["network"]["openvswitch"]["enable_tunne
 #
 # Default: tunnel_id_ranges =
 # Example: tunnel_id_ranges = 1:1000
+<% if node["openstack"]["network"]["openvswitch"]["tunnel_id_ranges"] -%>
 tunnel_id_ranges = <%= node["openstack"]["network"]["openvswitch"]["tunnel_id_ranges"] %>
+<% end -%>
 
 # Do not change this parameter unless you have a good reason to.
 # This is the name of the OVS integration bridge. There is one per hypervisor.
@@ -69,28 +73,36 @@ tunnel_id_ranges = <%= node["openstack"]["network"]["openvswitch"]["tunnel_id_ra
 # connectivity.
 #
 # Default: integration_bridge = br-int
+<% if node["openstack"]["network"]["openvswitch"]["integration_bridge"] -%>
 integration_bridge = <%= node["openstack"]["network"]["openvswitch"]["integration_bridge"] %>
+<% end -%>
 
 # Only used for the agent if tunnel_id_ranges (above) is not empty for
 # the server.  In most cases, the default value should be fine.
 #
 # Default: tunnel_bridge = br-tun
+<% if node["openstack"]["network"]["openvswitch"]["tunnel_bridge"] -%>
 tunnel_bridge = <%= node["openstack"]["network"]["openvswitch"]["tunnel_bridge"] %>
+<% end -%>
 
 # Peer patch port in integration bridge for tunnel bridge
-# int_peer_patch_port = patch-tun
+# Default: int_peer_patch_port = patch-tun
+<% if node["openstack"]["network"]["openvswitch"]["int_peer_patch_port"] -%>
 int_peer_patch_port = <%= node["openstack"]["network"]["openvswitch"]["int_peer_patch_port"] %>
+<% end -%>
 
 # Peer patch port in tunnel bridge for integration bridge
-# tun_peer_patch_port = patch-int
+# Default: tun_peer_patch_port = patch-int
+<% if node["openstack"]["network"]["openvswitch"]["tun_peer_patch_port"] -%>
 tun_peer_patch_port = <%= node["openstack"]["network"]["openvswitch"]["tun_peer_patch_port"] %>
+<% end -%>
 
 # Uncomment this line for the agent if tunnel_id_ranges (above) is not
 # empty for the server. Set local-ip to be the local IP address of
 # this hypervisor.
 #
 # Default: local_ip =
-local_ip = <%= node["openstack"]["network"]["openvswitch"]["local_ip"] %>
+local_ip = <%= @local_ip %>
 
 # (ListOpt) Comma-separated list of <physical_network>:<bridge> tuples
 # mapping physical network names to the agent's node-specific OVS
@@ -102,7 +114,9 @@ local_ip = <%= node["openstack"]["network"]["openvswitch"]["local_ip"] %>
 #
 # Default: bridge_mappings =
 # Example: bridge_mappings = physnet1:br-eth1
+<% if node["openstack"]["network"]["openvswitch"]["bridge_mappings"] -%>
 bridge_mappings = <%= node["openstack"]["network"]["openvswitch"]["bridge_mappings"] %>
+<% end -%>
 
 [AGENT]
 # Agent's polling interval in seconds
@@ -110,8 +124,10 @@ polling_interval = 2
 
 [SECURITYGROUP]
 # Firewall driver for realizing quantum security group function
-# firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+# Default: firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+<% if node["openstack"]["network"]["openvswitch"]["fw_driver"] -%>
 firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %>
+<% end -%>
 
 #-----------------------------------------------------------------------------
 # Sample Configurations.

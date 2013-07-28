@@ -300,10 +300,22 @@ notification_topics = notifications
 # root filter facility.
 # Change to "sudo" to skip the filtering and just run the comand directly
 # root_helper = sudo
+<% if node["openstack"]["network"]["use_rootwrap"] %>
+root_helper = "sudo quantum-rootwrap /etc/quantum/rootwrap.conf"
+<% end -%>
 
 # =========== items for agent management extension =============
 # seconds between nodes reporting state to server, should be less than
 # agent_down_time
-# report_interval = 4
+report_interval = <%= node["openstack"]["network"]["api"]["agent"]["agent_report_interval"] %>
+
+[keystone_authtoken]
+auth_host = <%= @identity_endpoint.host %>
+auth_port = <%= @identity_endpoint.port %>
+auth_protocol = <%= @identity_endpoint.scheme %>
+admin_tenant_name = <%= node["openstack"]["network"]["service_tenant_name"] %>
+admin_user = <%= node["openstack"]["network"]["service_user"] %>
+admin_password = <%= @service_pass %>
+signing_dir = <%= node["openstack"]["network"]["api"]["agent"]["signing_dir"] %>
 
 # ===========  end of items for agent management extension =====

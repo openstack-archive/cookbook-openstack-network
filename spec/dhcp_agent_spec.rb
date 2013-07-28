@@ -23,7 +23,7 @@ describe 'openstack-network::dhcp_agent' do
     end
 
     it "starts the dhcp agent on boot" do
-     expect(@chef_run).to set_service_to_start_on_boot "quantum-dhcp-agent"
+      expect(@chef_run).to set_service_to_start_on_boot "quantum-dhcp-agent"
     end
 
     describe "/etc/quantum/plugins" do
@@ -48,11 +48,14 @@ describe 'openstack-network::dhcp_agent' do
       it "has proper modes" do
         expect(sprintf("%o", @file.mode)).to eq "644"
       end
-      it "template contents" do
-        pending "TODO: implement"
+      it "uses ovs driver" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          "interface_driver = quantum.agent.linux.interface.OVSInterfaceDriver"
+      end
+      it "uses namespaces" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          "use_namespaces = True"
       end
     end
-
   end
-
 end
