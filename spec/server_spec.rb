@@ -27,6 +27,27 @@ describe 'openstack-network::server' do
 
   end
 
+  describe "api-paste.ini" do
+
+    before do
+     @file = @chef_run.template "/etc/quantum/api-paste.ini"
+    end
+
+    it "has proper owner" do
+      expect(@file).to be_owned_by "quantum", "quantum"
+    end
+
+    it "has proper modes" do
+     expect(sprintf("%o", @file.mode)).to eq "644"
+    end
+
+    it "has quantum pass" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "admin_password = quantum-pass"
+    end
+
+  end
+
   describe "quantum.conf" do
 
     before do

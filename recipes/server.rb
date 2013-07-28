@@ -147,7 +147,7 @@ db_pass = db_password "quantum"
 sql_connection = db_uri("network", db_user, db_pass)
 
 api_endpoint = endpoint "network-api"
-service_pass = service_password "quantum"
+service_pass = service_password "openstack-network"
 service_tenant_name = node["openstack"]["network"]["service_tenant_name"]
 service_user = node["openstack"]["network"]["service_user"]
 

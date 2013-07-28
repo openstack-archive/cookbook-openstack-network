@@ -58,7 +58,7 @@ def quantum_stubs
   ::Chef::Recipe.any_instance.stub(:db_password).and_return "quantum-pass"
   ::Chef::Recipe.any_instance.stub(:user_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).and_return String.new
-  ::Chef::Recipe.any_instance.stub(:service_password).with("quantum").
+  ::Chef::Recipe.any_instance.stub(:service_password).with("openstack-network").
     and_return "quantum-pass"
   ::Chef::Recipe.any_instance.stub(:user_password).with("guest").
     and_return("rabbit-password")
