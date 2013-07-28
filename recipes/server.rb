@@ -134,10 +134,10 @@ template "/etc/quantum/policy.json" do
 end
 
 rabbit_server_role = node["openstack"]["network"]["rabbit_server_chef_role"]
-rabbit_info = config_by_role rabbit_server_role, "queue"
-rabbit_user = node["openstack"]["network"]["rabbit"]["username"]
-rabbit_vhost = node["openstack"]["network"]["rabbit"]["vhost"]
-rabbit_pass = user_password "rabbit"
+if node["openstack"]["network"]["rabbit"]["ha"]
+  rabbit_hosts = rabbit_servers
+end
+rabbit_pass = user_password node["openstack"]["network"]["rabbit"]["username"]
 
 identity_endpoint = endpoint "identity-api"
 auth_uri = ::URI.decode identity_endpoint.to_s
@@ -186,11 +186,8 @@ template "/etc/quantum/quantum.conf" do
   variables(
     :bind_address => bind_address,
     :bind_port => api_endpoint.port,
-    :rabbit_ipaddress => rabbit_info["host"],
-    :rabbit_user => rabbit_user,
-    :rabbit_password => rabbit_pass,
-    :rabbit_port => rabbit_info["port"],
-    :rabbit_virtual_host => rabbit_vhost,
+    :rabbit_pass => rabbit_pass,
+    :rabbit_hosts => rabbit_hosts,
     :core_plugin => core_plugin
   )
 

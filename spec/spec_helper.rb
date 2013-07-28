@@ -44,6 +44,8 @@ MOCK_NODE_NETWORK_DATA =
 
 def quantum_stubs
 
+  ::Chef::Recipe.any_instance.stub(:rabbit_servers).
+    and_return "1.1.1.1:5672,2.2.2.2:5672"
   ::Chef::Recipe.any_instance.stub(:config_by_role).
     with("rabbitmq-server", "queue").and_return(
       {'host' => 'rabbit-host', 'port' => 'rabbit-port'}
@@ -58,5 +60,7 @@ def quantum_stubs
   ::Chef::Recipe.any_instance.stub(:service_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).with("quantum").
     and_return "quantum-pass"
+  ::Chef::Recipe.any_instance.stub(:user_password).with("guest").
+    and_return("rabbit-password")
 
 end

@@ -35,13 +35,18 @@ default["openstack"]["network"]["service_name"] = "quantum"
 default["openstack"]["network"]["service_type"] = "network"
 default["openstack"]["network"]["description"] = "OpenStack Networking service"
 
-# The name of the Chef role that knows about the message queue server
-# that Quantum uses
+# The rabbit user's password is stored in an encrypted databag
+# and accessed with openstack-common cookbook library's
+# user_password routine.  You are expected to create
+# the user, pass, vhost in a wrapper rabbitmq cookbook.
 default["openstack"]["network"]["rabbit_server_chef_role"] = "rabbitmq-server"
-default["openstack"]["network"]["rabbit"]["username"] = "rabbit"
-default["openstack"]["network"]["rabbit"]["vhost"] = "/nova"
+default["openstack"]["network"]["rabbit"]["username"] = "guest"
+default["openstack"]["network"]["rabbit"]["vhost"] = "/"
+default["openstack"]["network"]["rabbit"]["port"] = 5672
+default["openstack"]["network"]["rabbit"]["host"] = "127.0.0.1"
+default["openstack"]["network"]["rabbit"]["ha"] = false
 
-
+# The database username for the quantum database
 default["openstack"]["network"]["db"]["username"] = "quantum"
 
 # Used in the Keystone authtoken middleware configuration

@@ -126,19 +126,23 @@ control_exchange = quantum
 # kombu_ssl_ca_certs =
 
 ##### RABBITMQ #####
-rabbit_userid=<%= @rabbit_user %>
-rabbit_password=<%= @rabbit_password %>
-<%= "rabbit_port=#{@rabbit_port}" if @rabbit_port %>
-rabbit_host=<%= @rabbit_ipaddress %>
-rabbit_virtual_host=<%= @rabbit_virtual_host %>
+rabbit_userid=<%= node["openstack"]["network"]["rabbit"]["username"] %>
+rabbit_password=<%= @rabbit_pass %>
+rabbit_virtual_host=<%= node["openstack"]["network"]["rabbit"]["vhost"] %>
+<% if node["openstack"]["network"]["rabbit"]["ha"] -%>
+# Use HA queues in RabbitMQ (x-ha-policy: all).You need to
+# wipe RabbitMQ database when changing this option. (boolean value)
+rabbit_hosts=<%= @rabbit_hosts %>
+rabbit_ha_queues=True
+<% else -%>
+rabbit_host=<%= node["openstack"]["network"]["rabbit"]["host"] %>
+rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
+<% end -%>
 # Maximum retries with trying to connect to RabbitMQ
 # (the default of 0 implies an infinite retry count)
 # rabbit_max_retries = 0
 # RabbitMQ connection retry interval
 # rabbit_retry_interval = 1
-# Use HA queues in RabbitMQ (x-ha-policy: all).You need to
-# wipe RabbitMQ database when changing this option. (boolean value)
-# rabbit_ha_queues = false
 
 # QPID
 # rpc_backend=quantum.openstack.common.rpc.impl_qpid
