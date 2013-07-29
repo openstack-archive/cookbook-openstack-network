@@ -7,6 +7,7 @@ describe 'openstack-network::server' do
       n.set["openstack"]["mq"] = {
         "host" => "127.0.0.1"
       }
+      n.set["chef_client"]["splay"] = 300
     end
     @chef_run.converge "openstack-network::server"
   end
@@ -134,6 +135,7 @@ describe 'openstack-network::server' do
       before do
         @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
           n.set["openstack"]["network"]["rabbit"]["ha"] = true
+          n.set["chef_client"]["splay"] = 300
         end
         @chef_run.converge "openstack-network::server"
       end

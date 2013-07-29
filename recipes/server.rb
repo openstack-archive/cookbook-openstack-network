@@ -43,3 +43,22 @@ service "quantum-server" do
   supports :status => true, :restart => true
   action :enable
 end
+
+if node["openstack"]["network"]["quantum_ha_cmd_cron"]
+  # ensure period checks are offset between multiple l3 agent nodes
+  # and assumes splay will remain constant (i.e. based on hostname)
+  # Generate a uniformly distributed unique number to sleep.
+  checksum   = Digest::MD5.hexdigest(node['fqdn'] || 'unknown-hostname')
+  splay = node['chef_client']['splay'].to_i || 3000
+  sleep_time = checksum.to_s.hex % splay
+
+  cron "quantum-ha-healthcheck" do
+    minute node["openstack"]["network"]["cron_l3_healthcheck"]
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --l3-agent-migrate"
+  end
+
+  cron "quantum-ha-replicate-dhcp" do
+    minute node["openstack"]["network"]["cron_replicate_dhcp"]
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --replicate-dhcp"
+  end
+end

@@ -4,9 +4,10 @@ describe 'openstack-network::server' do
   describe "opensuse" do
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
+        n.set["chef_client"]["splay"] = 300
+      end
       @node = @chef_run.node
-
       @chef_run.converge "openstack-network::server"
     end
 
@@ -20,7 +21,9 @@ describe 'openstack-network::server' do
 
     it "does not install openvswitch package" do
       opts = ::OPENSUSE_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run = ::ChefSpec::ChefRunner.new opts do |n|
+        n.set["chef_client"]["splay"] = 300
+      end
       chef_run.converge "openstack-network::server"
 
       expect(chef_run).not_to install_package "openstack-quantum-openvswitch"
