@@ -54,6 +54,10 @@ core_plugin = <%= @core_plugin %>
 
 # Advanced service modules
 # service_plugins =
+<% if node["openstack"]["network"]["quantum_loadbalancer"] %>
+# LoadBalancer plugin
+service_plugins = quantum.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin
+<% end %>
 
 # Paste configuration file
 api_paste_config = api-paste.ini
