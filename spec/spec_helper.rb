@@ -53,7 +53,7 @@ def quantum_stubs
   ::Chef::Recipe.any_instance.stub(:secret).
     with("secrets", "openstack_identity_bootstrap_token").
     and_return "bootstrap-token"
-  ::Chef::Recipe.any_instance.stub(:db_password).and_return String.new
+  ::Chef::Recipe.any_instance.stub(:db_password).and_return "quantum-pass"
   ::Chef::Recipe.any_instance.stub(:user_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).with("quantum").
