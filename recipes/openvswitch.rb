@@ -30,11 +30,16 @@ db_user = node["openstack"]["network"]["db"]["username"]
 db_pass = db_password "quantum"
 sql_connection = db_uri("network", db_user, db_pass)
 
-bash "installing linux headers to compile openvswitch module" do
-  only_if { platform?(%w(ubuntu debian)) } # :pragma-foodcritic: ~FC024 - won't fix this
-  code <<-EOH
-    apt-get install -y linux-headers-`uname -r`
-  EOH
+if platform?("ubuntu", "debian")
+
+  # obtain kernel version for kernel header
+  # installation on ubuntu and debian
+  kernel_ver = node["release"]
+  package "linux-headers-#{kernel_ver}" do
+    options platform_options["package_overrides"]
+    action :install
+  end
+
 end
 
 platform_options["quantum_openvswitch_packages"].each do |pkg|
