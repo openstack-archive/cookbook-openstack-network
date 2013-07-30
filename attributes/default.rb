@@ -683,7 +683,7 @@ when "ubuntu"
     "quantum_packages" => [ "quantum-server", "python-quantumclient", "python-pyparsing", "python-cliff" ],
     "quantum_lb_packages" => ["quantum-lbaas-agent", "haproxy"],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
-    "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev" ],
+    "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
