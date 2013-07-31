@@ -7,7 +7,7 @@ describe 'openstack-network::openvswitch' do
     before do
       quantum_stubs
       @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
-        n.set["release"] = "1.2.3"
+        n.automatic_attrs["kernel"]["release"] = "1.2.3"
       end
       @chef_run.converge "openstack-network::openvswitch"
     end

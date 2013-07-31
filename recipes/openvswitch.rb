@@ -34,7 +34,7 @@ if platform?("ubuntu", "debian")
 
   # obtain kernel version for kernel header
   # installation on ubuntu and debian
-  kernel_ver = node["release"]
+  kernel_ver = node["kernel"]["release"]
   package "linux-headers-#{kernel_ver}" do
     options platform_options["package_overrides"]
     action :install
