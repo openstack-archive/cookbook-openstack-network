@@ -12,6 +12,6 @@ recipe            "openstack-network::identity_registration", "Registers OpenSta
 end
 
 depends           "openstack-identity", "~> 7.0"
-depends           "openstack-common", "~> 0.3.0"
+depends           "openstack-common", "~> 0.4.0"
 depends           "mysql"
 depends           "postgresql"
