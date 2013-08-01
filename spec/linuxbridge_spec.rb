@@ -28,5 +28,25 @@ describe 'openstack-network::linuxbridge' do
           @file.name, "mysql://quantum:quantum-pass@127.0.0.1:3306/quantum")
       end
     end
+
+    describe "/etc/default/quantum-server" do
+      before do
+        @file = @chef_run.template(
+          "/etc/default/quantum-server")
+      end
+
+      it "has proper owner" do
+        expect(@file).to be_owned_by "quantum", "quantum"
+      end
+
+      it "has proper modes" do
+        expect(sprintf("%o", @file.mode)).to eq "600"
+      end
+
+      it "has a correct plugin config path" do
+        expect(@chef_run).to create_file_with_content(
+          @file.name, "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini")
+      end
+    end
   end
 end

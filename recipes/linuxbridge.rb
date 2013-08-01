@@ -38,3 +38,18 @@ template "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini" do
 
   notifies :restart, "service[quantum-server]", :immediately
 end
+
+# Ubuntu packaging currently does not update the quantum init script to point to
+# linuxbridge config file. Manual update /etc/default/quantum-server is required.
+template "/etc/default/quantum-server" do
+  source "quantum-server.erb"
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
+  mode   00600
+  variables(
+    :plugin_config => "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini"
+  )
+
+  notifies :restart, "service[quantum-server]", :immediately
+  only_if { platform? %w{ubuntu debian} }
+end
