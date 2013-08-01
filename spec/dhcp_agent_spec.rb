@@ -22,6 +22,10 @@ describe 'openstack-network::dhcp_agent' do
       expect(@chef_run).to install_package "quantum-dhcp-agent"
     end
 
+    it "installs plugin packages" do
+      expect(@chef_run).to install_package "quantum-plugin-openvswitch"
+    end
+
     it "starts the dhcp agent on boot" do
       expect(@chef_run).to set_service_to_start_on_boot "quantum-dhcp-agent"
     end

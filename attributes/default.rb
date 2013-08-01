@@ -703,11 +703,12 @@ when "suse"
     "quantum_dhcp_packages" => ["openstack-quantum-dhcp-agent"],
     "quantum_dhcp_build_packages" => [],
     "quantum_l3_packages" => ["openstack-quantum-l3-agent"],
+    # plugins are installed by the main openstack-quantum package on SUSE
+    "quantum_plugin_package" => "",
     "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
     "quantum_openvswitch_packages" => ["openvswitch-switch"],
     "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
     "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
-    "quantum_plugin_package" => "openstack-quantum-%plugin%",
     "quantum_server_packages" => [],
     "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
     "quantum_l3_agent_service" => "openstack-quantum-l3-agent",

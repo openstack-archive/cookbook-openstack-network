@@ -42,6 +42,8 @@ end
 package platform_options["quantum_plugin_package"].gsub("%plugin%", main_plugin) do
   options platform_options["package_overrides"]
   action :install
+  # plugins are installed by the main openstack-quantum package on SUSE
+  not_if { platform_family? "suse" }
 end
 
 execute "quantum-dhcp-setup --plugin #{main_plugin}" do
