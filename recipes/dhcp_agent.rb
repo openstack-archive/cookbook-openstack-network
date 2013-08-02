@@ -24,6 +24,7 @@ main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
 # This will copy recursively all the files in
 # /files/default/etc/quantum/rootwrap.d
 remote_directory "/etc/quantum/rootwrap.d" do
+  source "etc/quantum/rootwrap.d"
   files_owner node["openstack"]["network"]["platform"]["user"]
   files_group node["openstack"]["network"]["platform"]["group"]
   files_mode 00700
