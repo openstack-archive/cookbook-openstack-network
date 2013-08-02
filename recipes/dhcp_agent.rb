@@ -111,21 +111,21 @@ if node['lsb']['codename'] == "precise"
       debian/rules binary
       EOH
     not_if { ::File.exists?(extract_path) }
-    notifies :install, "dpkg_package[dnsmasq]", :immediately
     notifies :install, "dpkg_package[dnsmasq-utils]", :immediately
     notifies :install, "dpkg_package[dnsmasq-base]", :immediately
+    notifies :install, "dpkg_package[dnsmasq]", :immediately
   end
 
-  dpkg_package "dnsmasq" do
-    source "#{extract_path}/../dnsmasq_#{dhcp_options['dnsmasq_dpkgversion']}_all.deb"
-    action :nothing
-  end
   dpkg_package "dnsmasq-utils" do
     source "#{extract_path}/../dnsmasq-utils_#{dhcp_options['dnsmasq_dpkgversion']}_#{dhcp_options['dnsmasq_architecture']}.deb"
     action :nothing
   end
   dpkg_package "dnsmasq-base" do
     source "#{extract_path}/../dnsmasq-base_#{dhcp_options['dnsmasq_dpkgversion']}_#{dhcp_options['dnsmasq_architecture']}.deb"
+    action :nothing
+  end
+  dpkg_package "dnsmasq" do
+    source "#{extract_path}/../dnsmasq_#{dhcp_options['dnsmasq_dpkgversion']}_all.deb"
     action :nothing
   end
 
