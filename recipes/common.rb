@@ -128,10 +128,12 @@ else
 end
 
 # https://bugs.launchpad.net/neutron/+bug/1111572
-package platform_options["quantum_python_package"] do
-  action :install
-  options platform_options["package_overrides"]
-  notifies :upgrade, "python_pip[python-quantumclient]", :immediately
+platform_options["quantum_client_packages"].each do |pkg|
+  package pkg do
+    action :install
+    options platform_options["package_overrides"]
+    notifies :upgrade, "python_pip[python-quantumclient]", :immediately
+  end
 end
 if platform?("ubuntu", "debian")
   include_recipe "python::pip"
