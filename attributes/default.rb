@@ -63,9 +63,11 @@ default["openstack"]["network"]["api"]["agent"]["signing_dir"] = "/var/lib/quant
 # Keystone PKI signing directory.
 default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/quantum/api"
 
-# If set, Quantum API service will bind to the address on this interface,
-# otherwise it will bind to the API endpoint's host.
+# If bind_interface is set, the quantum API service will bind to the
+# address on this interface and use the port in bind_port. Otherwise,
+# it will bind to the API endpoint's host.
 default["openstack"]["network"]["api"]["bind_interface"] = nil
+default["openstack"]["network"]["api"]["bind_port"] = 9696
 
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
