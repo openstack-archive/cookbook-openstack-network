@@ -77,7 +77,7 @@ def run(args):
 
     if args.l3_agent_migrate:
         LOG.info("Performing L3 Agent Migration for Offline L3 Agents")
-        l3_agent_check(qclient, args.noop)
+        l3_agent_migrate(qclient, args.noop)
 
     if args.l3_agent_rebalance:
         LOG.info("Rebalancing L3 Agent Router Count")
@@ -140,7 +140,7 @@ def l3_agent_rebalance(qclient, noop=False):
                 LOG.info("Migrating router=%s from agent=%s to agent=%s", router_id, hgh_agent_id, low_agent_id)
                 try:
                     if not noop:
-                        migrate_router(router_id, hgh_agent_id, low_agent_id)
+                        migrate_router(qclient, router_id, hgh_agent_id, low_agent_id)
                     low_agent_router_count += 1
                     hgh_agent_router_count -= 1
                 except:
@@ -200,7 +200,7 @@ def l3_agent_migrate(qclient, noop=False):
 
     if len(agent_dead_list) > 0:
 
-       if len(agents_alive_list) < 1:
+       if len(agent_alive_list) < 1:
            LOG.exception("There are no l3 agents alive to migrate routers onto")
 
        for agent_id in agent_dead_list:
@@ -217,7 +217,7 @@ def l3_agent_migrate(qclient, noop=False):
                try:
 
                    if not noop:
-                       migrate_router(router_id, agent_id, target_id)
+                       migrate_router(qclient, router_id, agent_id, target_id)
                    migration_count+=1
 
                except:
@@ -259,14 +259,14 @@ def replicate_dhcp(qclient, noop=False):
     LOG.info("Added %s networks to DHCP agents", added)
 
 
-def migrate_router(qclient, router, old_agent, new_agent):
+def migrate_router(qclient, router_id, agent_id, target_id):
     """
     Returns nothing, and raises on exception
 
     :param qclient: A quantumclient
-    :param router: The id of the router to migrate
-    :param old_agent: The id of the l3 agent to migrate from
-    :param new_agent: The id of the l3 agent to migrate to
+    :param router_id: The id of the router to migrate
+    :param agent_id: The id of the l3 agent to migrate from
+    :param target_id: The id of the l3 agent to migrate to
     """
 
     # N.B. The quantum API will return "success" even when there is a subsequent
@@ -280,7 +280,9 @@ def migrate_router(qclient, router, old_agent, new_agent):
     if router_id in list_routers_on_l3_agent(qclient, agent_id):
        LOG.exception("Failed to remove router_id=%s from agent_id=%s", router_id, agent_id)
 
+
     # add the router id to a live agent
+    router_body = {'router_id': router_id}
     qclient.add_router_to_l3_agent(target_id, router_body)
 
     # ensure it is removed or log an error
@@ -347,7 +349,7 @@ def list_agents(qclient, agent_type=None):
 
     # openvswitch
     #
-    # {u'agents': [{u'binary': u'quantum-openvswitch-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:25',
+    # {u'agents': [{u'binary': u'quantum-openvswitch-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:25'
     # u'alive': True, u'topic': u'N/A', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'Open vSwitch agent', u'created_at': u'2013-07-02 14:50:57',
     # u'started_at': u'2013-07-02 14:50:57', u'id': u'3a577f1d-d86e-4f1a-a395-8d4c8e4df1e2', u'configurations': {u'devices': 10}},
     #
