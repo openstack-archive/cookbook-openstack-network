@@ -11,6 +11,14 @@ describe 'openstack-network::linuxbridge' do
       @chef_run.converge "openstack-network::linuxbridge"
     end
 
+    it "installs linuxbridge agent" do
+      expect(@chef_run).to install_package "quantum-plugin-linuxbridge-agent"
+    end
+
+    it "sets the linuxbridge service to start on boot" do
+      expect(@chef_run).to set_service_to_start_on_boot "quantum-plugin-linuxbridge-agent"
+    end
+
     describe "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini" do
       before do
         @file = @chef_run.template(

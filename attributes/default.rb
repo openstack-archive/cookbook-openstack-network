@@ -686,6 +686,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_openvswitch_packages" => ["openvswitch"],
     "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
+    "quantum_linuxbridge_agent_packages" => ["openstack-quantum-linuxbridge"],
     "quantum_metadata_agent_packages" => [],
     "quantum_plugin_package" => "openstack-quantum-%plugin%",
     "quantum_server_packages" => [],
@@ -694,6 +695,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
     "quantum_openvswitch_service" => "openvswitch",
     "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_linuxbridge_agent_service" => "quantum-linuxbridge-agent",
     "quantum_server_service" => "quantum-server",
     "package_overrides" => ""
   }
@@ -714,6 +716,7 @@ when "suse"
     "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
     "quantum_openvswitch_packages" => ["openvswitch-switch"],
     "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
+    "quantum_linuxbridge_agent_packages" => ["openstack-quantum-linuxbridge-agent"],
     "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
     "quantum_server_packages" => [],
     "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
@@ -721,6 +724,7 @@ when "suse"
     "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent",
     "quantum_openvswitch_service" => "openvswitch",
     "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
+    "quantum_linuxbridge_agent_service" => "openstack-quantum-linuxbridge-agent",
     "quantum_server_service" => "openstack-quantum",
     "package_overrides" => ""
   }
@@ -739,6 +743,7 @@ when "ubuntu"
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
     "quantum_openvswitch_agent_packages" => [ "quantum-plugin-openvswitch", "quantum-plugin-openvswitch-agent" ],
+    "quantum_linuxbridge_agent_packages" => [ "quantum-plugin-linuxbridge", "quantum-plugin-linuxbridge-agent" ],
     "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
     "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_server_packages" => ["quantum-server"],
@@ -748,6 +753,7 @@ when "ubuntu"
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
     "quantum_openvswitch_service" => "openvswitch-switch",
     "quantum_openvswitch_agent_service" => "quantum-plugin-openvswitch-agent",
+    "quantum_linuxbridge_agent_service" => "quantum-plugin-linuxbridge-agent",
     "quantum_server_service" => "quantum-server",
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
