@@ -125,6 +125,9 @@ control_exchange = quantum
 # SSL certification authority file (valid only if SSL enabled)'
 # kombu_ssl_ca_certs =
 
+# allow_overlapping_ips = False
+allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] -%>
+
 ##### RABBITMQ #####
 rabbit_userid=<%= node["openstack"]["network"]["rabbit"]["username"] %>
 rabbit_password=<%= @rabbit_pass %>
