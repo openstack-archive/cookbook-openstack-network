@@ -341,7 +341,9 @@ when "openvswitch"
       :local_ip => local_ip
     )
     notifies :restart, "service[quantum-server]", :delayed
-    notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+    if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::openvswitch")
+      notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+    end
   end
 
 
