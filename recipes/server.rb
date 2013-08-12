@@ -54,11 +54,11 @@ if node["openstack"]["network"]["quantum_ha_cmd_cron"]
 
   cron "quantum-ha-healthcheck" do
     minute node["openstack"]["network"]["cron_l3_healthcheck"]
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --l3-agent-migrate"
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --l3-agent-migrate > /dev/null 2>&1"
   end
 
   cron "quantum-ha-replicate-dhcp" do
     minute node["openstack"]["network"]["cron_replicate_dhcp"]
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --replicate-dhcp"
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
   end
 end
