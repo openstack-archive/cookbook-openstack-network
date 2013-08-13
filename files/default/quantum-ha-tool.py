@@ -22,6 +22,7 @@ import os
 import sys
 import json
 import argparse
+from logging.handlers import SysLogHandler
 from collections import OrderedDict
 from random import choice
 from quantumclient.quantum import client
@@ -59,6 +60,10 @@ def setup_logging(args):
     if args.debug:
         level = logging.DEBUG
     logging.basicConfig(level=level, format=LOG_FORMAT, date_fmt=LOG_DATE)
+    handler = SysLogHandler(address = '/dev/log')
+    syslog_formatter = logging.Formatter('%(name)s: %(levelname)s %(message)s')
+    handler.setFormatter(syslog_formatter)
+    LOG.addHandler(handler)
 
 def run(args):
 
