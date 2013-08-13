@@ -72,6 +72,12 @@ default["openstack"]["network"]["api"]["bind_port"] = 9696
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
 
+# Whether or not we want to disable offloading
+# on all the NIC interfaces (currently only supports
+# ubuntu and debian).  This can help if openvswitch
+# or nicira plugins are crashing the sdn routers
+default['openstack']['network']['disable_offload'] = false
+
 # the plugins to install on the server.  this will be
 # quantum-plugin-%plugin% and the first plugin in the
 # list should match the core plugin below

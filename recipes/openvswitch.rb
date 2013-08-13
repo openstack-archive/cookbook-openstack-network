@@ -99,3 +99,29 @@ if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
     notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
   end
 end
+
+if node['openstack']['network']['disable_offload']
+
+  package "ethtool" do
+    action :install
+    options platform_options["package_overrides"]
+  end
+
+  service "disable-eth-offload" do
+    supports :restart => false, :start => true, :stop => false, :reload => false
+    priority({ 2 => [ :start, 19 ]})
+    action :nothing
+  end
+
+  # a priority of 19 ensures we start before openvswitch
+  # at least on ubuntu and debian
+  cookbook_file "disable-eth-offload-script" do
+    path "/etc/init.d/disable-eth-offload"
+    source "disable-eth-offload.sh"
+    owner "root"
+    group "root"
+    mode "0755"
+    notifies :enable, "service[disable-eth-offload]"
+    notifies :start, "service[disable-eth-offload]"
+  end
+end
