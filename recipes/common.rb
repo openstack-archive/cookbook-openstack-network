@@ -127,20 +127,11 @@ else
   local_ip = address_for node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
 end
 
-# https://bugs.launchpad.net/neutron/+bug/1111572
 platform_options["quantum_client_packages"].each do |pkg|
   package pkg do
-    action :install
+    action :upgrade
     options platform_options["package_overrides"]
-    notifies :upgrade, "python_pip[python-quantumclient]", :immediately
   end
-end
-if platform?("ubuntu", "debian")
-  include_recipe "python::pip"
-end
-python_pip "python-quantumclient" do
-  action :nothing
-  only_if { platform?("ubuntu", "debian") }
 end
 
 # all recipes include common.rb, and some servers

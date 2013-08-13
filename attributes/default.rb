@@ -720,7 +720,7 @@ when "ubuntu"
     "nova_network_packages" => [ "nova-network" ],
     "quantum_lb_packages" => ["quantum-lbaas-agent", "haproxy"],
     "quantum_packages" => [ "quantum-common", "python-pyparsing", "python-cliff" ],
-    "quantum_client_packages" => [ "python-quantumclient" ],
+    "quantum_client_packages" => [ "python-quantumclient", "python-pyparsing" ],
     "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
     "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],

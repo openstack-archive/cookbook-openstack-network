@@ -30,7 +30,7 @@ describe 'openstack-network::metadata_agent' do
 
       it "sets auth url correctly" do
         expect(@chef_run).to create_file_with_content @file.name,
-          "auth_url = https://127.0.0.1:5000/v2.0"
+          "auth_url = http://127.0.0.1:5000/v2.0"
       end
       it "sets auth region correctly" do
         expect(@chef_run).to create_file_with_content @file.name,
