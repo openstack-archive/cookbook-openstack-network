@@ -130,6 +130,11 @@ describe 'openstack-network::server' do
         "rabbit_virtual_host=/"
     end
 
+    it "it does not allow overlapping ips by default" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "allow_overlapping_ips = False"
+    end
+
     describe "quantum.conf with rabbit ha" do
 
       before do
@@ -180,6 +185,5 @@ describe 'openstack-network::server' do
           @file.name, "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini")
       end
     end
-
   end
 end
