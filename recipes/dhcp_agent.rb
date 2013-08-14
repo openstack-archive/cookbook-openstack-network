@@ -96,6 +96,7 @@ if node['lsb']['codename'] == "precise"
       tar xzf #{src_filename} -C #{extract_path}
       mv #{extract_path}/*/* #{extract_path}/
       cd #{extract_path}/
+      echo '2.65' > VERSION
       debian/rules binary
       EOH
     not_if { ::File.exists?(extract_path) }
