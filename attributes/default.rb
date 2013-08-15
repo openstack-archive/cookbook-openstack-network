@@ -712,7 +712,7 @@ when "suse"
     "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
     "quantum_l3_agent_service" => "openstack-quantum-l3-agent",
     "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent",
-    "quantum_openvswitch_service" => "openvswitch",
+    "quantum_openvswitch_service" => "openvswitch-switch",
     "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
     "quantum_server_service" => "openstack-quantum",
     "package_overrides" => ""
