@@ -120,6 +120,12 @@ default["openstack"]["network"]["use_rootwrap"] = true
 
 # ============================= DHCP Agent Configuration ===================
 
+# Override the default mtu setting given to virtual machines
+# to 1454 to allow for tunnel and other encapsulation overhead.  You
+# can adjust this from 1454 to 1500 if you do not want any lowering
+# of the default guest MTU.
+default["openstack"]["network"]["dhcp"]["dhcp-option"] = "26,1454"
+
 # Number of seconds between sync of DHCP agent with Quantum API server
 default["openstack"]["network"]["dhcp"]["resync_interval"] = 5
 

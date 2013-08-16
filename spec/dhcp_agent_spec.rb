@@ -57,5 +57,21 @@ describe 'openstack-network::dhcp_agent' do
           "use_namespaces = True"
       end
     end
+
+    describe "/etc/quantum/dnsmasq.conf" do
+      before do
+        @file = @chef_run.template "/etc/quantum/dnsmasq.conf"
+      end
+      it "has proper owner" do
+        expect(@file).to be_owned_by "quantum", "quantum"
+      end
+      it "has proper modes" do
+        expect(sprintf("%o", @file.mode)).to eq "644"
+      end
+      it "overrides dhcp options" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          "dhcp-option=26,1454"
+      end
+    end
   end
 end

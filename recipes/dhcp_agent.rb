@@ -48,6 +48,14 @@ execute "quantum-dhcp-setup --plugin #{main_plugin}" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
+template "/etc/quantum/dnsmasq.conf" do
+  source "dnsmasq.conf.erb"
+  owner node["openstack"]["network"]["platform"]["user"]
+  group node["openstack"]["network"]["platform"]["group"]
+  mode   00644
+  notifies :restart, "service[quantum-dhcp-agent]", :delayed
+end
+
 template "/etc/quantum/dhcp_agent.ini" do
   source "dhcp_agent.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
