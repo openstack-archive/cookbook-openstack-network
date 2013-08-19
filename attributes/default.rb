@@ -169,6 +169,19 @@ default["openstack"]["network"]["dhcp"]["dnsmasq_architecture"] = "amd64"
 # The debian package version that the above tarball will produce
 default["openstack"]["network"]["dhcp"]["dnsmasq_dpkgversion"] = "2.65-1"
 
+# Upstream resolver to use
+# This will be used by dnsmasq to resolve recursively
+# but will not be used if the tenant specifies a dns
+# server in their subnet
+#
+# Defaults are spread out across multiple, presumably
+# reliable, upstream providers
+#
+# 208.67.222.222 and 208.67.220.220 are OpenDNS
+# 8.8.8.8 is Google
+#
+# May be a comma separated list of servers
+default["openstack"]["network"]["dhcp"]["upstream_dns_servers"] = ["208.67.222.222", "208.67.220.220", "8.8.8.8"]
 
 
 # ============================= L3 Agent Configuration =====================

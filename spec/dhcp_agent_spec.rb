@@ -76,6 +76,14 @@ describe 'openstack-network::dhcp_agent' do
         expect(@chef_run).to create_file_with_content @file.name,
           "dhcp-option=26,1454"
       end
+      it "checks upstream resolvers" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^server=208.67.222.222$/
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^server=208.67.220.220$/
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^server=8.8.8.8$/
+      end
     end
   end
 end
