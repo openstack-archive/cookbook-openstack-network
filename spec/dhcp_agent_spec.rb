@@ -82,9 +82,7 @@ describe 'openstack-network::dhcp_agent' do
       end
       it "checks upstream resolvers" do
         expect(@chef_run).to create_file_with_content @file.name,
-          /^server=208.67.222.222$/
-        expect(@chef_run).to create_file_with_content @file.name,
-          /^server=208.67.220.220$/
+          /^server=209.244.0.3$/
         expect(@chef_run).to create_file_with_content @file.name,
           /^server=8.8.8.8$/
       end

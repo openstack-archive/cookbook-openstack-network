@@ -177,11 +177,11 @@ default["openstack"]["network"]["dhcp"]["dnsmasq_dpkgversion"] = "2.65-1"
 # Defaults are spread out across multiple, presumably
 # reliable, upstream providers
 #
-# 208.67.222.222 and 208.67.220.220 are OpenDNS
 # 8.8.8.8 is Google
+# 209.244.0.3 is Level3
 #
 # May be a comma separated list of servers
-default["openstack"]["network"]["dhcp"]["upstream_dns_servers"] = ["208.67.222.222", "208.67.220.220", "8.8.8.8"]
+default["openstack"]["network"]["dhcp"]["upstream_dns_servers"] = ["8.8.8.8", "209.244.0.3"]
 
 # Set the default domain in dnsmasq
 default["openstack"]["network"]["dhcp"]["default_domain"] = "openstacklocal"
