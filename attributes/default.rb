@@ -183,6 +183,9 @@ default["openstack"]["network"]["dhcp"]["dnsmasq_dpkgversion"] = "2.65-1"
 # May be a comma separated list of servers
 default["openstack"]["network"]["dhcp"]["upstream_dns_servers"] = ["208.67.222.222", "208.67.220.220", "8.8.8.8"]
 
+# Set the default domain in dnsmasq
+default["openstack"]["network"]["dhcp"]["default_domain"] = "openstacklocal"
+
 
 # ============================= L3 Agent Configuration =====================
 

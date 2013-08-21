@@ -45,6 +45,10 @@ enable_isolated_metadata = <%= node["openstack"]["network"]["dhcp"]["enable_isol
 # This option requires enable_isolated_metadata = True
 enable_metadata_network = <%= node["openstack"]["network"]["dhcp"]["enable_metadata_network"] %>
 
+# Domain to use for building the host names of instances.
+# If not set, it will default to "openstacklocal"
+dhcp_domain = <%= node["openstack"]["network"]["dhcp"]["default_domain"] %>
+
 # Pass a config file to dnsmasq so we can override settings
 # like the mtu passed to the virtual machine
 dnsmasq_config_file = /etc/quantum/dnsmasq.conf

@@ -60,6 +60,10 @@ describe 'openstack-network::dhcp_agent' do
         expect(@chef_run).to create_file_with_content @file.name,
           "use_namespaces = True"
       end
+      it "checks dhcp domain" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^dhcp_domain = openstacklocal$/
+      end
     end
 
     describe "/etc/quantum/dnsmasq.conf" do
