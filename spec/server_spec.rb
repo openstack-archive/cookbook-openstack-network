@@ -51,6 +51,10 @@ describe 'openstack-network::server' do
 
   end
 
+  it "should create quantum-ha-tool.py script" do
+    expect(@chef_run).to create_cookbook_file "/usr/local/bin/quantum-ha-tool.py"
+  end
+
   describe "quantum.conf" do
 
     before do

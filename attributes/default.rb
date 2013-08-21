@@ -78,6 +78,12 @@ default["openstack"]["network"]["syslog"]["use"] = false
 # or nicira plugins are crashing the sdn routers
 default['openstack']['network']['disable_offload'] = false
 
+# configure quantum ha tool installation parameters
+default["openstack"]["network"]["quantum_ha_cmd_cron"] = false
+default["openstack"]["network"]["quantum_ha_cmd"] = "/usr/local/bin/quantum-ha-tool.py"
+default["openstack"]["network"]["cron_l3_healthcheck"] = "*/1"
+default["openstack"]["network"]["cron_replicate_dhcp"] = "*/1"
+
 # the plugins to install on the server.  this will be
 # quantum-plugin-%plugin% and the first plugin in the
 # list should match the core plugin below
