@@ -44,6 +44,14 @@ service "quantum-server" do
   action :enable
 end
 
+cookbook_file "quantum-ha-tool" do
+  source "quantum-ha-tool.py"
+  path node["openstack"]["network"]["quantum_ha_cmd"]
+  owner "root"
+  group "root"
+  mode 00755
+end
+
 if node["openstack"]["network"]["quantum_ha_cmd_cron"]
   # ensure period checks are offset between multiple l3 agent nodes
   # and assumes splay will remain constant (i.e. based on hostname)
