@@ -764,7 +764,6 @@ when "ubuntu"
     "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
     "quantum_plugin_package" => "quantum-plugin-%plugin%",
     "quantum_server_packages" => ["quantum-server"],
-    "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
     "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
     "quantum_l3_agent_service" => "quantum-l3-agent",
     "quantum_metadata_agent_service" => "quantum-metadata-agent",
