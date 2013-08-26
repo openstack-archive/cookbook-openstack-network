@@ -126,6 +126,9 @@ default["openstack"]["network"]["use_rootwrap"] = true
 
 # ============================= DHCP Agent Configuration ===================
 
+# The scheduler class to use for scheduling to DHCP agents
+default["openstack"]["network"]["dhcp"]["scheduler"] = "quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler"
+
 # Override the default mtu setting given to virtual machines
 # to 1454 to allow for tunnel and other encapsulation overhead.  You
 # can adjust this from 1454 to 1500 if you do not want any lowering
@@ -192,8 +195,10 @@ default["openstack"]["network"]["dhcp"]["upstream_dns_servers"] = ["8.8.8.8", "2
 # Set the default domain in dnsmasq
 default["openstack"]["network"]["dhcp"]["default_domain"] = "openstacklocal"
 
-
 # ============================= L3 Agent Configuration =====================
+
+# The scheduler class to use for scheduling routers to L3 agents
+default["openstack"]["network"]["l3"]["scheduler"] = "quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
 
 # If use_namespaces is set as False then the agent can only configure one router.
 # This is done by setting the specific router_id.

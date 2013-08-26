@@ -224,9 +224,9 @@ notification_topics = notifications
 
 # =========== items for agent scheduler extension =============
 # Driver to use for scheduling network to DHCP agent
-# network_scheduler_driver = quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler
+network_scheduler_driver = <%= node["openstack"]["network"]["dhcp"]["scheduler"] %>
 # Driver to use for scheduling router to a default L3 agent
-# router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler
+router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 
 # Allow auto scheduling networks to DHCP agent. It will schedule non-hosted
 # networks to first DHCP agent which sends get_active_networks message to

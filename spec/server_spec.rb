@@ -139,6 +139,13 @@ describe 'openstack-network::server' do
         "allow_overlapping_ips = False"
     end
 
+    it "it has correct default scheduler classes" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "network_scheduler_driver = quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler"
+      expect(@chef_run).to create_file_with_content @file.name,
+        "router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
+    end
+
     describe "quantum.conf with rabbit ha" do
 
       before do
