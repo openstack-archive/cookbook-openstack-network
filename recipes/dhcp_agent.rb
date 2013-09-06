@@ -77,7 +77,7 @@ end
 #
 # Would prefer a PPA or backport but there are none and upstream
 # has no plans to fix
-if node['lsb']['codename'] == "precise"
+if node['lsb'] && node['lsb']['codename'] == "precise"
 
   platform_options["quantum_dhcp_build_packages"].each do |pkg|
     package pkg do
