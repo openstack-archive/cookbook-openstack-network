@@ -110,6 +110,11 @@ default["openstack"]["network"]["interface_driver_map"] = {
    'bridgeinterfacedriver' => 'linuxbridge'
 }
 
+default["openstack"]["network"]["plugin_conf_map"] = {
+  'ovsinterfacedriver' => 'openvswitch/ovs_quantum_plugin.ini',
+  'bridgeinterfacedriver' => 'linuxbridge/linuxbridge_conf.ini'
+}
+
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
 default["openstack"]["network"]["dhcp_driver"] = 'quantum.agent.linux.dhcp.Dnsmasq'
