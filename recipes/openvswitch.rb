@@ -42,9 +42,15 @@ if platform?("ubuntu", "debian")
 
 end
 
-platform_options["quantum_openvswitch_packages"].each do |pkg|
-  package pkg do
-    action :install
+if node['openstack']['network']['openvswitch']['use_source_version']
+  if node['lsb'] && node['lsb']['codename'] == "precise"
+    include_recipe "openstack-network::build_openvswitch_source"
+  end
+else
+  platform_options["quantum_openvswitch_packages"].each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 end
 
