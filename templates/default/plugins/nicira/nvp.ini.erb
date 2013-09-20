@@ -19,7 +19,7 @@
 
 [DEFAULT]
 # User name for NVP controller
-nvp_user = admin <%= node["openstack"]["network"]["nicira"]["nvp_user"] %>
+nvp_user = <%= node["openstack"]["network"]["nicira"]["nvp_user"] %>
 
 # Password for NVP controller
 nvp_password = <%= node["openstack"]["network"]["nicira"]["nvp_password"] %>
@@ -43,7 +43,7 @@ nvp_controllers = <%= node["openstack"]["network"]["nicira"]["nvp_controllers"] 
 
 # UUID of the pre-existing default NVP Transport zone to be used for creating
 # tunneled isolated "Quantum" networks. This option MUST be specified, e.g.:
-default_tz_uuid = <%= node["openstack"]["network"]["nicira"]["default_tx_uuid"] %>
+default_tz_uuid = <%= node["openstack"]["network"]["nicira"]["default_tz_uuid"] %>
 
 # (Optional) UUID of the cluster in NVP.  It can be retrieved from NVP management
 # console "admin" section.
