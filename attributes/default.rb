@@ -339,6 +339,31 @@ default["openstack"]["network"]["openvswitch"]["bridge_mappings"] = nil
 # Firewall driver for realizing quantum security group function
 default["openstack"]["network"]["openvswitch"]["fw_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
 
+# The newest version of OVS which comes with 12.04 Precise is 1.4.0
+# Which is legacy. Should we compile a newer version from source?
+# If so, set ['openstack']['network']['openvswitch']['use_source_version']
+# to true, and configure the packages, versions, checksums, etc. you wish
+# to use
+default['openstack']['network']['openvswitch']['use_source_version'] = false
+
+# Url of the OVS source tarball
+default['openstack']['network']['openvswitch']['openvswitch_url'] = "http://git.openvswitch.org/cgi-bin/gitweb.cgi?p=openvswitch;a=snapshot;h=88dbaa9dc554d0ace1867bf23144788bd6f700bb;sf=tgz"
+
+# Filename the above URL actually downloads.
+default['openstack']['network']['openvswitch']['openvswitch_filename'] = "openvswitch-88dbaa9.tar.gz"
+
+# What is the base filename (essentially, the above without the .tar.gz)
+default['openstack']['network']['openvswitch']['openvswitch_base_filename'] = "openvswitch-88dbaa9"
+
+# Checksum of the file for verification
+default['openstack']['network']['openvswitch']['openvswitch_checksum'] = "22df718eb81fcfe93228e9bba8575e50"
+
+# What version of the package does this install
+default['openstack']['network']['openvswitch']['openvswitch_dpkgversion'] = "1.10.2-1"
+
+# What arch are we building for
+default['openstack']['network']['openvswitch']['openvswitch_architecture'] = "amd64"
+
 # ============================= LinuxBridge Plugin Configuration ===========
 
 # Type of network to allocate for tenant networks. The
@@ -774,6 +799,7 @@ when "ubuntu"
     "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
     "quantum_l3_packages" => [ "quantum-l3-agent" ],
     "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
+    "quantum_openvswitch_build_packages" => [ "build-essential", "pkg-config", "fakeroot", "libssl-dev", "openssl", "debhelper", "autoconf", "dkms", "python-all", "python-qt4", "python-zopeinterface", "python-twisted-conch" ],
     "quantum_openvswitch_agent_packages" => [ "quantum-plugin-openvswitch", "quantum-plugin-openvswitch-agent" ],
     "quantum_linuxbridge_agent_packages" => [ "quantum-plugin-linuxbridge", "quantum-plugin-linuxbridge-agent" ],
     "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
