@@ -62,5 +62,6 @@ if not ["nicira", "plumgrid", "bigswitch", "linuxbridge"].include?(main_plugin)
     command "ovs-vsctl add-br #{ext_bridge} && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
     action :run
     not_if "ovs-vsctl show | grep 'Bridge #{ext_bridge}'"
+    only_if "ip link show #{ext_bridge_iface}"
   end
 end
