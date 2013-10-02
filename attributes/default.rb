@@ -72,6 +72,14 @@ default["openstack"]["network"]["api"]["bind_port"] = 9696
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
 
+# The driver for Quota management in Neutron. Possible values:
+#  quantum.quota.ConfDriver (default)
+#  quantum.quota.DbDriver
+#
+# Note: set this to the DbDriver if you want to be able to update
+# quotas for networks/subnets/security groups!
+default["openstack"]["network"]["quota"]["driver"] = "quantum.quota.ConfDriver"
+
 # Whether or not we want to disable offloading
 # on all the NIC interfaces (currently only supports
 # ubuntu and debian).  This can help if openvswitch

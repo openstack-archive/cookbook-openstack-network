@@ -8,6 +8,7 @@ describe 'openstack-network::server' do
         "host" => "127.0.0.1"
       }
       n.set["chef_client"]["splay"] = 300
+      n.set["openstack"]["network"]["quota"]["driver"] = "my.quota.Driver"
     end
     @chef_run.converge "openstack-network::server"
   end
@@ -144,6 +145,11 @@ describe 'openstack-network::server' do
         "network_scheduler_driver = quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler"
       expect(@chef_run).to create_file_with_content @file.name,
         "router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
+    end
+
+    it "writes the quota driver properly" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        "quota_driver = my.quota.Driver"
     end
 
     describe "quantum.conf with rabbit ha" do

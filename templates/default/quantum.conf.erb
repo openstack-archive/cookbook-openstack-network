@@ -288,7 +288,7 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 # quota_security_group_rule = 100
 
 # default driver to use for quota checks
-# quota_driver = quantum.quota.ConfDriver
+quota_driver = <%= node["openstack"]["network"]["quota"]["driver"] %>
 
 [DEFAULT_SERVICETYPE]
 # Description of the default service type (optional)
