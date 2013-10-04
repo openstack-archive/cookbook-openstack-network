@@ -22,6 +22,8 @@ import os
 import sys
 import json
 import argparse
+import random
+import time
 from logging.handlers import SysLogHandler
 from collections import OrderedDict
 from random import choice
@@ -31,6 +33,8 @@ LOG = logging.getLogger('quantum-ha-tool')
 LOG_FORMAT='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 LOG_DATE = '%m-%d %H:%M'
 DESCRIPTION = "Quantum High Availability Tool"
+TAKEOVER_DELAY = int(random.random()*30+30)
+
 
 def parse_args():
 
@@ -207,6 +211,21 @@ def l3_agent_migrate(qclient, noop=False):
 
        if len(agent_alive_list) < 1:
            LOG.exception("There are no l3 agents alive to migrate routers onto")
+
+       timeout = 0
+
+       while timeout < TAKEOVER_DELAY:
+
+           agent_list_new = list_agents(qclient)
+           agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
+           if len(agent_dead_list_new) < len(agent_dead_list):
+               LOG.info("Skipping router failover since an agent came online while ensuring agents offline for seconds=%s" % TAKEOVER_DELAY)
+               sys.exit(0)
+
+           LOG.info("Agent found offline for seconds=%s but waiting seconds=%s before migration" % (timeout, TAKEOVER_DELAY))
+           timeout += 1
+           time.sleep(1)
+
 
        for agent_id in agent_dead_list:
 
