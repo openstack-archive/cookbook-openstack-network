@@ -38,6 +38,29 @@ describe 'openstack-network::openvswitch' do
     expect(@chef_run).to set_service_to_start_on_boot "quantum-plugin-openvswitch-agent"
   end
 
+  describe "ovs-dpctl-top" do
+    before do
+      @file = @chef_run.cookbook_file "ovs-dpctl-top"
+    end
+
+    it "creates the ovs-dpctl-top file" do
+      expect(@chef_run).to create_file "/usr/bin/ovs-dpctl-top"
+    end
+
+    it "has the proper owner" do
+      expect(@file).to be_owned_by "root", "root"
+    end
+
+    it "has the proper mode" do
+      expect(sprintf("%o", @file.mode)).to eq "755"
+    end
+
+    it "has the proper interpreter line" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^#!\/usr\/bin\/env python/
+    end
+  end
+
   describe "ovs_quantum_plugin.ini" do
     before do
       @file = @chef_run.template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini"
