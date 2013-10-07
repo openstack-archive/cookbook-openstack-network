@@ -137,3 +137,12 @@ if node['openstack']['network']['disable_offload']
     notifies :start, "service[disable-eth-offload]"
   end
 end
+
+# From http://git.openvswitch.org/cgi-bin/gitweb.cgi?p=openvswitch;a=blob_plain;f=utilities/ovs-dpctl-top.in;h=f43fdeb7ab52e3ef642a22579036249ec3a4bc22;hb=14b4c575c28421d1181b509dbeae6e4849c7da69
+cookbook_file "ovs-dpctl-top" do
+  path "/usr/bin/ovs-dpctl-top"
+  source "ovs-dpctl-top"
+  owner "root"
+  group "root"
+  mode "0755"
+end
