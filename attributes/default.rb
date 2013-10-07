@@ -54,7 +54,10 @@ default["openstack"]["network"]["service_tenant_name"] = "service"
 default["openstack"]["network"]["service_user"] = "quantum"
 default["openstack"]["network"]["service_role"] = "admin"
 
-# The default agent reporting interval
+# The maximum number of seconds we will wait for an agent to checkin
+default["openstack"]["network"]["api"]["agent"]["agent_down_time"] = 15
+
+# The default agent reporting interval in seconds
 default["openstack"]["network"]["api"]["agent"]["agent_report_interval"] = 4
 
 # The agent signing directory for api server

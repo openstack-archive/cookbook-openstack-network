@@ -70,6 +70,16 @@ describe 'openstack-network::server' do
      expect(sprintf("%o", @file.mode)).to eq "644"
     end
 
+    it "it sets agent_down_time correctly" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        'agent_down_time = 15'
+    end
+
+    it "it sets agent report interval correctly" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        'report_interval = 4'
+    end
+
     it "it sets root_helper" do
       expect(@chef_run).to create_file_with_content @file.name,
         'root_helper = "sudo quantum-rootwrap /etc/quantum/rootwrap.conf"'
