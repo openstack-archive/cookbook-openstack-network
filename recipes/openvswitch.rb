@@ -54,10 +54,12 @@ else
   end
 end
 
-service "quantum-server" do
-  service_name node["openstack"]["network"]["platform"]["quantum_server_service"]
-  supports :status => true, :restart => true
-  action :nothing
+if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::server")
+  service "quantum-server" do
+    service_name node["openstack"]["network"]["platform"]["quantum_server_service"]
+    supports :status => true, :restart => true
+    action :nothing
+  end
 end
 
 service "quantum-openvswitch-switch" do
@@ -66,11 +68,13 @@ service "quantum-openvswitch-switch" do
   action :enable
 end
 
-service "quantum-server" do
-  service_name platform_options["quantum_server_service"]
-  supports :status => true, :restart => true
-  ignore_failure true
-  action :nothing
+if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::server")
+  service "quantum-server" do
+    service_name platform_options["quantum_server_service"]
+    supports :status => true, :restart => true
+    ignore_failure true
+    action :nothing
+  end
 end
 
 platform_options["quantum_openvswitch_agent_packages"].each do |pkg|
