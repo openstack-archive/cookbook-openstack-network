@@ -54,14 +54,6 @@ else
   end
 end
 
-if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::server")
-  service "quantum-server" do
-    service_name node["openstack"]["network"]["platform"]["quantum_server_service"]
-    supports :status => true, :restart => true
-    action :nothing
-  end
-end
-
 service "quantum-openvswitch-switch" do
   service_name platform_options["quantum_openvswitch_service"]
   supports :status => true, :restart => true
@@ -72,7 +64,6 @@ if node.run_list.expand(node.chef_environment).recipes.include?("openstack-netwo
   service "quantum-server" do
     service_name platform_options["quantum_server_service"]
     supports :status => true, :restart => true
-    ignore_failure true
     action :nothing
   end
 end
