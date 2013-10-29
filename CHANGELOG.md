@@ -1,6 +1,6 @@
 # CHANGELOG for cookbook-openstack-network
 
-This file is used to list changes made in each version of cookbook-openstack-common.
+This file is used to list changes made in each version of cookbook-openstack-network.
 
 ## 7.0.3:
 * Parameterize agent_down_time and report_interval settings
