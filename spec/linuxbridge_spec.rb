@@ -37,6 +37,14 @@ describe 'openstack-network::linuxbridge' do
         expect(@chef_run).to create_file_with_content(
           @file.name, "mysql://quantum:quantum-pass@127.0.0.1:3306/quantum")
       end
+
+      it "sets sqlalchemy attributes" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          "sql_dbpool_enable = False",
+          "sql_min_pool_size = 1",
+          "sql_max_pool_size = 10",
+          "sql_idle_timeout = 3600"
+      end
     end
   end
 end

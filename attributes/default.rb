@@ -49,6 +49,26 @@ default["openstack"]["network"]["rabbit"]["ha"] = false
 # The database username for the quantum database
 default["openstack"]["network"]["db"]["username"] = "quantum"
 
+# Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
+# sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
+default['openstack']['network']['db']['sql_dbpool_enable'] = "False"
+
+# Database reconnection retry times - in event connectivity is lost
+default['openstack']['network']['db']['sql_max_retries'] = 10
+
+# Database reconnection interval in seconds - if the initial connection to the
+# database fails
+default['openstack']['network']['db']['reconnect_interval'] = 2
+
+# Minimum number of SQL connections to keep open in a pool
+default['openstack']['network']['db']['sql_min_pool_size'] = 1
+
+# Maximum number of SQL connections to keep open in a pool
+default['openstack']['network']['db']['sql_max_pool_size'] = 5
+
+# Timeout in seconds before idle sql connections are reaped
+default['openstack']['network']['db']['sql_idle_timeout'] = 3600
+
 # Used in the Keystone authtoken middleware configuration
 default["openstack"]["network"]["service_tenant_name"] = "service"
 default["openstack"]["network"]["service_user"] = "quantum"
