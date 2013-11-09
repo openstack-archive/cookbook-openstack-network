@@ -6,8 +6,18 @@ describe 'openstack-network::balancer' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
       @chef_run.converge "openstack-network::balancer"
+    end
+
+    it "does not install quantum-lbaas-agent when nova networking." do
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = @chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      @chef_run.converge "openstack-network::balancer"
+      expect(@chef_run).to_not install_package "quantum-lbaas-agent"
     end
 
     ['haproxy', 'quantum-lbaas-agent'].each do |pack|

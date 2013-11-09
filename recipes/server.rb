@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+
 class ::Chef::Recipe
   include ::Openstack
 end

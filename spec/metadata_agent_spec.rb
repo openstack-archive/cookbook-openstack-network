@@ -6,8 +6,18 @@ describe 'openstack-network::metadata_agent' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
       @chef_run.converge "openstack-network::metadata_agent"
+    end
+
+    it "does not install quamtum metadata agent when nova networking" do
+      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      chef_run.converge "openstack-network::metadata_agent"
+      expect(chef_run).to_not install_package "quantum-metadata-agent"
     end
 
     it "installs quamtum metadata agent" do

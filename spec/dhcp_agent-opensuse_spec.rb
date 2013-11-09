@@ -6,8 +6,18 @@ describe 'openstack-network::dhcp_agent' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
       @chef_run.converge "openstack-network::dhcp_agent"
+    end
+
+    it "does not install openstack-quantum-dhcp-agent when nova networking" do
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = @chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      @chef_run.converge "openstack-network::dhcp_agent"
+      expect(@chef_run).to_not install_package "openstack-quantum-dhcp-agent"
     end
 
     it "installs quamtum dhcp package" do

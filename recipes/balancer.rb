@@ -20,6 +20,8 @@
 # This recipe should be placed in the run_list of the node that
 # runs the network server or network controller server.
 
+['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+
 platform_options = node["openstack"]["network"]["platform"]
 
 service "quantum-server" do

@@ -6,8 +6,18 @@ describe 'openstack-network::dhcp_agent' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
       @chef_run.converge "openstack-network::dhcp_agent"
+    end
+
+    it "does not include recipe openstack-network::comon when nova networking" do
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = @chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      @chef_run.converge "openstack-network::dhcp_agent"
+      expect(@chef_run).to_not include_recipe  "openstack-network::common"
     end
 
     # since our mocked version of ubuntu is precise, our compile
