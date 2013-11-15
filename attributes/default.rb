@@ -103,6 +103,36 @@ default["openstack"]["network"]["syslog"]["use"] = false
 # quotas for networks/subnets/security groups!
 default["openstack"]["network"]["quota"]["driver"] = "quantum.quota.ConfDriver"
 
+# default quotas will be used when no more specific tenant entry exists
+# when using the DBDriver - override them below to adjust the default
+# quotas
+
+# resource name(s) that are supported in quota features
+default["openstack"]["network"]["quota"]["items"] = "network,subnet,port"
+
+# default number of resource allowed per tenant, minus for unlimited
+# however if more specific setting exists for a quota resource (all known
+# quota resources are specified below) those numbers will be used instead
+# so unless new resources are introduces, this has no effect
+default["openstack"]["network"]["quota"]["default"] = -1
+
+# number of networks allowed per tenant, and minus means unlimited
+default["openstack"]["network"]["quota"]["network"] = 10
+
+# number of subnets allowed per tenant, and minus means unlimited
+default["openstack"]["network"]["quota"]["subnet"] = 10
+
+# number of ports allowed per tenant, and minus means unlimited
+default["openstack"]["network"]["quota"]["port"] = 50
+
+# number of security groups allowed per tenant, and minus means unlimited
+default["openstack"]["network"]["quota"]["security_group"] = 10
+
+# number of security group rules allowed per tenant, and minus means unlimited
+default["openstack"]["network"]["quota"]["security_group_rule"] = 100
+
+
+
 # Whether or not we want to disable offloading
 # on all the NIC interfaces (currently only supports
 # ubuntu and debian).  This can help if openvswitch

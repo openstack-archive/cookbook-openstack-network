@@ -268,25 +268,25 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 
 [QUOTAS]
 # resource name(s) that are supported in quota features
-# quota_items = network,subnet,port
+quota_items = <%= node["openstack"]["network"]["quota"]["items"] %>
 
 # default number of resource allowed per tenant, minus for unlimited
-# default_quota = -1
+default_quota = <%= node["openstack"]["network"]["quota"]["default"] %>
 
 # number of networks allowed per tenant, and minus means unlimited
-# quota_network = 10
+quota_network = <%= node["openstack"]["network"]["quota"]["network"] %>
 
 # number of subnets allowed per tenant, and minus means unlimited
-# quota_subnet = 10
+quota_subnet = <%= node["openstack"]["network"]["quota"]["subnet"] %>
 
 # number of ports allowed per tenant, and minus means unlimited
-# quota_port = 50
+quota_port = <%= node["openstack"]["network"]["quota"]["port"] %>
 
 # number of security groups allowed per tenant, and minus means unlimited
-# quota_security_group = 10
+quota_security_group = <%= node["openstack"]["network"]["quota"]["security_group"] %>
 
 # number of security group rules allowed per tenant, and minus means unlimited
-# quota_security_group_rule = 100
+quota_security_group_rule = <%= node["openstack"]["network"]["quota"]["security_group_rule"] %>
 
 # default driver to use for quota checks
 quota_driver = <%= node["openstack"]["network"]["quota"]["driver"] %>

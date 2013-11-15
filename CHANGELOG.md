@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.0.5
+* Parameterize quota default values in quantum.conf.erb (LP #1228623)
+
 ## 7.0.4
 * Set auth_uri and use admin_endpoint in authtoken configuration (LP #1207504)
 

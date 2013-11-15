@@ -3,7 +3,7 @@ maintainer        "Jay Pipes <jaypipes@gmail.com>"
 license           "Apache 2.0"
 description       "Installs and configures the OpenStack Network API Service and various agents and plugins"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "7.0.4"
+version           "7.0.5"
 recipe            "openstack-network::server", "Installs packages required for a OpenStack Network server"
 recipe            "openstack-network::openvswitch", "Installs packages required for OVS"
 recipe            "openstack-network::metadata_agent", "Installs packages required for a OpenStack Network Metadata Agent"

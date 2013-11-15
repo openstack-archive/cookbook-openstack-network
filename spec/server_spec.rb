@@ -176,6 +176,23 @@ describe 'openstack-network::server' do
         "router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
     end
 
+    it "has the overridable default quota values" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_items = network,subnet,port/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^default_quota = -1/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_network = 10/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_subnet = 10/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_port = 50/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_security_group = 10/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^quota_security_group_rule = 100/
+    end
+
     it "writes the quota driver properly" do
       expect(@chef_run).to create_file_with_content @file.name,
         "quota_driver = my.quota.Driver"
