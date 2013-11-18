@@ -101,6 +101,7 @@ end
 rabbit_pass = user_password node["openstack"]["network"]["rabbit"]["username"]
 
 identity_endpoint = endpoint "identity-api"
+identity_admin_endpoint = endpoint "identity-admin"
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node["openstack"]["network"]["db"]["username"]
@@ -168,8 +169,10 @@ template "/etc/quantum/api-paste.ini" do
   source "api-paste.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
-  mode   00644
+  mode   00640
   variables(
+    "auth_uri" => auth_uri,
+    "identity_admin_endpoint" => identity_admin_endpoint,
     "identity_endpoint" => identity_endpoint,
     "service_pass" => service_pass
   )
