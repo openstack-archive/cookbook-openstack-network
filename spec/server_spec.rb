@@ -42,7 +42,7 @@ describe 'openstack-network::server' do
     end
 
     it "has proper modes" do
-     expect(sprintf("%o", @file.mode)).to eq "644"
+     expect(sprintf("%o", @file.mode)).to eq "640"
     end
 
     it "has quantum pass" do
@@ -50,6 +50,25 @@ describe 'openstack-network::server' do
         "admin_password = quantum-pass"
     end
 
+    it "has auth_uri" do
+      expect(@chef_run).to create_file_with_content @file.name,
+      "auth_uri = http://127.0.0.1:5000/v2.0"
+    end
+
+    it "has auth_host" do
+      expect(@chef_run).to create_file_with_content @file.name,
+      "auth_host = 127.0.0.1"
+    end
+
+    it "has auth_port" do
+      expect(@chef_run).to create_file_with_content @file.name,
+      "auth_port = 35357"
+    end
+
+    it "has auth_protocol" do
+      expect(@chef_run).to create_file_with_content @file.name,
+      "auth_protocol = http"
+    end
   end
 
   it "should create quantum-ha-tool.py script" do

@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.0.4
+* Set auth_uri and use admin_endpoint in authtoken configuration (LP #1207504)
+
 ## 7.0.3:
 * Parameterize agent_down_time and report_interval settings
 
