@@ -1,4 +1,4 @@
-# quantum-rootwrap command filters for nodes on which quantum is
+# neutron-rootwrap command filters for nodes on which neutron is
 # expected to control network
 #
 # This file should be owned by (and only-writeable by) the root user

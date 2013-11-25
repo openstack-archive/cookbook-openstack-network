@@ -25,7 +25,7 @@ platform_options = node["openstack"]["network"]["platform"]
 driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
 main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
 
-platform_options["quantum_l3_packages"].each do |pkg|
+platform_options["neutron_l3_packages"].each do |pkg|
   package pkg do
     options platform_options["package_overrides"]
     action :install
@@ -34,30 +34,30 @@ platform_options["quantum_l3_packages"].each do |pkg|
   end
 end
 
-service "quantum-l3-agent" do
-  service_name platform_options["quantum_l3_agent_service"]
+service "neutron-l3-agent" do
+  service_name platform_options["neutron_l3_agent_service"]
   supports :status => true, :restart => true
 
   action :enable
 end
 
-execute "quantum-l3-setup --plugin #{main_plugin}" do
+execute "neutron-l3-setup --plugin #{main_plugin}" do
   only_if {
     platform?(%w(fedora redhat centos)) and not # :pragma-foodcritic: ~FC024 - won't fix this
     ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
   }
 end
 
-template "/etc/quantum/l3_agent.ini" do
+template "/etc/neutron/l3_agent.ini" do
   source "l3_agent.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
-  notifies :restart, "service[quantum-l3-agent]", :immediately
+  notifies :restart, "service[neutron-l3-agent]", :immediately
 end
 
 if not ["nicira", "plumgrid", "bigswitch", "linuxbridge"].include?(main_plugin)
-  # See http://docs.openstack.org/trunk/openstack-network/admin/content/install_quantum-l3.html
+  # See http://docs.openstack.org/trunk/openstack-network/admin/content/install_neutron-l3.html
   ext_bridge = node["openstack"]["network"]["l3"]["external_network_bridge"]
   ext_bridge_iface = node["openstack"]["network"]["l3"]["external_network_bridge_interface"]
   execute "create external network bridge" do

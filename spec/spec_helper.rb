@@ -43,7 +43,7 @@ MOCK_NODE_NETWORK_DATA =
     }
   }
 
-def quantum_stubs
+def neutron_stubs
 
   ::Chef::Recipe.any_instance.stub(:rabbit_servers).
     and_return "1.1.1.1:5672,2.2.2.2:5672"
@@ -56,14 +56,14 @@ def quantum_stubs
   ::Chef::Recipe.any_instance.stub(:secret).
     with("secrets", "openstack_identity_bootstrap_token").
     and_return "bootstrap-token"
-  ::Chef::Recipe.any_instance.stub(:db_password).and_return "quantum-pass"
+  ::Chef::Recipe.any_instance.stub(:db_password).and_return "neutron-pass"
   ::Chef::Recipe.any_instance.stub(:secret).
-    with("secrets", "quantum_metadata_secret").
+    with("secrets", "neutron_metadata_secret").
     and_return "metadata-secret"
   ::Chef::Recipe.any_instance.stub(:user_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).with("openstack-network").
-    and_return "quantum-pass"
+    and_return "neutron-pass"
   ::Chef::Recipe.any_instance.stub(:user_password).with("guest").
     and_return("rabbit-password")
   ::Chef::Application.stub(:fatal!)

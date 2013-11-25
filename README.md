@@ -1,7 +1,7 @@
 Description
 ===========
 
-This cookbook installs the **OpenStack Network** service (formerly project-named Quantum)
+This cookbook installs the **OpenStack Network** service (formerly project-named Quantum, current name is Neutron)
 as part of a Chef reference deployment of OpenStack.
 
 More information about the OpenStack Network service is available
@@ -84,7 +84,7 @@ Templates
 =========
 
 * `api-paste.ini.erb` - Paste config for OpenStack Network server
-* `quantum.conf.erb` - Config file for OpenStack Network server
+* `neutron.conf.erb` - Config file for OpenStack Network server
 * `policy.json.erb` - Configuration of ACLs for glance API server
 
 Testing

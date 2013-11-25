@@ -2,9 +2,9 @@
 [DATABASE]
 # This line MUST be changed to actually run the plugin.
 # Example:
-# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_quantum
+# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_neutron
 # Replace 127.0.0.1 above with the IP address of the database used by the
-# main quantum server. (Leave it as is if the database runs on this host.)
+# main neutron server. (Leave it as is if the database runs on this host.)
 sql_connection = <%= @sql_connection %>
 
 # Database reconnection retry times - in event connectivity is lost
@@ -129,8 +129,8 @@ bridge_mappings = <%= node["openstack"]["network"]["openvswitch"]["bridge_mappin
 polling_interval = 2
 
 [SECURITYGROUP]
-# Firewall driver for realizing quantum security group function
-# Default: firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+# Firewall driver for realizing neutron security group function
+# Default: firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 <% if node["openstack"]["network"]["openvswitch"]["fw_driver"] -%>
 firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %>
 <% end -%>
@@ -141,7 +141,7 @@ firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %
 #
 # 1. With VLANs on eth1.
 # [DATABASE]
-# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_quantum
+# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_neutron
 # [OVS]
 # network_vlan_ranges = default:2000:3999
 # tunnel_id_ranges =
@@ -152,7 +152,7 @@ firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %
 #
 # 2. With tunneling.
 # [DATABASE]
-# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_quantum
+# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_neutron
 # [OVS]
 # network_vlan_ranges =
 # tunnel_id_ranges = 1:1000

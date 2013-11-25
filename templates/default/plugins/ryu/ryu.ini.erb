@@ -1,7 +1,7 @@
 <%= node["openstack"]["network"]["custom_template_banner"] %>
 [DATABASE]
 # This line MUST be changed to actually run the plugin.
-# Example: sql_connection = mysql://root:nova@127.0.0.1:3306/ryu_quantum
+# Example: sql_connection = mysql://root:nova@127.0.0.1:3306/ryu_neutron
 sql_connection = <%= @sql_connection %>
 # Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
 # sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
@@ -50,7 +50,7 @@ ovsdb_ip = <%= node["openstack"]["network"]["ryu"]["ovsdb_ip"] %>
 ovsdb_interface = <%= node["openstack"]["network"]["ryu"]["ovsdb_interface"] %>
 
 [SECURITYGROUP]
-# Firewall driver for realizing quantum security group function
+# Firewall driver for realizing neutron security group function
 firewall_driver = <%= node["openstack"]["network"]["ryu"]["firewall_driver"] %>
 
 [AGENT]

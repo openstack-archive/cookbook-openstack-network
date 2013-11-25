@@ -24,14 +24,14 @@
 
 platform_options = node["openstack"]["network"]["platform"]
 
-service "quantum-server" do
-  service_name platform_options["quantum_server_service"]
+service "neutron-server" do
+  service_name platform_options["neutron_server_service"]
   supports :status => true, :restart => true
 
   action :nothing
 end
 
-platform_options["quantum_lb_packages"].each do |pkg|
+platform_options["neutron_lb_packages"].each do |pkg|
    package pkg do
      action :install
    end
@@ -46,5 +46,5 @@ end
 
 template "#{node["openstack"]["network"]["lbaas_config_path"]}/lbaas_agent.ini" do
   source "lbaas_agent.ini.erb"
-  notifies :restart, "service[quantum-server]", :immediately
+  notifies :restart, "service[neutron-server]", :immediately
 end

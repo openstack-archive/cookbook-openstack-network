@@ -6,9 +6,9 @@
 debug = <%= node["openstack"]["network"]["debug"] %>
 verbose = <%= node["openstack"]["network"]["verbose"] %>
 
-# Where to store Quantum state files.  This directory must be writable by the
+# Where to store Neutron state files.  This directory must be writable by the
 # user executing the agent.
-# state_path = /var/lib/quantum
+# state_path = /var/lib/neutron
 
 # Where to store lock files
 lock_path = $state_path/lock
@@ -44,19 +44,19 @@ bind_port = <%= @bind_port %>
 # Path to the extensions.  Note that this can be a colon-separated list of
 # paths.  For example:
 # api_extensions_path = extensions:/path/to/more/extensions:/even/more/extensions
-# The __path__ of quantum.extensions is appended to this, so if your
+# The __path__ of neutron.extensions is appended to this, so if your
 # extensions are in there you don't need to specify them here
 # api_extensions_path =
 
-# Quantum plugin provider module
+# Neutron plugin provider module
 # core_plugin =
 core_plugin = <%= @core_plugin %>
 
 # Advanced service modules
 # service_plugins =
-<% if node["openstack"]["network"]["quantum_loadbalancer"] %>
+<% if node["openstack"]["network"]["neutron_loadbalancer"] %>
 # LoadBalancer plugin
-service_plugins = quantum.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin
+service_plugins = neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin
 <% end %>
 
 # Paste configuration file
@@ -90,7 +90,7 @@ api_paste_config = api-paste.ini
 # Enable or disable sorting
 # allow_sorting = False
 # Enable or disable overlapping IPs for subnets
-# Attention: the following parameter MUST be set to False if Quantum is
+# Attention: the following parameter MUST be set to False if Neutron is
 # being used in conjunction with nova security groups and/or metadata service.
 # allow_overlapping_ips = False
 # Ensure that configured gateway is on subnet
@@ -99,7 +99,7 @@ api_paste_config = api-paste.ini
 
 # RPC configuration options. Defined in rpc __init__
 # The messaging module to use, defaults to kombu.
-# rpc_backend = quantum.openstack.common.rpc.impl_kombu
+# rpc_backend = neutron.openstack.common.rpc.impl_kombu
 # Size of RPC thread pool
 # rpc_thread_pool_size = 64,
 # Size of RPC connection pool
@@ -110,9 +110,9 @@ api_paste_config = api-paste.ini
 # rpc_cast_timeout = 30
 # Modules of exceptions that are permitted to be recreated
 # upon receiving exception data from an rpc call.
-# allowed_rpc_exception_modules = quantum.openstack.common.exception, nova.exception
+# allowed_rpc_exception_modules = neutron.openstack.common.exception, nova.exception
 # AMQP exchange to connect to if using RabbitMQ or QPID
-control_exchange = quantum
+control_exchange = neutron
 
 # Configuration options if sending notifications via kombu rpc (these are
 # the defaults)
@@ -151,7 +151,7 @@ rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
 
 <% if node["openstack"]["network"]["mq"]["service_type"] == "qpid"  %>
 ##### QPID #####
-rpc_backend=quantum.openstack.common.rpc.impl_qpid
+rpc_backend=neutron.openstack.common.rpc.impl_qpid
 qpid_hostname=<%= node["openstack"]["network"]["mq"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["network"]["mq"]["qpid"]["port"] %>
 
@@ -171,9 +171,8 @@ qpid_tcp_nodelay=<%= node["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] %
 
 <% end %>
 
-
 # ZMQ
-# rpc_backend=quantum.openstack.common.rpc.impl_zmq
+# rpc_backend=neutron.openstack.common.rpc.impl_zmq
 # ZeroMQ bind address. Should be a wildcard (*), an ethernet interface, or IP.
 # The "host" option should point or resolve to this address.
 # rpc_zmq_bind_address = *
@@ -187,11 +186,11 @@ qpid_tcp_nodelay=<%= node["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] %
 
 # Notification_driver can be defined multiple times
 # Do nothing driver
-# notification_driver = quantum.openstack.common.notifier.no_op_notifier
+# notification_driver = neutron.openstack.common.notifier.no_op_notifier
 # Logging driver
-# notification_driver = quantum.openstack.common.notifier.log_notifier
+# notification_driver = neutron.openstack.common.notifier.log_notifier
 # RPC driver. DHCP agents needs it.
-notification_driver = quantum.openstack.common.notifier.rpc_notifier
+notification_driver = neutron.openstack.common.notifier.rpc_notifier
 
 # default_notification_level is used to form actual topic name(s) or to set logging level
 default_notification_level = INFO
@@ -234,11 +233,11 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 
 # Allow auto scheduling networks to DHCP agent. It will schedule non-hosted
 # networks to first DHCP agent which sends get_active_networks message to
-# quantum server
+# neutron server
 # network_auto_schedule = True
 
 # Allow auto scheduling routers to L3 agent. It will schedule non-hosted
-# routers to first L3 agent which sends sync_routers message to quantum server
+# routers to first L3 agent which sends sync_routers message to neutron server
 # router_auto_schedule = True
 # ===========  end of items for agent scheduler extension =====
 
@@ -303,12 +302,12 @@ quota_driver = <%= node["openstack"]["network"]["quota"]["driver"] %>
 # <service>:<plugin>[:driver]
 
 [AGENT]
-# Use "sudo quantum-rootwrap /etc/quantum/rootwrap.conf" to use the real
+# Use "sudo neutron-rootwrap /etc/neutron/rootwrap.conf" to use the real
 # root filter facility.
 # Change to "sudo" to skip the filtering and just run the comand directly
 # root_helper = sudo
 <% if node["openstack"]["network"]["use_rootwrap"] %>
-root_helper = "sudo quantum-rootwrap /etc/quantum/rootwrap.conf"
+root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"
 <% end -%>
 
 # =========== items for agent management extension =============

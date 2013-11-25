@@ -29,7 +29,7 @@ identity_endpoint = endpoint "identity-api"
 service_pass = service_password "openstack-network"
 metadata_secret = secret "secrets", node["openstack"]["network"]["metadata"]["secret_name"]
 
-template "/etc/quantum/metadata_agent.ini" do
+template "/etc/neutron/metadata_agent.ini" do
   source "metadata_agent.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
@@ -39,19 +39,19 @@ template "/etc/quantum/metadata_agent.ini" do
     :metadata_secret => metadata_secret,
     :service_pass => service_pass
   )
-  notifies :restart, "service[quantum-metadata-agent]", :immediately
+  notifies :restart, "service[neutron-metadata-agent]", :immediately
   action :create
 end
 
-platform_options["quantum_metadata_agent_packages"].each do |pkg|
+platform_options["neutron_metadata_agent_packages"].each do |pkg|
   package pkg do
     action :install
     options platform_options["package_overrides"]
   end
 end
 
-service "quantum-metadata-agent" do
-  service_name platform_options["quantum_metadata_agent_service"]
+service "neutron-metadata-agent" do
+  service_name platform_options["neutron_metadata_agent_service"]
   supports :status => true, :restart => true
   action :enable
 end

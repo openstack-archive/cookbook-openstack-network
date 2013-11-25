@@ -2,11 +2,11 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::openvswitch' do
   before do
-    quantum_stubs
+    neutron_stubs
     @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
       n.automatic_attrs["kernel"]["release"] = "1.2.3"
       n.set["openstack"]["network"]["local_ip_interface"] = "eth0"
-      n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
     end
     @chef_run.converge "openstack-network::openvswitch"
   end
@@ -40,11 +40,11 @@ describe 'openstack-network::openvswitch' do
   end
 
   it "installs openvswitch agent" do
-    expect(@chef_run).to install_package "quantum-plugin-openvswitch-agent"
+    expect(@chef_run).to install_package "neutron-plugin-openvswitch-agent"
   end
 
   it "sets the openvswitch service to start on boot" do
-    expect(@chef_run).to set_service_to_start_on_boot "quantum-plugin-openvswitch-agent"
+    expect(@chef_run).to set_service_to_start_on_boot "neutron-plugin-openvswitch-agent"
   end
 
   describe "ovs-dpctl-top" do
@@ -70,13 +70,13 @@ describe 'openstack-network::openvswitch' do
     end
   end
 
-  describe "ovs_quantum_plugin.ini" do
+  describe "ovs_neutron_plugin.ini" do
     before do
-      @file = @chef_run.template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini"
+      @file = @chef_run.template "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
     end
 
     it "has proper owner" do
-      expect(@file).to be_owned_by "quantum", "quantum"
+      expect(@file).to be_owned_by "neutron", "neutron"
     end
 
     it "has proper modes" do
@@ -115,7 +115,7 @@ describe 'openstack-network::openvswitch' do
 
     it "it has firewall driver" do
       expect(@chef_run).to create_file_with_content @file.name,
-        "firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+        "firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
     end
 
     it "it uses local_ip from eth0 when local_ip_interface is set" do

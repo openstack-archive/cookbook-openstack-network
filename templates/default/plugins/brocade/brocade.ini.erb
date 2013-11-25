@@ -28,7 +28,7 @@ ostype = <%= node["openstack"]["network"]["brocade"]["switch_ostype"] %>
 # sql_idle_timeout = 3600
 #
 # Example:
-# sql_connection = mysql://root:pass@localhost/brcd_quantum?charset=utf8
+# sql_connection = mysql://root:pass@localhost/brcd_neutron?charset=utf8
 sql_connection = <%= @sql_connection %>
 
 [PHYSICAL_INTERFACE]
@@ -47,7 +47,7 @@ network_vlan_ranges = <%= node["openstack"]["network"]["brocade"]["network_vlan_
 
 [AGENT]
 # Example:
-# root_helper = sudo /usr/local/bin/quantum-rootwrap /etc/quantum/rootwrap.conf
+# root_helper = sudo /usr/local/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
 
 [LINUX_BRIDGE]
 # physical_interface_mappings = <physical network name>:<local interface>

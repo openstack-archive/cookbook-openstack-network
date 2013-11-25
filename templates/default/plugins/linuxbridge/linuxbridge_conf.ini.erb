@@ -26,9 +26,9 @@ network_vlan_ranges = <%= node["openstack"]["network"]["linuxbridge"]["network_v
 [DATABASE]
 # This line MUST be changed to actually run the plugin.
 # Example:
-# sql_connection = mysql://root:nova@127.0.0.1:3306/quantum_linux_bridge
+# sql_connection = mysql://root:nova@127.0.0.1:3306/neutron_linux_bridge
 # Replace 127.0.0.1 above with the IP address of the database used by the
-# main quantum server. (Leave it as is if the database runs on this host.)
+# main neutron server. (Leave it as is if the database runs on this host.)
 sql_connection = <%= @sql_connection %>
 
 # Database reconnection retry times - in event connectivity is lost
@@ -69,5 +69,5 @@ physical_interface_mappings = <%= node["openstack"]["network"]["linuxbridge"]["p
 polling_interval = 2
 
 [SECURITYGROUP]
-# Firewall driver for realizing quantum security group function
-firewall_driver = quantum.agent.linux.iptables_firewall.IptablesFirewallDriver
+# Firewall driver for realizing neutron security group function
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver

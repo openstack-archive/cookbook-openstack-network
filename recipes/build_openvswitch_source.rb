@@ -21,7 +21,7 @@
 
 platform_options = node["openstack"]["network"]["platform"]
 
-platform_options["quantum_openvswitch_build_packages"].each do |pkg|
+platform_options["neutron_openvswitch_build_packages"].each do |pkg|
   package pkg do
     action :install
   end

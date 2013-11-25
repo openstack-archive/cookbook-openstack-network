@@ -49,41 +49,41 @@ if node['openstack']['network']['openvswitch']['use_source_version']
     include_recipe "openstack-network::build_openvswitch_source"
   end
 else
-  platform_options["quantum_openvswitch_packages"].each do |pkg|
+  platform_options["neutron_openvswitch_packages"].each do |pkg|
     package pkg do
       action :install
     end
   end
 end
 
-service "quantum-openvswitch-switch" do
-  service_name platform_options["quantum_openvswitch_service"]
+service "neutron-openvswitch-switch" do
+  service_name platform_options["neutron_openvswitch_service"]
   supports :status => true, :restart => true
   action :enable
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::server")
-  service "quantum-server" do
-    service_name platform_options["quantum_server_service"]
+  service "neutron-server" do
+    service_name platform_options["neutron_server_service"]
     supports :status => true, :restart => true
     action :nothing
   end
 end
 
-platform_options["quantum_openvswitch_agent_packages"].each do |pkg|
+platform_options["neutron_openvswitch_agent_packages"].each do |pkg|
   package pkg do
     action :install
     options platform_options["package_overrides"]
   end
 end
 
-service "quantum-plugin-openvswitch-agent" do
-  service_name platform_options["quantum_openvswitch_agent_service"]
+service "neutron-plugin-openvswitch-agent" do
+  service_name platform_options["neutron_openvswitch_agent_service"]
   supports :status => true, :restart => true
   action :enable
 end
 
-execute "quantum-node-setup --plugin openvswitch" do
+execute "neutron-node-setup --plugin openvswitch" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
@@ -94,7 +94,7 @@ if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
     command "ovs-vsctl add-br #{int_bridge}"
     action :run
     not_if "ovs-vsctl show | grep 'Bridge #{int_bridge}'"
-    notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+    notifies :restart, "service[neutron-plugin-openvswitch-agent]", :delayed
   end
 end
 
@@ -105,7 +105,7 @@ if not ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
     command "ovs-vsctl add-br #{tun_bridge}"
     action :run
     not_if "ovs-vsctl show | grep 'Bridge #{tun_bridge}'"
-    notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+    notifies :restart, "service[neutron-plugin-openvswitch-agent]", :delayed
   end
 end
 

@@ -2,9 +2,9 @@ require_relative "spec_helper"
 
 describe "openstack-network::identity_registration" do
   before do
-    quantum_stubs
+    neutron_stubs
     @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
     @chef_run.converge "openstack-network::identity_registration"
   end
@@ -74,15 +74,15 @@ describe "openstack-network::identity_registration" do
   it "registers service user" do
     resource = @chef_run.find_resource(
       "openstack-identity_register",
-      "Register quantum User"
+      "Register neutron User"
     ).to_hash
 
     expect(resource).to include(
       :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :tenant_name => "service",
-      :user_name => "quantum",
-      :user_pass => "quantum-pass",
+      :user_name => "neutron",
+      :user_pass => "neutron-pass",
       :action => [:create_user]
     )
   end
@@ -90,7 +90,7 @@ describe "openstack-network::identity_registration" do
   it "grants admin role to service user for service tenant" do
     resource = @chef_run.find_resource(
       "openstack-identity_register",
-      "Grant 'admin' Role to quantum User for service Tenant"
+      "Grant 'admin' Role to neutron User for service Tenant"
     ).to_hash
 
     expect(resource).to include(
@@ -98,7 +98,7 @@ describe "openstack-network::identity_registration" do
       :bootstrap_token => "bootstrap-token",
       :tenant_name => "service",
       :role_name => "admin",
-      :user_name => "quantum",
+      :user_name => "neutron",
       :action => [:grant_role]
     )
   end

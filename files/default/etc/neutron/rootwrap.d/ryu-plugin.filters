@@ -1,4 +1,4 @@
-# quantum-rootwrap command filters for nodes on which quantum is
+# neutron-rootwrap command filters for nodes on which neutron is
 # expected to control network
 #
 # This file should be owned by (and only-writeable by) the root user
@@ -12,14 +12,14 @@
 # unclear whether both variants are necessary, but I'm transliterating
 # from the old mechanism
 
-# quantum/plugins/ryu/agent/ryu_quantum_agent.py:
+# neutron/plugins/ryu/agent/ryu_neutron_agent.py:
 #   "ovs-vsctl", "--timeout=2", ...
 ovs-vsctl: CommandFilter, /bin/ovs-vsctl, root
 ovs-vsctl_usr: CommandFilter, /usr/bin/ovs-vsctl, root
 ovs-vsctl_sbin: CommandFilter, /sbin/ovs-vsctl, root
 ovs-vsctl_sbin_usr: CommandFilter, /usr/sbin/ovs-vsctl, root
 
-# quantum/plugins/ryu/agent/ryu_quantum_agent.py:
+# neutron/plugins/ryu/agent/ryu_neutron_agent.py:
 #   "xe", "vif-param-get", ...
 xe: CommandFilter, /bin/xe, root
 xe_usr: CommandFilter, /usr/bin/xe, root

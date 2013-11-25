@@ -8,9 +8,9 @@ debug = <%= node["openstack"]["network"]["debug"] %>
 # matches your plugin.
 
 # OVS based plugins (OVS, Ryu, NEC, NVP, BigSwitch/Floodlight)
-# interface_driver = quantum.agent.linux.interface.OVSInterfaceDriver
+# interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 # LinuxBridge
-# interface_driver = quantum.agent.linux.interface.BridgeInterfaceDriver
+# interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 interface_driver = <%= node["openstack"]["network"]["interface_driver"] %>
 
 # Allow overlapping IP (Must have kernel build with CONFIG_NET_NS=y and
@@ -35,7 +35,7 @@ gateway_external_network_id = <%= node["openstack"]["network"]["l3"]["gateway_ex
 
 # Indicates that this L3 agent should also handle routers that do not have
 # an external network gateway configured.  This option should be True only
-# for a single agent in a Quantum deployment, and may be False for all agents
+# for a single agent in a Neutron deployment, and may be False for all agents
 # if all routers must have an external network gateway
 handle_internal_only_routers = <%= node["openstack"]["network"]["l3"]["handle_internal_only_routers"] %>
 
@@ -43,7 +43,7 @@ handle_internal_only_routers = <%= node["openstack"]["network"]["l3"]["handle_in
 # empty value for the linux bridge
 external_network_bridge = <%= node["openstack"]["network"]["l3"]["external_network_bridge"] %>
 
-# TCP Port used by Quantum metadata server
+# TCP Port used by Neutron metadata server
 metadata_port = <%= node["openstack"]["network"]["l3"]["metadata_port"] %>
 
 # Send this many gratuitous ARPs for HA setup. Set it below or equal to 0

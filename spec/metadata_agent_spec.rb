@@ -5,9 +5,9 @@ describe 'openstack-network::metadata_agent' do
   describe "ubuntu" do
 
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::metadata_agent"
     end
@@ -17,21 +17,21 @@ describe 'openstack-network::metadata_agent' do
       node = chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       chef_run.converge "openstack-network::metadata_agent"
-      expect(chef_run).to_not install_package "quantum-metadata-agent"
+      expect(chef_run).to_not install_package "neutron-metadata-agent"
     end
 
     it "installs quamtum metadata agent" do
-      expect(@chef_run).to install_package "quantum-metadata-agent"
+      expect(@chef_run).to install_package "neutron-metadata-agent"
     end
 
     describe "metadata_agent.ini" do
 
       before do
-       @file = @chef_run.template "/etc/quantum/metadata_agent.ini"
+       @file = @chef_run.template "/etc/neutron/metadata_agent.ini"
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
+        expect(@file).to be_owned_by "neutron", "neutron"
       end
 
       it "has proper modes" do
@@ -52,11 +52,11 @@ describe 'openstack-network::metadata_agent' do
       end
       it "sets admin user" do
         expect(@chef_run).to create_file_with_content @file.name,
-          "admin_user = quantum"
+          "admin_user = neutron"
       end
       it "sets admin password" do
         expect(@chef_run).to create_file_with_content @file.name,
-          "admin_password = quantum-pass"
+          "admin_password = neutron-pass"
       end
       it "sets nova metadata ip correctly" do
         expect(@chef_run).to create_file_with_content @file.name,
@@ -66,7 +66,7 @@ describe 'openstack-network::metadata_agent' do
         expect(@chef_run).to create_file_with_content @file.name,
           "nova_metadata_port = 8775"
       end
-      it "sets quantum secret correctly" do
+      it "sets neutron secret correctly" do
         expect(@chef_run).to create_file_with_content @file.name,
           "metadata_proxy_shared_secret = metadata-secret"
       end

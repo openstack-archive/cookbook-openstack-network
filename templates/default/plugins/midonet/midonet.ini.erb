@@ -2,9 +2,9 @@
 [DATABASE]
 # This line MUST be changed to actually run the plugin.
 # Example:
-# sql_connection = mysql://root:pass@127.0.0.1:3306/midonet_quantum
+# sql_connection = mysql://root:pass@127.0.0.1:3306/midonet_neutron
 # Replace 127.0.0.1 above with the IP address of the database used by the
-# main quantum server. (Leave it as is if the database runs on this host.)
+# main neutron server. (Leave it as is if the database runs on this host.)
 sql_connection = <%= @sql_connection %>
 # Database reconnection retry times - in event connectivity is lost
 # set to -1 implies an infinite retry count

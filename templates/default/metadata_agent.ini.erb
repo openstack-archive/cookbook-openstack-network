@@ -4,7 +4,7 @@
 # Show debugging output in log (sets DEBUG log level output)
 debug = <%= node["openstack"]["network"]["debug"] %>
 
-# The Quantum user information for accessing the Quantum API.
+# The Neutron user information for accessing the Neutron API.
 auth_url = <%= @identity_endpoint.to_s %>
 auth_region = <%= node["openstack"]["network"]["region"] %>
 admin_tenant_name = <%= node["openstack"]["network"]["service_tenant_name"] %>
@@ -23,8 +23,8 @@ nova_metadata_ip = <%= node["openstack"]["network"]["metadata"]["nova_metadata_i
 nova_metadata_port = <%= node["openstack"]["network"]["metadata"]["nova_metadata_port"] %>
 <% end -%>
 
-# When proxying metadata requests, Quantum signs the Instance-ID header with a
+# When proxying metadata requests, Neutron signs the Instance-ID header with a
 # shared secret to prevent spoofing.  You may select any string for a secret,
 # but it must match here and in the configuration used by the Nova Metadata
-# Server. NOTE: Nova uses a different key: quantum_metadata_proxy_shared_secret
+# Server. NOTE: Nova uses a different key: neutron_metadata_proxy_shared_secret
 metadata_proxy_shared_secret = <%= @metadata_secret %>

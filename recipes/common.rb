@@ -42,13 +42,13 @@ platform_options["nova_network_packages"].each do |pkg|
   end
 end
 
-platform_options["quantum_packages"].each do |pkg|
+platform_options["neutron_packages"].each do |pkg|
   package pkg do
     action :install
   end
 end
 
-directory "/etc/quantum/plugins" do
+directory "/etc/neutron/plugins" do
   recursive true
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
@@ -56,7 +56,7 @@ directory "/etc/quantum/plugins" do
   action :create
 end
 
-directory "/var/cache/quantum" do
+directory "/var/cache/neutron" do
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode 00700
@@ -72,28 +72,28 @@ directory ::File.dirname node["openstack"]["network"]["api"]["auth"]["cache_dir"
 end
 
 # This will copy recursively all the files in
-# /files/default/etc/quantum/rootwrap.d
-remote_directory "/etc/quantum/rootwrap.d" do
-  source "etc/quantum/rootwrap.d"
+# /files/default/etc/neutron/rootwrap.d
+remote_directory "/etc/neutron/rootwrap.d" do
+  source "etc/neutron/rootwrap.d"
   files_owner node["openstack"]["network"]["platform"]["user"]
   files_group node["openstack"]["network"]["platform"]["group"]
   files_mode 00700
 end
 
-template "/etc/quantum/rootwrap.conf" do
+template "/etc/neutron/rootwrap.conf" do
   source "rootwrap.conf.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode 00644
 end
 
-template "/etc/quantum/policy.json" do
+template "/etc/neutron/policy.json" do
   source "policy.json.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode 00644
 
-  notifies :restart, "service[quantum-server]", :delayed
+  notifies :restart, "service[neutron-server]", :delayed
 end
 
 if node["openstack"]["network"]["mq"]["service_type"] == "rabbitmq"
@@ -109,7 +109,7 @@ identity_admin_endpoint = endpoint "identity-admin"
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node["openstack"]["network"]["db"]["username"]
-db_pass = db_password "quantum"
+db_pass = db_password "neutron"
 sql_connection = db_uri("network", db_user, db_pass)
 
 api_endpoint = endpoint "network-api"
@@ -132,7 +132,7 @@ else
   local_ip = address_for node["openstack"]["network"]["openvswitch"]["local_ip_interface"]
 end
 
-platform_options["quantum_client_packages"].each do |pkg|
+platform_options["neutron_client_packages"].each do |pkg|
   package pkg do
     action :upgrade
     options platform_options["package_overrides"]
@@ -142,17 +142,17 @@ end
 # all recipes include common.rb, and some servers
 # may just be running a subset of agents (like l3_agent)
 # and not the api server components, so we ignore restart
-# failures here as there may be no quantum-server process
-service "quantum-server" do
-  service_name platform_options["quantum_server_service"]
+# failures here as there may be no neutron-server process
+service "neutron-server" do
+  service_name platform_options["neutron_server_service"]
   supports :status => true, :restart => true
   ignore_failure true
 
   action :nothing
 end
 
-template "/etc/quantum/quantum.conf" do
-  source "quantum.conf.erb"
+template "/etc/neutron/neutron.conf" do
+  source "neutron.conf.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
@@ -166,10 +166,10 @@ template "/etc/quantum/quantum.conf" do
     :service_pass => service_pass
   )
 
-  notifies :restart, "service[quantum-server]", :delayed
+  notifies :restart, "service[neutron-server]", :delayed
 end
 
-template "/etc/quantum/api-paste.ini" do
+template "/etc/neutron/api-paste.ini" do
   source "api-paste.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
@@ -181,10 +181,10 @@ template "/etc/quantum/api-paste.ini" do
     "service_pass" => service_pass
   )
 
-  notifies :restart, "service[quantum-server]", :delayed
+  notifies :restart, "service[neutron-server]", :delayed
 end
 
-directory "/etc/quantum/plugins/#{main_plugin}" do
+directory "/etc/neutron/plugins/#{main_plugin}" do
   recursive true
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
@@ -192,7 +192,7 @@ directory "/etc/quantum/plugins/#{main_plugin}" do
 end
 
 # For several plugins, the plugin configuration
-# is required by both the quantum-server and
+# is required by both the neutron-server and
 # ancillary services that may be on different
 # physical servers like the l3 agent, so we assume
 # the plugin configuration is a "common" file
@@ -202,8 +202,8 @@ template_file = nil
 case main_plugin
 when "bigswitch"
 
-  template_file =  "/etc/quantum/plugins/bigswitch/restproxy.ini"
-  template "/etc/quantum/plugins/bigswitch/restproxy.ini" do
+  template_file =  "/etc/neutron/plugins/bigswitch/restproxy.ini"
+  template "/etc/neutron/plugins/bigswitch/restproxy.ini" do
     source "plugins/bigswitch/restproxy.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -212,13 +212,13 @@ when "bigswitch"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "brocade"
 
-  template_file = "/etc/quantum/plugins/brocade/brocade.ini"
-  template "/etc/quantum/plugins/brocade/brocade.ini" do
+  template_file = "/etc/neutron/plugins/brocade/brocade.ini"
+  template "/etc/neutron/plugins/brocade/brocade.ini" do
     source "plugins/brocade/brocade.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -227,13 +227,13 @@ when "brocade"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "cisco"
 
-  template_file = "/etc/quantum/plugins/cisco/cisco_plugins.ini"
-  template "/etc/quantum/plugins/cisco/cisco_plugins.ini" do
+  template_file = "/etc/neutron/plugins/cisco/cisco_plugins.ini"
+  template "/etc/neutron/plugins/cisco/cisco_plugins.ini" do
     source "plugins/cisco/cisco_plugins.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -242,14 +242,14 @@ when "cisco"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "hyperv"
 
-  template_file = "/etc/quantum/plugins/hyperv/hyperv_quantum_plugin.ini.erb"
-  template "/etc/quantum/plugins/hyperv/hyperv_quantum_plugin.ini.erb" do
-    source "plugins/hyperv/hyperv_quantum_plugin.ini.erb"
+  template_file = "/etc/neutron/plugins/hyperv/hyperv_neutron_plugin.ini.erb"
+  template "/etc/neutron/plugins/hyperv/hyperv_neutron_plugin.ini.erb" do
+    source "plugins/hyperv/hyperv_neutron_plugin.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
     mode 00644
@@ -257,13 +257,13 @@ when "hyperv"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "linuxbridge"
 
-  template_file = "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini"
-  template "/etc/quantum/plugins/linuxbridge/linuxbridge_conf.ini" do
+  template_file = "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini"
+  template "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini" do
     source "plugins/linuxbridge/linuxbridge_conf.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -272,13 +272,13 @@ when "linuxbridge"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "midonet"
 
-  template_file = "/etc/quantum/plugins/metaplugin/metaplugin.ini"
-  template "/etc/quantum/plugins/metaplugin/metaplugin.ini" do
+  template_file = "/etc/neutron/plugins/metaplugin/metaplugin.ini"
+  template "/etc/neutron/plugins/metaplugin/metaplugin.ini" do
     source "plugins/metaplugin/metaplugin.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -287,13 +287,13 @@ when "midonet"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "nec"
 
-  template_file = "/etc/quantum/plugins/nec/nec.ini"
-  template "/etc/quantum/plugins/nec/nec.ini" do
+  template_file = "/etc/neutron/plugins/nec/nec.ini"
+  template "/etc/neutron/plugins/nec/nec.ini" do
     source "plugins/nec/nec.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -302,13 +302,13 @@ when "nec"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "nicira"
 
-  template_file = "/etc/quantum/plugins/nicira/nvp.ini"
-  template "/etc/quantum/plugins/nicira/nvp.ini" do
+  template_file = "/etc/neutron/plugins/nicira/nvp.ini"
+  template "/etc/neutron/plugins/nicira/nvp.ini" do
     source "plugins/nicira/nvp.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -317,20 +317,20 @@ when "nicira"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "openvswitch"
 
-  template_file = "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini"
+  template_file = "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
 
-  service "quantum-plugin-openvswitch-agent" do
-    service_name platform_options["quantum_openvswitch_agent_service"]
+  service "neutron-plugin-openvswitch-agent" do
+    service_name platform_options["neutron_openvswitch_agent_service"]
     action :nothing
   end
 
-  template "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini" do
-    source "plugins/openvswitch/ovs_quantum_plugin.ini.erb"
+  template "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini" do
+    source "plugins/openvswitch/ovs_neutron_plugin.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
     mode 00644
@@ -338,17 +338,17 @@ when "openvswitch"
       :sql_connection => sql_connection,
       :local_ip => local_ip
     )
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::openvswitch")
-      notifies :restart, "service[quantum-plugin-openvswitch-agent]", :delayed
+      notifies :restart, "service[neutron-plugin-openvswitch-agent]", :delayed
     end
   end
 
 
 when "plumgrid"
 
-  template_file = "/etc/quantum/plugins/plumgrid/plumgrid.ini"
-  template "/etc/quantum/plugins/plumgrid/plumgrid.ini" do
+  template_file = "/etc/neutron/plugins/plumgrid/plumgrid.ini"
+  template "/etc/neutron/plugins/plumgrid/plumgrid.ini" do
     source "plugins/plumgrid/plumgrid.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -357,13 +357,13 @@ when "plumgrid"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 when "ryu"
 
-  template_file = "/etc/quantum/plugins/ryu/ryu.ini"
-  template "/etc/quantum/plugins/ryu/ryu.ini" do
+  template_file = "/etc/neutron/plugins/ryu/ryu.ini"
+  template "/etc/neutron/plugins/ryu/ryu.ini" do
     source "plugins/ryu/ryu.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
     group node["openstack"]["network"]["platform"]["group"]
@@ -372,13 +372,13 @@ when "ryu"
       :sql_connection => sql_connection
     )
 
-    notifies :restart, "service[quantum-server]", :delayed
+    notifies :restart, "service[neutron-server]", :delayed
   end
 
 end
 
-template "/etc/default/quantum-server" do
-  source "quantum-server.erb"
+template "/etc/default/neutron-server" do
+  source "neutron-server.erb"
   owner "root"
   group "root"
   mode 00644

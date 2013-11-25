@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.0.0:
+* Support neutron deployment by search and replace quantum with neutron
+
 ## 7.1.1
 * fixing rpc_backend for qpid
 

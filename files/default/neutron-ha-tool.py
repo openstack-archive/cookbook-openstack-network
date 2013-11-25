@@ -27,12 +27,12 @@ import time
 from logging.handlers import SysLogHandler
 from collections import OrderedDict
 from random import choice
-from quantumclient.quantum import client
+from neutronclient.neutron import client
 
-LOG = logging.getLogger('quantum-ha-tool')
+LOG = logging.getLogger('neutron-ha-tool')
 LOG_FORMAT='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 LOG_DATE = '%m-%d %H:%M'
-DESCRIPTION = "Quantum High Availability Tool"
+DESCRIPTION = "neutron High Availability Tool"
 TAKEOVER_DELAY = int(random.random()*30+30)
 
 
@@ -102,14 +102,14 @@ def l3_agent_rebalance(qclient, noop=False):
     on each l3 agent will be as close as possible which should help
     distribute load as new l3 agents come online.
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param noop: Optional noop flag
     """
 
-    # {u'binary': u'quantum-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
+    # {u'binary': u'neutron-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
     # u'l3_agent', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'L3 agent', u'created_at': u'2013-07-02 14:50:58', u'started_at': u'2013-07-02 18:00:55',
     # u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff', u'configurations': {u'router_id': u'', u'gateway_external_network_id': u'', u'handle_internal_only_routers': True,
-    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'quantum.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
+    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'neutron.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
 
     l3_agent_dict={}
     agents = list_agents(qclient, agent_type='L3 agent')
@@ -162,7 +162,7 @@ def l3_agent_check(qclient, noop=False):
     Walk the l3 agents searching for agents that are offline.  Show routers
     that are offline and where we would migrate them too.
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param noop: Optional noop flag
 
     """
@@ -196,7 +196,7 @@ def l3_agent_migrate(qclient, noop=False):
     offline, we will retrieve a list of routers on them and migrate them to a
     random l3 agent that is online.
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param noop: Optional noop flag
 
     """
@@ -256,7 +256,7 @@ def replicate_dhcp(qclient, noop=False):
     Retrieve a network list and then probe each DHCP agent to ensure they have that
     network assigned.
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param noop: Optional noop flag
     """
 
@@ -287,13 +287,13 @@ def migrate_router(qclient, router_id, agent_id, target_id):
     """
     Returns nothing, and raises on exception
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param router_id: The id of the router to migrate
     :param agent_id: The id of the l3 agent to migrate from
     :param target_id: The id of the l3 agent to migrate to
     """
 
-    # N.B. The quantum API will return "success" even when there is a subsequent
+    # N.B. The neutron API will return "success" even when there is a subsequent
     # failure during the add or remove process so we must check to ensure the
     # router has been added or removed
 
@@ -318,7 +318,7 @@ def list_networks(qclient):
     """
     Return a list of network objects
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     """
 
     resp = qclient.list_networks()
@@ -329,7 +329,7 @@ def list_dhcp_agent_networks(qclient, agent_id):
     """
     Return a list of network ids assigned to a particular DHCP agent
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     :param agent_id: A DHCP agent id
     """
 
@@ -343,7 +343,7 @@ def list_routers(qclient):
     """
     Return a list of router objects
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
 
     # {'routers': [{u'status': u'ACTIVE', u'external_gateway_info': {u'network_id': u'b970297c-d80e-4527-86d7-e49d2da9fdef'}, u'name': u'router1',
     # u'admin_state_up': True, u'tenant_id': u'5603b97ee7f047ea999e25492c7fcb23', u'routes': [], u'id': u'0a122e5c-1623-412e-8c53-a1e21d1daff8'},
@@ -358,7 +358,7 @@ def list_routers_on_l3_agent(qclient, agent_id):
     """
     Return a list of router ids on an agent
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
     """
 
     resp = qclient.list_routers_on_l3_agent(agent_id)
@@ -369,27 +369,27 @@ def list_agents(qclient, agent_type=None):
     """
     Return a list of agent objects
 
-    :param qclient: A quantumclient
+    :param qclient: A neutronclient
 
     # openvswitch
     #
-    # {u'agents': [{u'binary': u'quantum-openvswitch-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:25'
+    # {u'agents': [{u'binary': u'neutron-openvswitch-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:25'
     # u'alive': True, u'topic': u'N/A', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'Open vSwitch agent', u'created_at': u'2013-07-02 14:50:57',
     # u'started_at': u'2013-07-02 14:50:57', u'id': u'3a577f1d-d86e-4f1a-a395-8d4c8e4df1e2', u'configurations': {u'devices': 10}},
     #
     # dhcp
     #
-    # {u'binary': u'quantum-dhcp-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True,
+    # {u'binary': u'neutron-dhcp-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True,
     # u'topic': u'dhcp_agent', u'host': u'o5r4.int.san3.attcompute.com', u'agent_type': u'DHCP agent', u'created_at': u'2013-06-26 16:21:02', u'started_at':
     #  u'2013-06-28 13:32:52', u'id': u'3e8be28e-05a0-472b-9288-a59f8d8d2271', u'configurations': {u'subnets': 4, u'use_namespaces': True, u'dhcp_driver':
-    # u'quantum.agent.linux.dhcp.Dnsmasq', u'networks': 4, u'dhcp_lease_time': 120, u'ports': 38}},
+    # u'neutron.agent.linux.dhcp.Dnsmasq', u'networks': 4, u'dhcp_lease_time': 120, u'ports': 38}},
     #
     # l3
     #
-    # {u'binary': u'quantum-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
+    # {u'binary': u'neutron-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
     # u'l3_agent', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'L3 agent', u'created_at': u'2013-07-02 14:50:58', u'started_at': u'2013-07-02 18:00:55',
     # u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff', u'configurations': {u'router_id': u'', u'gateway_external_network_id': u'', u'handle_internal_only_routers': True,
-    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'quantum.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
+    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'neutron.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
     """
 
     resp = qclient.list_agents()

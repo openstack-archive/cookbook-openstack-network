@@ -5,33 +5,33 @@ describe 'openstack-network::l3_agent' do
   describe "ubuntu" do
 
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::l3_agent"
     end
 
-    it "does not install quantum l3 package when nova networking" do
+    it "does not install neutron l3 package when nova networking" do
       chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       node = chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       chef_run.converge "openstack-network::l3_agent"
-      expect(chef_run).to_not install_package "quantum-l3-agent"
+      expect(chef_run).to_not install_package "neutron-l3-agent"
     end
 
     it "installs quamtum l3 package" do
-      expect(@chef_run).to install_package "quantum-l3-agent"
+      expect(@chef_run).to install_package "neutron-l3-agent"
     end
 
     describe "l3_agent.ini" do
 
       before do
-        @file = @chef_run.template "/etc/quantum/l3_agent.ini"
+        @file = @chef_run.template "/etc/neutron/l3_agent.ini"
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
+        expect(@file).to be_owned_by "neutron", "neutron"
       end
 
       it "has proper modes" do
@@ -40,7 +40,7 @@ describe 'openstack-network::l3_agent' do
 
       it "it has ovs driver" do
         expect(@chef_run).to create_file_with_content @file.name,
-          "interface_driver = quantum.agent.linux.interface.OVSInterfaceDriver"
+          "interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver"
       end
 
       it "sets fuzzy delay to default" do
@@ -61,10 +61,10 @@ describe 'openstack-network::l3_agent' do
 
     describe "create ovs bridges" do
       before do
-        quantum_stubs
+        neutron_stubs
         opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
         @chef_run = ::ChefSpec::ChefRunner.new opts do |n|
-          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+          n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
         end
       end
 

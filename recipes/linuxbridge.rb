@@ -23,15 +23,15 @@ include_recipe "openstack-network::common"
 
 platform_options = node["openstack"]["network"]["platform"]
 
-platform_options["quantum_linuxbridge_agent_packages"].each do |pkg|
+platform_options["neutron_linuxbridge_agent_packages"].each do |pkg|
   package pkg do
     options platform_options["package_overrides"]
     action :install
   end
 end
 
-service "quantum-plugin-linuxbridge-agent" do
-  service_name platform_options["quantum_linuxbridge_agent_service"]
+service "neutron-plugin-linuxbridge-agent" do
+  service_name platform_options["neutron_linuxbridge_agent_service"]
   supports :status => true, :restart => true
   action :enable
 end

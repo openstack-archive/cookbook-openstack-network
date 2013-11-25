@@ -29,9 +29,9 @@ default["openstack"]["network"]["debug"] = "False"
 
 # Gets set in the Network Endpoint when registering with Keystone
 default["openstack"]["network"]["region"] = "RegionOne"
-default["openstack"]["network"]["service_user"] = "quantum"
+default["openstack"]["network"]["service_user"] = "neutron"
 default["openstack"]["network"]["service_role"] = "admin"
-default["openstack"]["network"]["service_name"] = "quantum"
+default["openstack"]["network"]["service_name"] = "neutron"
 default["openstack"]["network"]["service_type"] = "network"
 default["openstack"]["network"]["description"] = "OpenStack Networking service"
 
@@ -46,8 +46,8 @@ default["openstack"]["network"]["rabbit"]["port"] = 5672
 default["openstack"]["network"]["rabbit"]["host"] = "127.0.0.1"
 default["openstack"]["network"]["rabbit"]["ha"] = false
 
-# The database username for the quantum database
-default["openstack"]["network"]["db"]["username"] = "quantum"
+# The database username for the neutron database
+default["openstack"]["network"]["db"]["username"] = "neutron"
 
 # Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
 # sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
@@ -71,7 +71,7 @@ default['openstack']['network']['db']['sql_idle_timeout'] = 3600
 
 # Used in the Keystone authtoken middleware configuration
 default["openstack"]["network"]["service_tenant_name"] = "service"
-default["openstack"]["network"]["service_user"] = "quantum"
+default["openstack"]["network"]["service_user"] = "neutron"
 default["openstack"]["network"]["service_role"] = "admin"
 
 # The maximum number of seconds we will wait for an agent to checkin
@@ -81,12 +81,12 @@ default["openstack"]["network"]["api"]["agent"]["agent_down_time"] = 15
 default["openstack"]["network"]["api"]["agent"]["agent_report_interval"] = 4
 
 # The agent signing directory for api server
-default["openstack"]["network"]["api"]["agent"]["signing_dir"] = "/var/lib/quantum/keystone-signing"
+default["openstack"]["network"]["api"]["agent"]["signing_dir"] = "/var/lib/neutron/keystone-signing"
 
 # Keystone PKI signing directory.
-default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/quantum/api"
+default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/neutron/api"
 
-# If bind_interface is set, the quantum API service will bind to the
+# If bind_interface is set, the neutron API service will bind to the
 # address on this interface and use the port in bind_port. Otherwise,
 # it will bind to the API endpoint's host.
 default["openstack"]["network"]["api"]["bind_interface"] = nil
@@ -116,12 +116,12 @@ default["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] = true
 default["openstack"]["network"]["syslog"]["use"] = false
 
 # The driver for Quota management in Neutron. Possible values:
-#  quantum.quota.ConfDriver (default)
-#  quantum.quota.DbDriver
+#  neutron.quota.ConfDriver (default)
+#  neutron.quota.DbDriver
 #
 # Note: set this to the DbDriver if you want to be able to update
 # quotas for networks/subnets/security groups!
-default["openstack"]["network"]["quota"]["driver"] = "quantum.quota.ConfDriver"
+default["openstack"]["network"]["quota"]["driver"] = "neutron.quota.ConfDriver"
 
 # default quotas will be used when no more specific tenant entry exists
 # when using the DBDriver - override them below to adjust the default
@@ -159,31 +159,31 @@ default["openstack"]["network"]["quota"]["security_group_rule"] = 100
 # or nicira plugins are crashing the sdn routers
 default['openstack']['network']['disable_offload'] = false
 
-# configure quantum ha tool installation parameters
-default["openstack"]["network"]["quantum_ha_cmd_cron"] = false
-default["openstack"]["network"]["quantum_ha_cmd"] = "/usr/local/bin/quantum-ha-tool.py"
+# configure neutron ha tool installation parameters
+default["openstack"]["network"]["neutron_ha_cmd_cron"] = false
+default["openstack"]["network"]["neutron_ha_cmd"] = "/usr/local/bin/neutron-ha-tool.py"
 default["openstack"]["network"]["cron_l3_healthcheck"] = "*/1"
 default["openstack"]["network"]["cron_replicate_dhcp"] = "*/1"
 
 # the plugins to install on the server.  this will be
-# quantum-plugin-%plugin% and the first plugin in the
+# neutron-plugin-%plugin% and the first plugin in the
 # list should match the core plugin below
 # N.B. this will be ignored on SUSE as all plugins are installed by
-# default by the main openstack-quantum package
+# default by the main openstack-neutron package
 default["openstack"]["network"]["plugins"] = ['openvswitch', 'openvswitch-agent' ]
 
-# the core plugin to use for quantum
-default["openstack"]["network"]["core_plugin"] = "quantum.plugins.openvswitch.ovs_quantum_plugin.OVSQuantumPluginV2"
+# the core plugin to use for neutron
+default["openstack"]["network"]["core_plugin"] = "neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2"
 
 # The bridging interface driver.
 #
 # Options are:
 #
-#   - quantum.agent.linux.interface.OVSInterfaceDriver
-#   - quantum.agent.linux.interface.BridgeInterfaceDriver
+#   - neutron.agent.linux.interface.OVSInterfaceDriver
+#   - neutron.agent.linux.interface.BridgeInterfaceDriver
 #
 
-default["openstack"]["network"]["interface_driver"] = 'quantum.agent.linux.interface.OVSInterfaceDriver'
+default["openstack"]["network"]["interface_driver"] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
 
 # maps the above driver to a plugin name
 default["openstack"]["network"]["interface_driver_map"] = {
@@ -192,13 +192,13 @@ default["openstack"]["network"]["interface_driver_map"] = {
 }
 
 default["openstack"]["network"]["plugin_conf_map"] = {
-  'ovsinterfacedriver' => 'openvswitch/ovs_quantum_plugin.ini',
+  'ovsinterfacedriver' => 'openvswitch/ovs_neutron_plugin.ini',
   'bridgeinterfacedriver' => 'linuxbridge/linuxbridge_conf.ini'
 }
 
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
-default["openstack"]["network"]["dhcp_driver"] = 'quantum.agent.linux.dhcp.Dnsmasq'
+default["openstack"]["network"]["dhcp_driver"] = 'neutron.agent.linux.dhcp.Dnsmasq'
 
 # Use namespaces and optionally allow overlapping IPs. You
 # must enable namespaces to use overlapping ips.  Also,
@@ -207,13 +207,13 @@ default["openstack"]["network"]["dhcp_driver"] = 'quantum.agent.linux.dhcp.Dnsma
 default["openstack"]["network"]["use_namespaces"] = "True"
 default["openstack"]["network"]["allow_overlapping_ips"] = "False"
 
-# use quantum root wrap
+# use neutron root wrap
 default["openstack"]["network"]["use_rootwrap"] = true
 
 # ============================= DHCP Agent Configuration ===================
 
 # The scheduler class to use for scheduling to DHCP agents
-default["openstack"]["network"]["dhcp"]["scheduler"] = "quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler"
+default["openstack"]["network"]["dhcp"]["scheduler"] = "neutron.scheduler.dhcp_agent_scheduler.ChanceScheduler"
 
 # Override the default mtu setting given to virtual machines
 # to 1454 to allow for tunnel and other encapsulation overhead.  You
@@ -221,7 +221,7 @@ default["openstack"]["network"]["dhcp"]["scheduler"] = "quantum.scheduler.dhcp_a
 # of the default guest MTU.
 default["openstack"]["network"]["dhcp"]["dhcp-option"] = "26,1454"
 
-# Number of seconds between sync of DHCP agent with Quantum API server
+# Number of seconds between sync of DHCP agent with Neutron API server
 default["openstack"]["network"]["dhcp"]["resync_interval"] = 5
 
 # OVS based plugins(Ryu, NEC, NVP, BigSwitch/Floodlight) that use OVS
@@ -237,7 +237,7 @@ default["openstack"]["network"]["dhcp"]["enable_isolated_metadata"] = "False"
 
 # Allows for serving metadata requests coming from a dedicated metadata
 # access network whose cidr is 169.254.169.254/16 (or larger prefix), and
-# is connected to a Quantum router from which the VMs send metadata
+# is connected to a Neutron router from which the VMs send metadata
 # request. In this case DHCP Option 121 will not be injected in VMs, as
 # they will be able to reach 169.254.169.254 through a router.
 # This option requires enable_isolated_metadata = True
@@ -284,7 +284,7 @@ default["openstack"]["network"]["dhcp"]["default_domain"] = "openstacklocal"
 # ============================= L3 Agent Configuration =====================
 
 # The scheduler class to use for scheduling routers to L3 agents
-default["openstack"]["network"]["l3"]["scheduler"] = "quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
+default["openstack"]["network"]["l3"]["scheduler"] = "neutron.scheduler.l3_agent_scheduler.ChanceScheduler"
 
 # If use_namespaces is set as False then the agent can only configure one router.
 # This is done by setting the specific router_id.
@@ -298,7 +298,7 @@ default["openstack"]["network"]["l3"]["gateway_external_network_id"] = nil
 
 # Indicates that this L3 agent should also handle routers that do not have
 # an external network gateway configured.  This option should be True only
-# for a single agent in a Quantum deployment, and may be False for all agents
+# for a single agent in a Neutron deployment, and may be False for all agents
 # if all routers must have an external network gateway
 default["openstack"]["network"]["l3"]["handle_internal_only_routers"] = "True"
 
@@ -309,7 +309,7 @@ default["openstack"]["network"]["l3"]["external_network_bridge"] = "br-ex"
 # Interface to use for external bridge.
 default["openstack"]["network"]["l3"]["external_network_bridge_interface"] = "eth1"
 
-# TCP Port used by Quantum metadata server
+# TCP Port used by Neutron metadata server
 default["openstack"]["network"]["l3"]["metadata_port"] = 9697
 
 # Send this many gratuitous ARPs for HA setup. Set it below or equal to 0
@@ -330,18 +330,18 @@ default["openstack"]["network"]["metadata"]["nova_metadata_ip"] = "127.0.0.1"
 default["openstack"]["network"]["metadata"]["nova_metadata_port"] = 8775
 
 # The name of the secret databag containing the metadata secret
-default["openstack"]["network"]["metadata"]["secret_name"] = "quantum_metadata_secret"
+default["openstack"]["network"]["metadata"]["secret_name"] = "neutron_metadata_secret"
 
 
 # ============================= LBaaS Agent Configuration ==================
 
-# Enable or disable quantum loadbalancer
-default["openstack"]["network"]["quantum_loadbalancer"] = false
+# Enable or disable neutron loadbalancer
+default["openstack"]["network"]["neutron_loadbalancer"] = false
 
 # Plugin configuration path
-default["openstack"]["network"]["lbaas_config_path"] = "/etc/quantum/plugins/services/agent_loadbalancer"
+default["openstack"]["network"]["lbaas_config_path"] = "/etc/neutron/plugins/services/agent_loadbalancer"
 
-# Number of seconds between sync of LBaaS agent with Quantum API server
+# Number of seconds between sync of LBaaS agent with Neutron API server
 default["openstack"]["network"]["lbaas"]["periodic_interval"] = 10
 
 # Set lbaas plugin
@@ -417,8 +417,8 @@ default["openstack"]["network"]["openvswitch"]["local_ip_interface"] = nil
 # Example: bridge_mappings = physnet1:br-eth1
 default["openstack"]["network"]["openvswitch"]["bridge_mappings"] = nil
 
-# Firewall driver for realizing quantum security group function
-default["openstack"]["network"]["openvswitch"]["fw_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+# Firewall driver for realizing neutron security group function
+default["openstack"]["network"]["openvswitch"]["fw_driver"] = "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
 
 # The newest version of OVS which comes with 12.04 Precise is 1.4.0
 # Which is legacy. Should we compile a newer version from source?
@@ -523,10 +523,10 @@ default["openstack"]["network"]["brocade"]["physical_interface_mappings"] = ""
 # ============================= Cisco Plugin Configuration =================
 
 # The module and class name path for the nexus plugin
-default["openstack"]["network"]["cisco"]["nexus_plugin"] = "quantum.plugins.cisco.nexus.cisco_nexus_plugin_v2.NexusPlugin"
+default["openstack"]["network"]["cisco"]["nexus_plugin"] = "neutron.plugins.cisco.nexus.cisco_nexus_plugin_v2.NexusPlugin"
 
 # The module and class name path for the vswitch plugin
-default["openstack"]["network"]["cisco"]["vswitch_plugin"] = "quantum.plugins.openvswitch.ovs_quantum_plugin.OVSQuantumPluginV2"
+default["openstack"]["network"]["cisco"]["vswitch_plugin"] = "neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2"
 
 # Start of the tenant VLAN range
 default["openstack"]["network"]["cisco"]["vlan_start"] = 100
@@ -546,13 +546,13 @@ default["openstack"]["network"]["cisco"]["max_port_profiles"] = 65568
 default["openstack"]["network"]["cisco"]["max_networks"] = 65568
 
 # Module and class path for switch model
-default["openstack"]["network"]["cisco"]["model_class"] = "quantum.plugins.cisco.models.virt_phy_sw_v2.VirtualPhysicalSwitchModelV2"
+default["openstack"]["network"]["cisco"]["model_class"] = "neutron.plugins.cisco.models.virt_phy_sw_v2.VirtualPhysicalSwitchModelV2"
 
 # Module and class path for VLAN network manager
-default["openstack"]["network"]["cisco"]["manager_class"] = "quantum.plugins.cisco.segmentation.l2network_vlan_mgr_v2.L2NetworkVLANMgr"
+default["openstack"]["network"]["cisco"]["manager_class"] = "neutron.plugins.cisco.segmentation.l2network_vlan_mgr_v2.L2NetworkVLANMgr"
 
 # Module and class path for the Nexus driver
-default["openstack"]["network"]["cisco"]["nexus_driver"] = "quantum.plugins.cisco.tests.unit.v2.nexus.fake_nexus_driver.CiscoNEXUSFakeDriver"
+default["openstack"]["network"]["cisco"]["nexus_driver"] = "neutron.plugins.cisco.tests.unit.v2.nexus.fake_nexus_driver.CiscoNEXUSFakeDriver"
 
 # For each Nexus switch, add a hash to the
 # node["openstack"]["network"]["cisco"]["nexus_switches"] Hash,
@@ -626,10 +626,10 @@ default["openstack"]["network"]["hyperv"]["local_network_vswitch"] = "private"
 
 # ============================= Metaplugin Plugin Configuration ============
 
-## This is list of flavor:quantum_plugins
+## This is list of flavor:neutron_plugins
 # extension method is used in the order of this list
-default["openstack"]["network"]["metaplugin"]["plugin_list"] = "openvswitch:quantum.plugins.openvswitch.ovs_quantum_plugin.OVSQuantumPluginV2,linuxbridge:quantum.plugins.linuxbridge.lb_quantum_plugin.LinuxBridgePluginV2"
-default["openstack"]["network"]["metaplugin"]["l3_plugin_list"] = "openvswitch:quantum.plugins.openvswitch.ovs_quantum_plugin.OVSQuantumPluginV2,linuxbridge:quantum.plugins.linuxbridge.lb_quantum_plugin.LinuxBridgePluginV2"
+default["openstack"]["network"]["metaplugin"]["plugin_list"] = "openvswitch:neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2,linuxbridge:neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2"
+default["openstack"]["network"]["metaplugin"]["l3_plugin_list"] = "openvswitch:neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2,linuxbridge:neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2"
 
 # Default "flavor" for L2 and L3
 default["openstack"]["network"]["metaplugin"]["default_flavor"] = "openvswitch"
@@ -667,14 +667,14 @@ default["openstack"]["network"]["nec"]["integration_bridge"] = "br-int"
 # Agent's polling interval in seconds
 default["openstack"]["network"]["nec"]["polling_interval"] = 2
 
-# Firewall driver for realizing quantum security group function
-default["openstack"]["network"]["nec"]["firewall_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+# Firewall driver for realizing neutron security group function
+default["openstack"]["network"]["nec"]["firewall_driver"] = "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
 
 # Specify OpenFlow Controller Host, Port and Driver to connect.
 default["openstack"]["network"]["nec"]["ofc_host"] = "127.0.0.1"
 default["openstack"]["network"]["nec"]["ofc_port"] = 8888
 
-# Drivers are in quantum/plugins/nec/drivers/ .
+# Drivers are in neutron/plugins/nec/drivers/ .
 default["openstack"]["network"]["nec"]["ofc_driver"] = "trema"
 
 # PacketFilter is available when it's enabled in this configuration
@@ -707,7 +707,7 @@ default["openstack"]["network"]["nicira"]["redirects"] = 2
 default["openstack"]["network"]["nicira"]["nvp_controllers"] = "xx.yy.zz.ww:443, aa.bb.cc.dd, ee.ff.gg.hh.ee:80"
 
 # UUID of the pre-existing default NVP Transport zone to be used for creating
-# tunneled isolated "Quantum" networks. This option MUST be specified, e.g.:
+# tunneled isolated "Neutron" networks. This option MUST be specified, e.g.:
 default["openstack"]["network"]["nicira"]["default_tz_uuid"] = "1e8e52cf-fa7f-46b0-a14a-f99835a9cb53"
 
 # (Optional) UUID of the cluster in NVP.  It can be retrieved from NVP management
@@ -741,7 +741,7 @@ default["openstack"]["network"]["nicira"]["concurrent_connections"] = 3
 
 # Acceptable values for 'metadata_mode' are:
 #   - 'access_network': this enables a dedicated connection to the metadata
-#     proxy for metadata server access via Quantum router.
+#     proxy for metadata server access via Neutron router.
 #   - 'dhcp_host_route': this enables host route injection via the dhcp agent.
 # This option is only useful if running on a host that does not support
 # namespaces otherwise access_network should be used.
@@ -802,8 +802,8 @@ default["openstack"]["network"]["ryu"]["ovsdb_port"] = 6634
 default["openstack"]["network"]["ryu"]["ovsdb_ip"] = ""
 default["openstack"]["network"]["ryu"]["ovsdb_interface"] = "eth0"
 
-# Firewall driver for realizing quantum security group function
-default["openstack"]["network"]["ryu"]["firewall_driver"] = "quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+# Firewall driver for realizing neutron security group function
+default["openstack"]["network"]["ryu"]["firewall_driver"] = "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
 
 # Agent's polling interval in seconds
 default["openstack"]["network"]["ryu"]["polling_interval"] = 2
@@ -812,87 +812,87 @@ default["openstack"]["network"]["ryu"]["polling_interval"] = 2
 case platform
 when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["openstack"]["network"]["platform"] = {
-    "user" => "quantum",
-    "group" => "quantum",
+    "user" => "neutron",
+    "group" => "neutron",
     "mysql_python_packages" => [ "MySQL-python" ],
     "postgresql_python_packages" => ["python-psycopg2"],
     "nova_network_packages" => [ "openstack-nova-network" ],
-    "quantum_packages" => [ "openstack-quantum" ],
-    "quantum_client_packages" => [],
-    "quantum_dhcp_packages" => [ "openstack-quantum" ],
-    "quantum_dhcp_build_packages" => [],
-    "quantum_l3_packages" => [ "quantum-l3-agent" ],
-    "quantum_openvswitch_packages" => ["openvswitch"],
-    "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
-    "quantum_linuxbridge_agent_packages" => ["openstack-quantum-linuxbridge"],
-    "quantum_metadata_agent_packages" => [],
-    "quantum_plugin_package" => "openstack-quantum-%plugin%",
-    "quantum_server_packages" => [],
-    "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
-    "quantum_l3_agent_service" => "quantum-l3-agent",
-    "quantum_metadata_agent_service" => "quantum-metadata-agent",
-    "quantum_openvswitch_service" => "openvswitch",
-    "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
-    "quantum_linuxbridge_agent_service" => "quantum-linuxbridge-agent",
-    "quantum_server_service" => "quantum-server",
+    "neutron_packages" => [ "openstack-neutron" ],
+    "neutron_client_packages" => [],
+    "neutron_dhcp_packages" => [ "openstack-neutron" ],
+    "neutron_dhcp_build_packages" => [],
+    "neutron_l3_packages" => [ "neutron-l3-agent" ],
+    "neutron_openvswitch_packages" => ["openvswitch"],
+    "neutron_openvswitch_agent_packages" => ["openstack-neutron-openvswitch-agent"],
+    "neutron_linuxbridge_agent_packages" => ["openstack-neutron-linuxbridge"],
+    "neutron_metadata_agent_packages" => [],
+    "neutron_plugin_package" => "openstack-neutron-%plugin%",
+    "neutron_server_packages" => [],
+    "neutron_dhcp_agent_service" => "neutron-dhcp-agent",
+    "neutron_l3_agent_service" => "neutron-l3-agent",
+    "neutron_metadata_agent_service" => "neutron-metadata-agent",
+    "neutron_openvswitch_service" => "openvswitch",
+    "neutron_openvswitch_agent_service" => "openstack-neutron-openvswitch-agent",
+    "neutron_linuxbridge_agent_service" => "neutron-linuxbridge-agent",
+    "neutron_server_service" => "neutron-server",
     "package_overrides" => ""
   }
 when "suse"
   default["openstack"]["network"]["platform"] = {
-    "user" => "openstack-quantum",
-    "group" => "openstack-quantum",
+    "user" => "openstack-neutron",
+    "group" => "openstack-neutron",
     "mysql_python_packages" => ["python-mysql"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "nova_network_packages" => ["openstack-nova-network"],
-    "quantum_packages" => ["openstack-quantum"],
-    "quantum_client_packages" => [],
-    "quantum_dhcp_packages" => ["openstack-quantum-dhcp-agent"],
-    "quantum_dhcp_build_packages" => [],
-    "quantum_l3_packages" => ["openstack-quantum-l3-agent"],
-    # plugins are installed by the main openstack-quantum package on SUSE
-    "quantum_plugin_package" => "",
-    "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
-    "quantum_openvswitch_packages" => ["openvswitch-switch"],
-    "quantum_openvswitch_agent_packages" => ["openstack-quantum-openvswitch-agent"],
-    "quantum_linuxbridge_agent_packages" => ["openstack-quantum-linuxbridge-agent"],
-    "quantum_metadata_agent_packages" => ["openstack-quantum-metadata-agent"],
-    "quantum_server_packages" => [],
-    "quantum_dhcp_agent_service" => "openstack-quantum-dhcp-agent",
-    "quantum_l3_agent_service" => "openstack-quantum-l3-agent",
-    "quantum_metadata_agent_service" => "openstack-quantum-metadata-agent",
-    "quantum_openvswitch_service" => "openvswitch-switch",
-    "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
-    "quantum_linuxbridge_agent_service" => "openstack-quantum-linuxbridge-agent",
-    "quantum_server_service" => "openstack-quantum",
+    "neutron_packages" => ["openstack-neutron"],
+    "neutron_client_packages" => [],
+    "neutron_dhcp_packages" => ["openstack-neutron-dhcp-agent"],
+    "neutron_dhcp_build_packages" => [],
+    "neutron_l3_packages" => ["openstack-neutron-l3-agent"],
+    # plugins are installed by the main openstack-neutron package on SUSE
+    "neutron_plugin_package" => "",
+    "neutron_metadata_agent_packages" => ["openstack-neutron-metadata-agent"],
+    "neutron_openvswitch_packages" => ["openvswitch-switch"],
+    "neutron_openvswitch_agent_packages" => ["openstack-neutron-openvswitch-agent"],
+    "neutron_linuxbridge_agent_packages" => ["openstack-neutron-linuxbridge-agent"],
+    "neutron_metadata_agent_packages" => ["openstack-neutron-metadata-agent"],
+    "neutron_server_packages" => [],
+    "neutron_dhcp_agent_service" => "openstack-neutron-dhcp-agent",
+    "neutron_l3_agent_service" => "openstack-neutron-l3-agent",
+    "neutron_metadata_agent_service" => "openstack-neutron-metadata-agent",
+    "neutron_openvswitch_service" => "openvswitch-switch",
+    "neutron_openvswitch_agent_service" => "openstack-neutron-openvswitch-agent",
+    "neutron_linuxbridge_agent_service" => "openstack-neutron-linuxbridge-agent",
+    "neutron_server_service" => "openstack-neutron",
     "package_overrides" => ""
   }
 when "ubuntu"
   default["openstack"]["network"]["platform"] = {
-    "user" => "quantum",
-    "group" => "quantum",
+    "user" => "neutron",
+    "group" => "neutron",
     "mysql_python_packages" => [ "python-mysqldb" ],
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "nova_network_packages" => [ "nova-network" ],
-    "quantum_lb_packages" => ["quantum-lbaas-agent", "haproxy"],
-    "quantum_packages" => [ "quantum-common", "python-pyparsing", "python-cliff" ],
-    "quantum_client_packages" => [ "python-quantumclient", "python-pyparsing" ],
-    "quantum_dhcp_packages" => [ "quantum-dhcp-agent" ],
-    "quantum_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
-    "quantum_l3_packages" => [ "quantum-l3-agent" ],
-    "quantum_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
-    "quantum_openvswitch_build_packages" => [ "build-essential", "pkg-config", "fakeroot", "libssl-dev", "openssl", "debhelper", "autoconf", "dkms", "python-all", "python-qt4", "python-zopeinterface", "python-twisted-conch" ],
-    "quantum_openvswitch_agent_packages" => [ "quantum-plugin-openvswitch", "quantum-plugin-openvswitch-agent" ],
-    "quantum_linuxbridge_agent_packages" => [ "quantum-plugin-linuxbridge", "quantum-plugin-linuxbridge-agent" ],
-    "quantum_metadata_agent_packages" => [ "quantum-metadata-agent" ],
-    "quantum_plugin_package" => "quantum-plugin-%plugin%",
-    "quantum_server_packages" => ["quantum-server"],
-    "quantum_dhcp_agent_service" => "quantum-dhcp-agent",
-    "quantum_l3_agent_service" => "quantum-l3-agent",
-    "quantum_metadata_agent_service" => "quantum-metadata-agent",
-    "quantum_openvswitch_service" => "openvswitch-switch",
-    "quantum_openvswitch_agent_service" => "quantum-plugin-openvswitch-agent",
-    "quantum_linuxbridge_agent_service" => "quantum-plugin-linuxbridge-agent",
-    "quantum_server_service" => "quantum-server",
+    "neutron_lb_packages" => ["neutron-lbaas-agent", "haproxy"],
+    "neutron_packages" => [ "neutron-common", "python-pyparsing", "python-cliff" ],
+    "neutron_client_packages" => [ "python-neutronclient", "python-pyparsing" ],
+    "neutron_dhcp_packages" => [ "neutron-dhcp-agent" ],
+    "neutron_dhcp_build_packages" => [ "build-essential", "pkg-config", "libidn11-dev", "libdbus-1-dev", "libnetfilter-conntrack-dev", "gettext" ],
+    "neutron_l3_packages" => [ "neutron-l3-agent" ],
+    "neutron_openvswitch_packages" => [ "openvswitch-switch", "openvswitch-datapath-dkms", "bridge-utils" ],
+    "neutron_openvswitch_build_packages" => [ "build-essential", "pkg-config", "fakeroot", "libssl-dev", "openssl", "debhelper", "autoconf", "dkms", "python-all", "python-qt4", "python-zopeinterface", "python-twisted-conch" ],
+    "neutron_openvswitch_agent_packages" => [ "neutron-plugin-openvswitch", "neutron-plugin-openvswitch-agent" ],
+    "neutron_linuxbridge_agent_packages" => [ "neutron-plugin-linuxbridge", "neutron-plugin-linuxbridge-agent" ],
+    "neutron_metadata_agent_packages" => [ "neutron-metadata-agent" ],
+    "neutron_plugin_package" => "neutron-plugin-%plugin%",
+    "neutron_server_packages" => ["neutron-server"],
+    "neutron_dhcp_agent_service" => "neutron-dhcp-agent",
+    "neutron_l3_agent_service" => "neutron-l3-agent",
+    "neutron_metadata_agent_service" => "neutron-metadata-agent",
+    "neutron_openvswitch_service" => "openvswitch-switch",
+    "neutron_openvswitch_agent_service" => "neutron-plugin-openvswitch-agent",
+    "neutron_linuxbridge_agent_service" => "neutron-plugin-linuxbridge-agent",
+    "neutron_server_service" => "neutron-server",
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

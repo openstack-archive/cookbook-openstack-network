@@ -5,23 +5,23 @@ describe 'openstack-network::dhcp_agent' do
   describe "opensuse" do
 
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::dhcp_agent"
     end
 
-    it "does not install openstack-quantum-dhcp-agent when nova networking" do
+    it "does not install openstack-neutron-dhcp-agent when nova networking" do
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       node = @chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       @chef_run.converge "openstack-network::dhcp_agent"
-      expect(@chef_run).to_not install_package "openstack-quantum-dhcp-agent"
+      expect(@chef_run).to_not install_package "openstack-neutron-dhcp-agent"
     end
 
     it "installs quamtum dhcp package" do
-      expect(@chef_run).to install_package "openstack-quantum-dhcp-agent"
+      expect(@chef_run).to install_package "openstack-neutron-dhcp-agent"
     end
 
     it "installs plugin packages" do
@@ -31,17 +31,17 @@ describe 'openstack-network::dhcp_agent' do
 
     it "starts the dhcp agent on boot" do
       expect(@chef_run).to(
-        set_service_to_start_on_boot "openstack-quantum-dhcp-agent")
+        set_service_to_start_on_boot "openstack-neutron-dhcp-agent")
     end
 
-    it "/etc/quantum/dhcp_agent.ini has the proper owner" do
-      expect(@chef_run.template "/etc/quantum/dhcp_agent.ini").to(
-        be_owned_by "openstack-quantum", "openstack-quantum")
+    it "/etc/neutron/dhcp_agent.ini has the proper owner" do
+      expect(@chef_run.template "/etc/neutron/dhcp_agent.ini").to(
+        be_owned_by "openstack-neutron", "openstack-neutron")
     end
 
-    it "/etc/quantum/dnsmasq.conf has the proper owner" do
-      expect(@chef_run.template "/etc/quantum/dnsmasq.conf").to(
-        be_owned_by "openstack-quantum", "openstack-quantum")
+    it "/etc/neutron/dnsmasq.conf has the proper owner" do
+      expect(@chef_run.template "/etc/neutron/dnsmasq.conf").to(
+        be_owned_by "openstack-neutron", "openstack-neutron")
     end
   end
 end

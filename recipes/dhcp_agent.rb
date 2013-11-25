@@ -25,15 +25,15 @@ platform_options = node["openstack"]["network"]["platform"]
 driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
 main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
 
-platform_options["quantum_dhcp_packages"].each do |pkg|
+platform_options["neutron_dhcp_packages"].each do |pkg|
   package pkg do
     options platform_options["package_overrides"]
     action :install
   end
 end
 
-service "quantum-dhcp-agent" do
-  service_name platform_options["quantum_dhcp_agent_service"]
+service "neutron-dhcp-agent" do
+  service_name platform_options["neutron_dhcp_agent_service"]
   supports :status => true, :restart => true
 
   action :enable
@@ -41,31 +41,31 @@ end
 
 # Some plugins have DHCP functionality, so we install the plugin
 # Python package and include the plugin-specific recipe here...
-package platform_options["quantum_plugin_package"].gsub("%plugin%", main_plugin) do
+package platform_options["neutron_plugin_package"].gsub("%plugin%", main_plugin) do
   options platform_options["package_overrides"]
   action :install
-  # plugins are installed by the main openstack-quantum package on SUSE
+  # plugins are installed by the main openstack-neutron package on SUSE
   not_if { platform_family? "suse" }
 end
 
-execute "quantum-dhcp-setup --plugin #{main_plugin}" do
+execute "neutron-dhcp-setup --plugin #{main_plugin}" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
-template "/etc/quantum/dnsmasq.conf" do
+template "/etc/neutron/dnsmasq.conf" do
   source "dnsmasq.conf.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
-  notifies :restart, "service[quantum-dhcp-agent]", :delayed
+  notifies :restart, "service[neutron-dhcp-agent]", :delayed
 end
 
-template "/etc/quantum/dhcp_agent.ini" do
+template "/etc/neutron/dhcp_agent.ini" do
   source "dhcp_agent.ini.erb"
   owner node["openstack"]["network"]["platform"]["user"]
   group node["openstack"]["network"]["platform"]["group"]
   mode   00644
-  notifies :restart, "service[quantum-dhcp-agent]", :immediately
+  notifies :restart, "service[neutron-dhcp-agent]", :immediately
 end
 
 # Deal with ubuntu precise dnsmasq 2.59 version by custom
@@ -81,7 +81,7 @@ end
 # has no plans to fix
 if node['lsb'] && node['lsb']['codename'] == "precise"
 
-  platform_options["quantum_dhcp_build_packages"].each do |pkg|
+  platform_options["neutron_dhcp_build_packages"].each do |pkg|
     package pkg do
       action :install
     end

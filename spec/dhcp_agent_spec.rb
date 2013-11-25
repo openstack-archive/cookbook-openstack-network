@@ -5,9 +5,9 @@ describe 'openstack-network::dhcp_agent' do
   describe "ubuntu" do
 
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::dhcp_agent"
     end
@@ -29,42 +29,42 @@ describe 'openstack-network::dhcp_agent' do
     end
 
     it "installs quamtum dhcp package" do
-      expect(@chef_run).to install_package "quantum-dhcp-agent"
+      expect(@chef_run).to install_package "neutron-dhcp-agent"
     end
 
     it "installs plugin packages" do
-      expect(@chef_run).to install_package "quantum-plugin-openvswitch"
+      expect(@chef_run).to install_package "neutron-plugin-openvswitch"
     end
 
     it "starts the dhcp agent on boot" do
-      expect(@chef_run).to set_service_to_start_on_boot "quantum-dhcp-agent"
+      expect(@chef_run).to set_service_to_start_on_boot "neutron-dhcp-agent"
     end
 
-    describe "/etc/quantum/plugins" do
+    describe "/etc/neutron/plugins" do
       before do
-        @file = @chef_run.directory "/etc/quantum/plugins"
+        @file = @chef_run.directory "/etc/neutron/plugins"
       end
       it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
+        expect(@file).to be_owned_by "neutron", "neutron"
       end
       it "has proper modes" do
         expect(sprintf("%o", @file.mode)).to eq "700"
       end
     end
 
-    describe "/etc/quantum/dhcp_agent.ini" do
+    describe "/etc/neutron/dhcp_agent.ini" do
       before do
-        @file = @chef_run.template "/etc/quantum/dhcp_agent.ini"
+        @file = @chef_run.template "/etc/neutron/dhcp_agent.ini"
       end
       it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
+        expect(@file).to be_owned_by "neutron", "neutron"
       end
       it "has proper modes" do
         expect(sprintf("%o", @file.mode)).to eq "644"
       end
       it "uses ovs driver" do
         expect(@chef_run).to create_file_with_content @file.name,
-          "interface_driver = quantum.agent.linux.interface.OVSInterfaceDriver"
+          "interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver"
       end
       it "uses namespaces" do
         expect(@chef_run).to create_file_with_content @file.name,
@@ -76,12 +76,12 @@ describe 'openstack-network::dhcp_agent' do
       end
     end
 
-    describe "/etc/quantum/dnsmasq.conf" do
+    describe "/etc/neutron/dnsmasq.conf" do
       before do
-        @file = @chef_run.template "/etc/quantum/dnsmasq.conf"
+        @file = @chef_run.template "/etc/neutron/dnsmasq.conf"
       end
       it "has proper owner" do
-        expect(@file).to be_owned_by "quantum", "quantum"
+        expect(@file).to be_owned_by "neutron", "neutron"
       end
       it "has proper modes" do
         expect(sprintf("%o", @file.mode)).to eq "644"

@@ -2,9 +2,9 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::server' do
   before do
-    quantum_stubs
+    neutron_stubs
     @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-      n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       n.set["openstack"]["mq"]["host"] = "127.0.0.1"
       n.set["chef_client"]["splay"] = 300
       n.set["openstack"]["network"]["quota"]["driver"] = "my.quota.Driver"
@@ -12,28 +12,28 @@ describe 'openstack-network::server' do
     @chef_run.converge "openstack-network::server"
   end
 
-  it "does not install quantum-server when nova networking" do
+  it "does not install neutron-server when nova networking" do
     chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
     node = chef_run.node
     node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
     chef_run.converge "openstack-network::server"
-    expect(chef_run).to_not install_package "quantum-server"
+    expect(chef_run).to_not install_package "neutron-server"
   end
 
   describe "package and services" do
 
-    it "installs quantum packages" do
-      expect(@chef_run).to install_package "quantum-server"
+    it "installs neutron packages" do
+      expect(@chef_run).to install_package "neutron-server"
     end
 
     it "starts server service" do
-      expect(@chef_run).to enable_service "quantum-server"
+      expect(@chef_run).to enable_service "neutron-server"
     end
 
     it "does not install openvswitch package or the agent" do
       expect(@chef_run).not_to install_package "openvswitch"
-      expect(@chef_run).not_to install_package "quantum-plugin-openvswitch-agent"
-      expect(@chef_run).not_to enable_service "quantum-plugin-openvswitch-agent"
+      expect(@chef_run).not_to install_package "neutron-plugin-openvswitch-agent"
+      expect(@chef_run).not_to enable_service "neutron-plugin-openvswitch-agent"
     end
 
   end
@@ -41,20 +41,20 @@ describe 'openstack-network::server' do
   describe "api-paste.ini" do
 
     before do
-     @file = @chef_run.template "/etc/quantum/api-paste.ini"
+     @file = @chef_run.template "/etc/neutron/api-paste.ini"
     end
 
     it "has proper owner" do
-      expect(@file).to be_owned_by "quantum", "quantum"
+      expect(@file).to be_owned_by "neutron", "neutron"
     end
 
     it "has proper modes" do
      expect(sprintf("%o", @file.mode)).to eq "640"
     end
 
-    it "has quantum pass" do
+    it "has neutron pass" do
       expect(@chef_run).to create_file_with_content @file.name,
-        "admin_password = quantum-pass"
+        "admin_password = neutron-pass"
     end
 
     it "has auth_uri" do
@@ -78,18 +78,18 @@ describe 'openstack-network::server' do
     end
   end
 
-  it "should create quantum-ha-tool.py script" do
-    expect(@chef_run).to create_cookbook_file "/usr/local/bin/quantum-ha-tool.py"
+  it "should create neutron-ha-tool.py script" do
+    expect(@chef_run).to create_cookbook_file "/usr/local/bin/neutron-ha-tool.py"
   end
 
-  describe "quantum.conf" do
+  describe "neutron.conf" do
 
     before do
-     @file = @chef_run.template "/etc/quantum/quantum.conf"
+     @file = @chef_run.template "/etc/neutron/neutron.conf"
     end
 
     it "has proper owner" do
-      expect(@file).to be_owned_by "quantum", "quantum"
+      expect(@file).to be_owned_by "neutron", "neutron"
     end
 
     it "has proper modes" do
@@ -108,7 +108,7 @@ describe 'openstack-network::server' do
 
     it "it sets root_helper" do
       expect(@chef_run).to create_file_with_content @file.name,
-        'root_helper = "sudo quantum-rootwrap /etc/quantum/rootwrap.conf"'
+        'root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"'
     end
 
     it "binds to appropriate api ip" do
@@ -133,7 +133,7 @@ describe 'openstack-network::server' do
 
     it "has appropriate admin password for agents"  do
       expect(@chef_run).to create_file_with_content @file.name,
-        "admin_password = quantum-pass"
+        "admin_password = neutron-pass"
     end
 
     it "has rabbit_host" do
@@ -173,7 +173,7 @@ describe 'openstack-network::server' do
 
     describe "qpid" do
       before do
-        @file = @chef_run.template "/etc/quantum/quantum.conf"
+        @file = @chef_run.template "/etc/neutron/neutron.conf"
         @chef_run.node.set['openstack']['network']['mq']['service_type'] = "qpid"
       end
 
@@ -255,9 +255,9 @@ describe 'openstack-network::server' do
 
     it "it has correct default scheduler classes" do
       expect(@chef_run).to create_file_with_content @file.name,
-        "network_scheduler_driver = quantum.scheduler.dhcp_agent_scheduler.ChanceScheduler"
+        "network_scheduler_driver = neutron.scheduler.dhcp_agent_scheduler.ChanceScheduler"
       expect(@chef_run).to create_file_with_content @file.name,
-        "router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
+        "router_scheduler_driver = neutron.scheduler.l3_agent_scheduler.ChanceScheduler"
     end
 
     it "has the overridable default quota values" do
@@ -282,13 +282,13 @@ describe 'openstack-network::server' do
         "quota_driver = my.quota.Driver"
     end
 
-    describe "quantum.conf with rabbit ha" do
+    describe "neutron.conf with rabbit ha" do
 
       before do
         @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
           n.set["openstack"]["network"]["rabbit"]["ha"] = true
           n.set["chef_client"]["splay"] = 300
-          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+          n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
         end
         @chef_run.converge "openstack-network::server"
       end
@@ -314,10 +314,10 @@ describe 'openstack-network::server' do
       end
     end
 
-    describe "/etc/default/quantum-server" do
+    describe "/etc/default/neutron-server" do
       before do
         @file = @chef_run.template(
-          "/etc/default/quantum-server")
+          "/etc/default/neutron-server")
       end
 
       it "has proper owner" do
@@ -330,18 +330,18 @@ describe 'openstack-network::server' do
 
       it "has a correct plugin config path" do
         expect(@chef_run).to create_file_with_content(
-          @file.name, "/etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini")
+          @file.name, "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini")
       end
     end
 
     it "does not install sysconfig template" do
       chef_run = ::ChefSpec::ChefRunner.new(
         ::UBUNTU_OPTS.merge(:evaluate_guards => true)) do |n|
-          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+          n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
         end
       chef_run.stub_command(/python/, true)
       chef_run.converge "openstack-network::server"
-      expect(chef_run).not_to create_file "/etc/sysconfig/quantum"
+      expect(chef_run).not_to create_file "/etc/sysconfig/neutron"
     end
   end
 end

@@ -4,10 +4,10 @@ describe 'openstack-network::linuxbridge' do
 
   describe "redhat" do
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS do |n|
-        n.set["openstack"]["network"]["interface_driver"] = "quantum.agent.linux.interface.BridgeInterfaceDriver"
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["network"]["interface_driver"] = "neutron.agent.linux.interface.BridgeInterfaceDriver"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::linuxbridge"
     end
@@ -17,15 +17,15 @@ describe 'openstack-network::linuxbridge' do
       node = chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       chef_run.converge "openstack-network::linuxbridge"
-      expect(chef_run).to_not install_package "openstack-quantum-linuxbridge"
+      expect(chef_run).to_not install_package "openstack-neutron-linuxbridge"
     end
 
     it "installs linuxbridge agent" do
-      expect(@chef_run).to install_package "openstack-quantum-linuxbridge"
+      expect(@chef_run).to install_package "openstack-neutron-linuxbridge"
     end
 
     it "sets the linuxbridge service to start on boot" do
-      expect(@chef_run).to set_service_to_start_on_boot "quantum-linuxbridge-agent"
+      expect(@chef_run).to set_service_to_start_on_boot "neutron-linuxbridge-agent"
     end
 
   end

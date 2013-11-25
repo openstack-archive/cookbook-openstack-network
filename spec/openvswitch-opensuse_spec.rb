@@ -3,10 +3,10 @@ require_relative "spec_helper"
 describe 'openstack-network::openvswitch' do
   describe "opensuse" do
     before do
-      quantum_stubs
+      neutron_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
         n.set["chef_client"]["splay"] = 300
-        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @node = @chef_run.node
       @chef_run.converge "openstack-network::openvswitch"
@@ -25,7 +25,7 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "installs the openvswitch-agent package" do
-      expect(@chef_run).to install_package "openstack-quantum-openvswitch-agent"
+      expect(@chef_run).to install_package "openstack-neutron-openvswitch-agent"
     end
 
     it "starts the openvswitch-switch service" do

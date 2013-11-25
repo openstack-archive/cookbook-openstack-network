@@ -33,28 +33,28 @@ core_plugin = node["openstack"]["network"]["core_plugin"]
 
 platform_options = node["openstack"]["network"]["platform"]
 
-platform_options["quantum_server_packages"].each do |pkg|
+platform_options["neutron_server_packages"].each do |pkg|
   package pkg do
     options platform_options["package_overrides"]
     action :install
   end
 end
 
-service "quantum-server" do
-  service_name platform_options["quantum_server_service"]
+service "neutron-server" do
+  service_name platform_options["neutron_server_service"]
   supports :status => true, :restart => true
   action :enable
 end
 
-cookbook_file "quantum-ha-tool" do
-  source "quantum-ha-tool.py"
-  path node["openstack"]["network"]["quantum_ha_cmd"]
+cookbook_file "neutron-ha-tool" do
+  source "neutron-ha-tool.py"
+  path node["openstack"]["network"]["neutron_ha_cmd"]
   owner "root"
   group "root"
   mode 00755
 end
 
-if node["openstack"]["network"]["quantum_ha_cmd_cron"]
+if node["openstack"]["network"]["neutron_ha_cmd_cron"]
   # ensure period checks are offset between multiple l3 agent nodes
   # and assumes splay will remain constant (i.e. based on hostname)
   # Generate a uniformly distributed unique number to sleep.
@@ -62,27 +62,27 @@ if node["openstack"]["network"]["quantum_ha_cmd_cron"]
   splay = node['chef_client']['splay'].to_i || 3000
   sleep_time = checksum.to_s.hex % splay
 
-  cron "quantum-ha-healthcheck" do
+  cron "neutron-ha-healthcheck" do
     minute node["openstack"]["network"]["cron_l3_healthcheck"]
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --l3-agent-migrate > /dev/null 2>&1"
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --l3-agent-migrate > /dev/null 2>&1"
   end
 
-  cron "quantum-ha-replicate-dhcp" do
+  cron "neutron-ha-replicate-dhcp" do
     minute node["openstack"]["network"]["cron_replicate_dhcp"]
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["quantum_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
+    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
   end
 end
 
 # the default SUSE initfile uses this sysconfig file to determine the
-# quantum plugin to use
-template "/etc/sysconfig/quantum" do
+# neutron plugin to use
+template "/etc/sysconfig/neutron" do
   only_if { platform? "suse" }
-  source "quantum.sysconfig.erb"
+  source "neutron.sysconfig.erb"
   owner "root"
   group "root"
   mode 00644
   variables(
     :plugin_conf => node["openstack"]["network"]["plugin_conf_map"][driver_name]
   )
-  notifies :restart, "service[quantum-server]"
+  notifies :restart, "service[neutron-server]"
 end
