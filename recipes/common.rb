@@ -271,6 +271,7 @@ when "hyperv"
 when "linuxbridge"
 
   template_file = "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini"
+
   template "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini" do
     source "plugins/linuxbridge/linuxbridge_conf.ini.erb"
     owner node["openstack"]["network"]["platform"]["user"]
@@ -281,6 +282,10 @@ when "linuxbridge"
     )
 
     notifies :restart, "service[neutron-server]", :delayed
+    if node.run_list.expand(node.chef_environment).recipes.include?("openstack-network::linuxbridge")
+      notifies :restart, "service[neutron-plugin-linuxbridge-agent]", :delayed
+    end
+
   end
 
 when "midonet"
@@ -331,11 +336,6 @@ when "nicira"
 when "openvswitch"
 
   template_file = "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
-
-  service "neutron-plugin-openvswitch-agent" do
-    service_name platform_options["neutron_openvswitch_agent_service"]
-    action :nothing
-  end
 
   template "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini" do
     source "plugins/openvswitch/ovs_neutron_plugin.ini.erb"
