@@ -92,6 +92,26 @@ default["openstack"]["network"]["api"]["auth"]["cache_dir"] = "/var/cache/quantu
 default["openstack"]["network"]["api"]["bind_interface"] = nil
 default["openstack"]["network"]["api"]["bind_port"] = 9696
 
+# MQ options
+default["openstack"]["network"]["mq"]["service_type"] = node["openstack"]["mq"]["service_type"]
+default["openstack"]["network"]["mq"]["qpid"]["host"] = "127.0.0.1"
+default["openstack"]["network"]["mq"]["qpid"]["port"] = "5672"
+default["openstack"]["network"]["mq"]["qpid"]["qpid_hosts"] = ['127.0.0.1:5672']
+
+default["openstack"]["network"]["mq"]["qpid"]["username"] = ""
+default["openstack"]["network"]["mq"]["qpid"]["password"] = ""
+default["openstack"]["network"]["mq"]["qpid"]["sasl_mechanisms"] = ""
+default["openstack"]["network"]["mq"]["qpid"]["reconnect"] = true
+default["openstack"]["network"]["mq"]["qpid"]["reconnect_timeout"] = 0
+default["openstack"]["network"]["mq"]["qpid"]["reconnect_limit"] = 0
+default["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_min"] = 0
+default["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_max"] = 0
+default["openstack"]["network"]["mq"]["qpid"]["reconnect_interval"] = 0
+default["openstack"]["network"]["mq"]["qpid"]["heartbeat"] = 60
+default["openstack"]["network"]["mq"]["qpid"]["protocol"] = "tcp"
+default["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] = true
+
+
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
 

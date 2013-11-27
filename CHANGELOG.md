@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.1.0
+* adding qpid support to quantum. default is rabbitmq
+
 ## 7.0.5
 * Parameterize quota default values in quantum.conf.erb (LP #1228623)
 

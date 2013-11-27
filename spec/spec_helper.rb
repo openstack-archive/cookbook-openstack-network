@@ -1,4 +1,5 @@
 require "chefspec"
+require "chef/application"
 
 ::LOG_LEVEL = :fatal
 ::OPENSUSE_OPTS = {
@@ -65,5 +66,5 @@ def quantum_stubs
     and_return "quantum-pass"
   ::Chef::Recipe.any_instance.stub(:user_password).with("guest").
     and_return("rabbit-password")
-
+  ::Chef::Application.stub(:fatal!)
 end

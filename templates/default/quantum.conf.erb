@@ -128,6 +128,7 @@ control_exchange = quantum
 # allow_overlapping_ips = False
 allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] -%>
 
+<% if node["openstack"]["network"]["mq"]["service_type"] == "rabbitmq"  %>
 ##### RABBITMQ #####
 rabbit_userid=<%= node["openstack"]["network"]["rabbit"]["username"] %>
 rabbit_password=<%= @rabbit_pass %>
@@ -146,28 +147,30 @@ rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
 # rabbit_max_retries = 0
 # RabbitMQ connection retry interval
 # rabbit_retry_interval = 1
+<% end %>
 
-# QPID
-# rpc_backend=quantum.openstack.common.rpc.impl_qpid
-# Qpid broker hostname
-# qpid_hostname = localhost
-# Qpid broker port
-# qpid_port = 5672
-# Qpid single or HA cluster (host:port pairs i.e: host1:5672, host2:5672)
-# qpid_hosts is defaulted to '$qpid_hostname:$qpid_port'
-# qpid_hosts = localhost:5672
-# Username for qpid connection
-# qpid_username = ''
-# Password for qpid connection
-# qpid_password = ''
-# Space separated list of SASL mechanisms to use for auth
-# qpid_sasl_mechanisms = ''
-# Seconds between connection keepalive heartbeats
-# qpid_heartbeat = 60
-# Transport to use, either 'tcp' or 'ssl'
-# qpid_protocol = tcp
-# Disable Nagle algorithm
-# qpid_tcp_nodelay = True
+<% if node["openstack"]["network"]["mq"]["service_type"] == "qpid"  %>
+##### QPID #####
+rpc_backend=nova.openstack.common.rpc.impl_qpid
+qpid_hostname=<%= node["openstack"]["network"]["mq"]["qpid"]["host"] %>
+qpid_port=<%= node["openstack"]["network"]["mq"]["qpid"]["port"] %>
+
+qpid_password=<%= node["openstack"]["network"]["mq"]["qpid"]["password"] %>
+qpid_username=<%= node["openstack"]["network"]["mq"]["qpid"]["username"] %>
+qpid_sasl_mechanisms=<%= node["openstack"]["network"]["mq"]["qpid"]["sasl_mechanisms"] %>
+qpid_reconnect=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect"] %>
+qpid_reconnect_timeout=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_timeout"] %>
+qpid_reconnect_limit=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_limit"] %>
+qpid_reconnect_interval_min=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_min"] %>
+qpid_reconnect_interval_max=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_max"] %>
+qpid_reconnect_interval=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval"] %>
+qpid_heartbeat=<%= node["openstack"]["network"]["mq"]["qpid"]["heartbeat"] %>
+# qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
+qpid_protocol=<%= node["openstack"]["network"]["mq"]["qpid"]["protocol"] %>
+qpid_tcp_nodelay=<%= node["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] %>
+
+<% end %>
+
 
 # ZMQ
 # rpc_backend=quantum.openstack.common.rpc.impl_zmq

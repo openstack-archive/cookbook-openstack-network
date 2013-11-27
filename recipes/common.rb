@@ -94,11 +94,13 @@ template "/etc/quantum/policy.json" do
   notifies :restart, "service[quantum-server]", :delayed
 end
 
-rabbit_server_role = node["openstack"]["network"]["rabbit_server_chef_role"]
-if node["openstack"]["network"]["rabbit"]["ha"]
-  rabbit_hosts = rabbit_servers
+if node["openstack"]["network"]["mq"]["service_type"] == "rabbitmq"
+  rabbit_server_role = node["openstack"]["network"]["rabbit_server_chef_role"]
+  if node["openstack"]["network"]["rabbit"]["ha"]
+    rabbit_hosts = rabbit_servers
+  end
+  rabbit_pass = user_password node["openstack"]["network"]["rabbit"]["username"]
 end
-rabbit_pass = user_password node["openstack"]["network"]["rabbit"]["username"]
 
 identity_endpoint = endpoint "identity-api"
 identity_admin_endpoint = endpoint "identity-admin"
