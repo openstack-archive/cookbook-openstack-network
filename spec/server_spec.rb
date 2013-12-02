@@ -253,6 +253,21 @@ describe 'openstack-network::server' do
         "router_scheduler_driver = quantum.scheduler.l3_agent_scheduler.ChanceScheduler"
     end
 
+    it "has the overridable default wsgi values" do
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^api_workers = 0/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^tcp_keepidle = 600/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^retry_until_window = 30/
+      expect(@chef_run).to create_file_with_content @file.name,
+        /^backlog = 4096/
+      expect(@chef_run).not_to create_file_with_content @file.name,
+        /^use_ssl = true/
+      expect(@chef_run).not_to create_file_with_content @file.name,
+        /^ssl_cert_file =/
+    end
+
     it "has the overridable default quota values" do
       expect(@chef_run).to create_file_with_content @file.name,
         /^quota_items = network,subnet,port/

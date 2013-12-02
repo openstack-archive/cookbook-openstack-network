@@ -243,30 +243,42 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 # ===========  end of items for agent scheduler extension =====
 
 # =========== WSGI parameters related to the API server ==============
+# Number of separate worker processes to spawn.  The default, 0, runs the
+# worker thread in the current process.  Greater than 0 launches that number of
+# child processes as workers.  The parent process manages them.
+api_workers = <%= node["openstack"]["network"]["wsgi"]["api_workers"] %>
+
 # Sets the value of TCP_KEEPIDLE in seconds to use for each server socket when
 # starting API server. Not supported on OS X.
-#tcp_keepidle = 600
+tcp_keepidle = <%= node["openstack"]["network"]["wsgi"]["tcp_keepidle"] %>
 
 # Number of seconds to keep retrying to listen
-#retry_until_window = 30
+retry_until_window = <%= node["openstack"]["network"]["wsgi"]["retry_until_window"] %>
 
 # Number of backlog requests to configure the socket with.
-#backlog = 4096
+backlog = <%= node["openstack"]["network"]["wsgi"]["backlog"] %>
+
+<%- if node["openstack"]["network"]["wsgi"]["use_ssl"] %>
 
 # Enable SSL on the API server
-#use_ssl = False
+use_ssl = True
 
 # Certificate file to use when starting API server securely
-#ssl_cert_file = /path/to/certfile
+ssl_cert_file = <%= node["openstack"]["network"]["wsgi"]["ssl_cert_file"] %>
 
 # Private key file to use when starting API server securely
-#ssl_key_file = /path/to/keyfile
+ssl_key_file = <%= node["openstack"]["network"]["wsgi"]["ssl_key_file"] %>
 
 # CA certificate file to use when starting API server securely to
 # verify connecting clients. This is an optional parameter only required if
 # API clients need to authenticate to the API server using SSL certificates
 # signed by a trusted CA
-#ssl_ca_file = /path/to/cafile
+<%- if node["openstack"]["network"]["wsgi"]["ssl_ca_file"] %>
+ssl_ca_file = <%= node["openstack"]["network"]["wsgi"]["ssl_ca_file"] %>
+<%- end %>
+
+<%- end %>
+
 # ======== end of WSGI parameters related to the API server ==========
 
 [QUOTAS]

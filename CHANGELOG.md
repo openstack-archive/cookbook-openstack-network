@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.2.0
+* Parameterize wsgi default values in quantum.conf.erb
+
 ## 7.1.1
 * fixing rpc_backend for qpid
 

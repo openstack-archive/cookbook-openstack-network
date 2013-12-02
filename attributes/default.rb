@@ -115,6 +115,46 @@ default["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] = true
 # logging attribute
 default["openstack"]["network"]["syslog"]["use"] = false
 
+# ============================= WSGI Configuration ===================
+
+# Number of separate worker processes to spawn.  The default, 0, runs the
+# worker thread in the current process.  Greater than 0 launches that number of
+# child processes as workers.  This option will only have an effect if the
+# following patch is applied to grizzly:
+#
+# https://gist.github.com/alanmeadows/7770570
+#
+default["openstack"]["network"]["wsgi"]["api_workers"] = 0
+
+# Sets the value of TCP_KEEPIDLE in seconds to use for each server socket when
+# starting API server. Not supported on OS X.
+default["openstack"]["network"]["wsgi"]["tcp_keepidle"] = 600
+
+# Number of seconds to keep retrying to listen
+default["openstack"]["network"]["wsgi"]["retry_until_window"] = 30
+
+# Number of backlog requests to configure the socket with.
+default["openstack"]["network"]["wsgi"]["backlog"] = 4096
+
+
+# Enble SSL on the API server - if set to false then all ssl paths
+# below will not be present in the configuration file
+default["openstack"]["network"]["wsgi"]["use_ssl"] = false
+
+# Certificate file to use when starting API server securely
+default["openstack"]["network"]["wsgi"]["ssl_cert_file"] = "/path/to/certificate"
+
+# Private key file to use when starting API server securely
+default["openstack"]["network"]["wsgi"]["ssl_key_file"] = "/path/to/keyfile"
+
+# Path to CA certificate file to use when starting API server securely to
+# verify connecting clients. This is an optional parameter only required if
+# API clients need to authenticate to the API server using SSL certificates
+# signed by a trusted CA
+default["openstack"]["network"]["wsgi"]["ssl_ca_file"] = nil
+
+# ============================= Quota Configuration ===================
+
 # The driver for Quota management in Neutron. Possible values:
 #  quantum.quota.ConfDriver (default)
 #  quantum.quota.DbDriver
