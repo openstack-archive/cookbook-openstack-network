@@ -815,6 +815,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "user" => "neutron",
     "group" => "neutron",
     "mysql_python_packages" => [ "MySQL-python" ],
+    "db2_python_packages" => ["db2-odbc", "python-ibm-db", "python-ibm-db-sa"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "nova_network_packages" => [ "openstack-nova-network" ],
     "neutron_packages" => [ "openstack-neutron" ],

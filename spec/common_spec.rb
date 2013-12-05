@@ -25,5 +25,10 @@ describe "openstack-network::common" do
     it "upgrades python pyparsing" do
       expect(@chef_run).to upgrade_package "python-pyparsing"
     end
+
+    it "installs mysql python packages by default" do
+      expect(@chef_run).to install_package "python-mysqldb"
+    end
+
   end
 end
