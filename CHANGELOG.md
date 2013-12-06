@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.1.1
+* fixing rpc_backend for qpid
+
 ## 7.1.0
 * adding qpid support to quantum. default is rabbitmq
 

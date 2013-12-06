@@ -151,7 +151,7 @@ rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
 
 <% if node["openstack"]["network"]["mq"]["service_type"] == "qpid"  %>
 ##### QPID #####
-rpc_backend=nova.openstack.common.rpc.impl_qpid
+rpc_backend=quantum.openstack.common.rpc.impl_qpid
 qpid_hostname=<%= node["openstack"]["network"]["mq"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["network"]["mq"]["qpid"]["port"] %>
 
