@@ -3,9 +3,22 @@ require_relative 'spec_helper'
 describe "openvswitch::build_openvswitch_source" do
   before do
     quantum_stubs
-    @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS)
+    @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
     @chef_run.converge "openstack-network::openvswitch"
     @chef_run.converge "openstack-network::build_openvswitch_source"
+  end
+
+  it "does not install openvswitch build dependencies when nova networking" do
+    chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+    chef_run.converge "openstack-network::openvswitch"
+    chef_run.converge "openstack-network::build_openvswitch_source"
+    [ "build-essential", "pkg-config", "fakeroot", "libssl-dev", "openssl", "debhelper", "autoconf" ].each do |pkg|
+      expect(chef_run).to_not install_package pkg
+    end
   end
 
   # since our mocked version of ubuntu is precise, our compile

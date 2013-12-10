@@ -1,14 +1,23 @@
 require_relative "spec_helper"
 
-describe 'openstack-network::server' do
+describe 'openstack-network::openvswitch' do
   describe "opensuse" do
     before do
       quantum_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
         n.set["chef_client"]["splay"] = 300
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
       end
       @node = @chef_run.node
       @chef_run.converge "openstack-network::openvswitch"
+    end
+
+    it "does not install openvswitch package when nova networking" do
+      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      chef_run.converge "openstack-network::openvswitch"
+      expect(chef_run).to_not install_package "openvswitch-switch"
     end
 
     it "installs the openvswitch package" do

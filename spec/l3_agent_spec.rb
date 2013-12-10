@@ -6,8 +6,18 @@ describe 'openstack-network::l3_agent' do
 
     before do
       quantum_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      end
       @chef_run.converge "openstack-network::l3_agent"
+    end
+
+    it "does not install quantum l3 package when nova networking" do
+      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+      chef_run.converge "openstack-network::l3_agent"
+      expect(chef_run).to_not install_package "quantum-l3-agent"
     end
 
     it "installs quamtum l3 package" do
@@ -53,7 +63,9 @@ describe 'openstack-network::l3_agent' do
       before do
         quantum_stubs
         opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
-        @chef_run = ::ChefSpec::ChefRunner.new opts
+        @chef_run = ::ChefSpec::ChefRunner.new opts do |n|
+          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        end
       end
 
       cmd = "ovs-vsctl add-br br-ex && ovs-vsctl add-port br-ex eth1"

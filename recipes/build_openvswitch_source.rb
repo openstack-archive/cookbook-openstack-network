@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+
 platform_options = node["openstack"]["network"]["platform"]
 
 platform_options["quantum_openvswitch_build_packages"].each do |pkg|

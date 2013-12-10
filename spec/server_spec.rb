@@ -1,16 +1,23 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::server' do
-  before { quantum_stubs }
   before do
+    quantum_stubs
     @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
-      n.set["openstack"]["mq"] = {
-        "host" => "127.0.0.1"
-      }
+      n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+      n.set["openstack"]["mq"]["host"] = "127.0.0.1"
       n.set["chef_client"]["splay"] = 300
       n.set["openstack"]["network"]["quota"]["driver"] = "my.quota.Driver"
     end
     @chef_run.converge "openstack-network::server"
+  end
+
+  it "does not install quantum-server when nova networking" do
+    chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+    chef_run.converge "openstack-network::server"
+    expect(chef_run).to_not install_package "quantum-server"
   end
 
   describe "package and services" do
@@ -281,6 +288,7 @@ describe 'openstack-network::server' do
         @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
           n.set["openstack"]["network"]["rabbit"]["ha"] = true
           n.set["chef_client"]["splay"] = 300
+          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
         end
         @chef_run.converge "openstack-network::server"
       end
@@ -328,7 +336,9 @@ describe 'openstack-network::server' do
 
     it "does not install sysconfig template" do
       chef_run = ::ChefSpec::ChefRunner.new(
-        ::UBUNTU_OPTS.merge(:evaluate_guards => true))
+        ::UBUNTU_OPTS.merge(:evaluate_guards => true)) do |n|
+          n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
+        end
       chef_run.stub_command(/python/, true)
       chef_run.converge "openstack-network::server"
       expect(chef_run).not_to create_file "/etc/sysconfig/quantum"

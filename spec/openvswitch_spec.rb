@@ -6,8 +6,17 @@ describe 'openstack-network::openvswitch' do
     @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
       n.automatic_attrs["kernel"]["release"] = "1.2.3"
       n.set["openstack"]["network"]["local_ip_interface"] = "eth0"
+      n.set["openstack"]["compute"]["network"]["service_type"] = "quantum"
     end
     @chef_run.converge "openstack-network::openvswitch"
+  end
+
+  it "does not install openvswitch switch when nova networking" do
+    chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
+    chef_run.converge "openstack-network::openvswitch"
+    expect(chef_run).to_not install_package "openvswitch-switch"
   end
 
   it "installs openvswitch switch" do
