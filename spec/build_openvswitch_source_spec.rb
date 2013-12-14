@@ -3,15 +3,15 @@ require_relative 'spec_helper'
 describe "openvswitch::build_openvswitch_source" do
   before do
     neutron_stubs
-    @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
-      end
+    @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
+      n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
+    end
     @chef_run.converge "openstack-network::openvswitch"
     @chef_run.converge "openstack-network::build_openvswitch_source"
   end
 
   it "does not install openvswitch build dependencies when nova networking" do
-    chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
     node = chef_run.node
     node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
     chef_run.converge "openstack-network::openvswitch"

@@ -6,14 +6,14 @@ describe 'openstack-network::balancer' do
 
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
         n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::balancer"
     end
 
     it "does not install neutron-lbaas-agent when nova networking." do
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = @chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       @chef_run.converge "openstack-network::balancer"
@@ -32,9 +32,10 @@ describe 'openstack-network::balancer' do
 
     it 'balancer config' do
       configf = "/etc/neutron/plugins/services/agent_loadbalancer/lbaas_agent.ini"
-      expect(@chef_run).to create_file configf
-      expect(@chef_run).to create_file_with_content configf, /periodic_interval = 10/
-      expect(@chef_run).to create_file_with_content configf, /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/
+      expect(@chef_run).to create_template(configf)
+      expect(@chef_run).to render_file(configf).with_content(/periodic_interval = 10/)
+      expect(@chef_run).to render_file(configf).with_content(
+        /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/)
     end
 
   end

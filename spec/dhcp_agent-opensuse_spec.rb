@@ -6,14 +6,14 @@ describe 'openstack-network::dhcp_agent' do
 
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS do |n|
         n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::dhcp_agent"
     end
 
     it "does not install openstack-neutron-dhcp-agent when nova networking" do
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = @chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       @chef_run.converge "openstack-network::dhcp_agent"
@@ -31,17 +31,19 @@ describe 'openstack-network::dhcp_agent' do
 
     it "starts the dhcp agent on boot" do
       expect(@chef_run).to(
-        set_service_to_start_on_boot "openstack-neutron-dhcp-agent")
+        enable_service "openstack-neutron-dhcp-agent")
     end
 
     it "/etc/neutron/dhcp_agent.ini has the proper owner" do
-      expect(@chef_run.template "/etc/neutron/dhcp_agent.ini").to(
-        be_owned_by "openstack-neutron", "openstack-neutron")
+      file = @chef_run.template "/etc/neutron/dhcp_agent.ini"
+      expect(file.owner).to eq("openstack-neutron")
+      expect(file.group).to eq("openstack-neutron")
     end
 
     it "/etc/neutron/dnsmasq.conf has the proper owner" do
-      expect(@chef_run.template "/etc/neutron/dnsmasq.conf").to(
-        be_owned_by "openstack-neutron", "openstack-neutron")
+      file = @chef_run.template "/etc/neutron/dnsmasq.conf"
+      expect(file.owner).to eq("openstack-neutron")
+      expect(file.group).to eq("openstack-neutron")
     end
   end
 end

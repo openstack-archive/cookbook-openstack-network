@@ -3,14 +3,14 @@ require_relative "spec_helper"
 describe "openstack-network::identity_registration" do
   before do
     neutron_stubs
-    @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
         n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
     @chef_run.converge "openstack-network::identity_registration"
   end
 
   it "does not do network service registrations when nova networking" do
-    @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
     node = @chef_run.node
     node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
     @chef_run.converge "openstack-network::identity_registration"

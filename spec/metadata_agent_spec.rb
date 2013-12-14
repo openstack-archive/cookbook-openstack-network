@@ -6,14 +6,14 @@ describe 'openstack-network::metadata_agent' do
 
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
         n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
       @chef_run.converge "openstack-network::metadata_agent"
     end
 
     it "does not install quamtum metadata agent when nova networking" do
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       chef_run.converge "openstack-network::metadata_agent"
@@ -31,7 +31,8 @@ describe 'openstack-network::metadata_agent' do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "neutron", "neutron"
+        expect(@file.owner).to eq("neutron")
+        expect(@file.group).to eq("neutron")
       end
 
       it "has proper modes" do
@@ -39,36 +40,36 @@ describe 'openstack-network::metadata_agent' do
       end
 
       it "sets auth url correctly" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "auth_url = http://127.0.0.1:5000/v2.0"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "auth_url = http://127.0.0.1:5000/v2.0")
       end
       it "sets auth region correctly" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "auth_region = RegionOne"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "auth_region = RegionOne")
       end
       it "sets admin tenant name" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "admin_tenant_name = service"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "admin_tenant_name = service")
       end
       it "sets admin user" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "admin_user = neutron"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "admin_user = neutron")
       end
       it "sets admin password" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "admin_password = neutron-pass"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "admin_password = neutron-pass")
       end
       it "sets nova metadata ip correctly" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "nova_metadata_ip = 127.0.0.1"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "nova_metadata_ip = 127.0.0.1")
       end
       it "sets nova metadata ip correctly" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "nova_metadata_port = 8775"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "nova_metadata_port = 8775")
       end
       it "sets neutron secret correctly" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "metadata_proxy_shared_secret = metadata-secret"
+        expect(@chef_run).to render_file(@file.name).with_content(
+          "metadata_proxy_shared_secret = metadata-secret")
       end
     end
   end

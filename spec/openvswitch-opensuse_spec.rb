@@ -4,7 +4,7 @@ describe 'openstack-network::openvswitch' do
   describe "opensuse" do
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::OPENSUSE_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS do |n|
         n.set["chef_client"]["splay"] = 300
         n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
       end
@@ -13,7 +13,7 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "does not install openvswitch package when nova networking" do
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = chef_run.node
       node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
       chef_run.converge "openstack-network::openvswitch"
@@ -29,7 +29,7 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "starts the openvswitch-switch service" do
-      expect(@chef_run).to set_service_to_start_on_boot "openvswitch-switch"
+      expect(@chef_run).to enable_service "openvswitch-switch"
     end
   end
 end

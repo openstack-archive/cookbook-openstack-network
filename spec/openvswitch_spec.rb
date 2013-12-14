@@ -3,16 +3,17 @@ require_relative 'spec_helper'
 describe 'openstack-network::openvswitch' do
   before do
     neutron_stubs
-    @chef_run = ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS) do |n|
+    @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
       n.automatic_attrs["kernel"]["release"] = "1.2.3"
       n.set["openstack"]["network"]["local_ip_interface"] = "eth0"
       n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
+      n.set["openstack"]["network"]["openvswitch"]["integration_bridge"] = "br-int"
     end
     @chef_run.converge "openstack-network::openvswitch"
   end
 
   it "does not install openvswitch switch when nova networking" do
-    chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
     node = chef_run.node
     node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
     chef_run.converge "openstack-network::openvswitch"
@@ -36,7 +37,7 @@ describe 'openstack-network::openvswitch' do
   end
 
   it "sets the openvswitch service to start on boot" do
-    expect(@chef_run).to set_service_to_start_on_boot 'openvswitch-switch'
+    expect(@chef_run).to enable_service 'openvswitch-switch'
   end
 
   it "installs openvswitch agent" do
@@ -44,20 +45,21 @@ describe 'openstack-network::openvswitch' do
   end
 
   it "sets the openvswitch service to start on boot" do
-    expect(@chef_run).to set_service_to_start_on_boot "neutron-plugin-openvswitch-agent"
+    expect(@chef_run).to enable_service "neutron-plugin-openvswitch-agent"
   end
 
   describe "ovs-dpctl-top" do
     before do
-      @file = @chef_run.cookbook_file "ovs-dpctl-top"
+      @file = @chef_run.cookbook_file("ovs-dpctl-top")
     end
 
     it "creates the ovs-dpctl-top file" do
-      expect(@chef_run).to create_file "/usr/bin/ovs-dpctl-top"
+      expect(@chef_run).to create_cookbook_file("/usr/bin/ovs-dpctl-top")
     end
 
     it "has the proper owner" do
-      expect(@file).to be_owned_by "root", "root"
+      expect(@file.owner).to eq("root")
+      expect(@file.group).to eq("root")
     end
 
     it "has the proper mode" do
@@ -65,8 +67,8 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "has the proper interpreter line" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        /^#!\/usr\/bin\/env python/
+      expect(@chef_run).to render_file(@file.name).with_content(
+        /^#!\/usr\/bin\/env python/)
     end
   end
 
@@ -76,7 +78,8 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "has proper owner" do
-      expect(@file).to be_owned_by "neutron", "neutron"
+      expect(@file.owner).to eq("neutron")
+      expect(@file.group).to eq("neutron")
     end
 
     it "has proper modes" do
@@ -84,51 +87,53 @@ describe 'openstack-network::openvswitch' do
     end
 
     it "uses default network_vlan_range" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^network_vlan_ranges =/
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        /^network_vlan_ranges =/)
     end
 
     it "uses default tunnel_id_ranges" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^tunnel_id_ranges =/
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        /^tunnel_id_ranges =/)
     end
 
     it "uses default integration_bridge" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        "integration_bridge = br-int"
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "integration_bridge = br-int")
     end
 
     it "uses default tunnel bridge" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        "tunnel_bridge = br-tun"
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "tunnel_bridge = br-tun")
     end
 
     it "uses default int_peer_patch_port" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^int_peer_patch_port =/
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        /^int_peer_patch_port =/)
     end
 
     it "uses default tun_peer_patch_port" do
-      expect(@chef_run).not_to create_file_with_content @file.name,
-        /^tun_peer_patch_port =/
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        /^tun_peer_patch_port =/)
     end
 
     it "it has firewall driver" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        "firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver")
     end
 
     it "it uses local_ip from eth0 when local_ip_interface is set" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        "local_ip = 10.0.0.3"
+      expect(@chef_run).to render_file(@file.name).with_content("local_ip = 10.0.0.3")
     end
 
     it "sets sqlalchemy attributes" do
-      expect(@chef_run).to create_file_with_content @file.name,
-        "sql_dbpool_enable = False",
-        "sql_min_pool_size = 1",
-        "sql_max_pool_size = 10",
-        "sql_idle_timeout = 3600"
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "sql_dbpool_enable = False")
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "sql_min_pool_size = 1")
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "sql_max_pool_size = 5")
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "sql_idle_timeout = 3600")
     end
   end
 end

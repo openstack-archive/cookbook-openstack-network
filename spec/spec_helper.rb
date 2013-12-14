@@ -67,4 +67,10 @@ def neutron_stubs
   ::Chef::Recipe.any_instance.stub(:user_password).with("guest").
     and_return("rabbit-password")
   ::Chef::Application.stub(:fatal!)
+
+  stub_command("dpkg -l | grep openvswitch-switch | grep 1.10.2-1").and_return(true)
+  stub_command("ovs-vsctl show | grep 'Bridge br-int'").and_return(false)
+  stub_command("ovs-vsctl show | grep 'Bridge br-tun'").and_return(false)
+  stub_command("ip link show eth1").and_return(false)
+
 end

@@ -4,14 +4,14 @@
       "path": "."
     },
     "openstack-identity": {
-      "locked_version": "7.0.0",
+      "locked_version": "8.0.0",
       "git": "https://github.com/stackforge/cookbook-openstack-identity.git",
-      "ref": "b881af26095cfa869a6970067c49597a0ee63586"
+      "ref": "309b8040a03d4bde97ca443644125e16c242edd8"
     },
     "openstack-common": {
-      "locked_version": "0.4.3",
+      "locked_version": "8.0.0",
       "git": "https://github.com/stackforge/cookbook-openstack-common.git",
-      "ref": "eb5eed7126b6a6efbaf803e8a594d610cf661e97"
+      "ref": "bf7f7bc3f2f8a1db112afd790aa54998a6cde40f"
     },
     "database": {
       "locked_version": "1.4.0"
