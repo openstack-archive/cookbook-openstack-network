@@ -64,6 +64,10 @@ describe 'openstack-network::dhcp_agent' do
         expect(@chef_run).to create_file_with_content @file.name,
           /^dhcp_domain = openstacklocal$/
       end
+      it "it has dhcp lease time" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^dhcp_lease_time = 120$/
+      end
     end
 
     describe "/etc/quantum/dnsmasq.conf" do

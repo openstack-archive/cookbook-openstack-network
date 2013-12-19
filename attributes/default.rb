@@ -264,6 +264,9 @@ default["openstack"]["network"]["dhcp"]["dhcp-option"] = "26,1454"
 # Number of seconds between sync of DHCP agent with Quantum API server
 default["openstack"]["network"]["dhcp"]["resync_interval"] = 5
 
+# The default lease time for DHCP requests (in seconds)
+default["openstack"]["network"]["dhcp"]["dhcp_lease_time"] = 120
+
 # OVS based plugins(Ryu, NEC, NVP, BigSwitch/Floodlight) that use OVS
 # as OpenFlow switch and check port status
 default["openstack"]["network"]["dhcp"]["ovs_use_veth"] = "True"

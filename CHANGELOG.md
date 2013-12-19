@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.3.0
+* Allow the DHCP lease timeout to be overriden in quantum.conf.erb
+
 ## 7.2.0
 * Parameterize wsgi default values in quantum.conf.erb
 

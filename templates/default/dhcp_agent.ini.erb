@@ -26,6 +26,9 @@ ovs_use_veth = <%= node["openstack"]["network"]["dhcp"]["ovs_use_veth"] %>
 # no additional setup of the DHCP server.
 dhcp_driver = <%= node["openstack"]["network"]["dhcp_driver"] %>
 
+# The default lease time in seconds for DHCP clients
+dhcp_lease_time = <%= node["openstack"]["network"]["dhcp"]["dhcp_lease_time"] %>
+
 # Allow overlapping IP (Must have kernel build with CONFIG_NET_NS=y and
 # iproute2 package that supports namespaces).
 use_namespaces = <%= node["openstack"]["network"]["use_namespaces"] %>
