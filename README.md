@@ -110,6 +110,7 @@ License and Author
 |                      |  Ionut Artarisi (<iartarisi@suse.cz>)              |
 |                      |  Salman Baset (<sabaset@us.ibm.com>)               |
 |                      |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
+|                      |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013, SUSE Linux GmbH               |
