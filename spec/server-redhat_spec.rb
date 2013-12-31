@@ -33,7 +33,7 @@ describe 'openstack-network::server' do
       end
       chef_run.converge "openstack-network::server"
       expect(chef_run).not_to install_package "openvswitch"
-      expect(chef_run).not_to enable_service "openstack-neutron-openvswitch-agent"
+      expect(chef_run).not_to enable_service "neutron-openvswitch-agent"
     end
   end
 end
