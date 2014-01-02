@@ -38,6 +38,26 @@ platform_options["quantum_server_packages"].each do |pkg|
   end
 end
 
+# Migrate network database
+# If the database has never migrated, make the current version of alembic_version to grizzly,
+# else migrate the database to latest version.
+# The recipe in Grizzly version do not migrate database, just add alembic_version to
+# network database, this alembic_version will be used by later OpenStack version like
+# Havana, Icehouse...
+bash "migrate network database" do
+  plugin_config_file = node['openstack']['network']['plugin_config_file']
+  migrate_command = "quantum-db-manage --config-file /etc/quantum/quantum.conf --config-file #{plugin_config_file}"
+  code <<-EOF
+current_version_line=`#{migrate_command} current 2>&1 | tail -n 1`
+# determine if the $current_version_line ends with ": None"
+if [[ $current_version_line == *:\\ None ]]; then
+  #{migrate_command} stamp grizzly
+else
+  #{migrate_command} upgrade head
+fi
+EOF
+end
+
 service "quantum-server" do
   service_name platform_options["quantum_server_service"]
   supports :status => true, :restart => true

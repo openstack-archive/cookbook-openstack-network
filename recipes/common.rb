@@ -375,6 +375,8 @@ when "ryu"
 
 end
 
+node.default['openstack']['network']['plugin_config_file'] = template_file
+
 template "/etc/default/quantum-server" do
   source "quantum-server.erb"
   owner "root"
