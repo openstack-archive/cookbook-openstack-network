@@ -74,3 +74,5 @@ def neutron_stubs
   stub_command("ip link show eth1").and_return(false)
 
 end
+
+at_exit { ChefSpec::Coverage.report! }

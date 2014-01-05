@@ -7,4 +7,4 @@ cookbooks/
 .cookbooks
 .vagrant
 *.swp
-
+.coverage/
