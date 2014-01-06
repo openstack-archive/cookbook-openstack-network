@@ -109,7 +109,7 @@ unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
     ignore_failure true
     command "ovs-vsctl add-br #{int_bridge}"
     action :run
-    not_if "ovs-vsctl show | grep 'Bridge #{int_bridge}'"
+    not_if "ovs-vsctl show | grep 'Bridge \"#{int_bridge}\"'"
     notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
   end
 end
@@ -120,7 +120,7 @@ unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
     ignore_failure true
     command "ovs-vsctl add-br #{tun_bridge}"
     action :run
-    not_if "ovs-vsctl show | grep 'Bridge #{tun_bridge}'"
+    not_if "ovs-vsctl show | grep 'Bridge \"#{tun_bridge}\"'"
     notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
   end
 end
