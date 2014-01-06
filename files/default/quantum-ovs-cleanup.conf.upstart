@@ -1,0 +1,17 @@
+# quantum-ovs-cleanup - Quantum OVS Port Cleanup
+#
+# Quantum OVS Port Cleanup Script
+
+description     "Quantum OVS Port Cleanup"
+author          "Alan Meadows <alan.meadows@gmail.com>"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+pre-start script
+  if [ -f "/etc/quantum/quantum.conf" ]; then
+    exec /usr/bin/quantum-ovs-cleanup
+  else
+    exit 1
+  fi
+end script

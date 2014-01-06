@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 7.4.1
+* Add missing quantum-ovs-cleanup to ubuntu startup (LP #1266495)
+
 ## 7.4.0
 * Add network database migration
 

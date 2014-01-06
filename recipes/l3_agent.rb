@@ -65,3 +65,32 @@ if not ["nicira", "plumgrid", "bigswitch", "linuxbridge"].include?(main_plugin)
     only_if "ip link show #{ext_bridge_iface}"
   end
 end
+
+# (alanmeadows): Ubuntu PPA packages are missing quantum-ovs-cleanup
+# service scripts whereas RHEL et al set this service up
+# appropriately on package installation.
+#
+# For additional details, see:
+# https://bugs.launchpad.net/openstack-manuals/+bug/1156861
+if platform?("ubuntu")
+  cookbook_file "/etc/init/quantum-ovs-cleanup.conf" do
+    owner "root"
+    group "root"
+    mode "0755"
+    source "quantum-ovs-cleanup.conf.upstart"
+    action :create
+    not_if { File.exists?("/etc/init/quantum-ovs-cleanup.conf") }
+  end
+  link "/etc/init.d/quantum-ovs-cleanup" do
+    to "/lib/init/upstart-job"
+    not_if { File.exists?("/etc/init.d/quantum-ovs-cleanup") }
+  end
+
+  service "quantum-ovs-cleanup" do
+    service_name platform_options["quantum_ovs_cleanup_service"]
+    supports :restart => false, :start => true, :stop => false, :reload => false
+    priority({ 2 => [ :start, 19 ]})
+    action :enable
+    only_if { File.exists?("/etc/quantum/quantum.conf") }
+  end
+end

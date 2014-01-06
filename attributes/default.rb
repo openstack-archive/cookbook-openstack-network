@@ -878,6 +878,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
     "quantum_linuxbridge_agent_service" => "quantum-linuxbridge-agent",
     "quantum_server_service" => "quantum-server",
+    "quantum_ovs_cleanup_service" => "quantum-ovs-cleanup",
     "package_overrides" => ""
   }
 when "suse"
@@ -907,6 +908,7 @@ when "suse"
     "quantum_openvswitch_agent_service" => "openstack-quantum-openvswitch-agent",
     "quantum_linuxbridge_agent_service" => "openstack-quantum-linuxbridge-agent",
     "quantum_server_service" => "openstack-quantum",
+    "quantum_ovs_cleanup_service" => "quantum-ovs-cleanup",
     "package_overrides" => ""
   }
 when "ubuntu"
@@ -936,6 +938,7 @@ when "ubuntu"
     "quantum_openvswitch_agent_service" => "quantum-plugin-openvswitch-agent",
     "quantum_linuxbridge_agent_service" => "quantum-plugin-linuxbridge-agent",
     "quantum_server_service" => "quantum-server",
+    "quantum_ovs_cleanup_service" => "quantum-ovs-cleanup",
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

@@ -14,6 +14,14 @@ describe 'openstack-network::l3_agent' do
       expect(@chef_run).to install_package "quantum-l3-agent"
     end
 
+    it "starts the l3 agent on boot" do
+      expect(@chef_run).to set_service_to_start_on_boot "quantum-l3-agent"
+    end
+
+    it "starts the quantum-ovs-cleanup service on boot" do
+      expect(@chef_run).to set_service_to_start_on_boot "quantum-ovs-cleanup"
+    end
+
     describe "l3_agent.ini" do
 
       before do
