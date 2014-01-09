@@ -40,6 +40,10 @@ describe 'openstack-network::openvswitch' do
     expect(@chef_run).to enable_service 'openvswitch-switch'
   end
 
+  it "restarts the openvswitch service" do
+    expect(@chef_run).to restart_service 'openvswitch-switch'
+  end
+
   it "installs openvswitch agent" do
     expect(@chef_run).to install_package "neutron-plugin-openvswitch-agent"
   end
