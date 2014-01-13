@@ -79,15 +79,6 @@ directory ::File.dirname node["openstack"]["network"]["api"]["auth"]["cache_dir"
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
-# This will copy recursively all the files in
-# /files/default/etc/neutron/rootwrap.d
-remote_directory "/etc/neutron/rootwrap.d" do
-  source "etc/neutron/rootwrap.d"
-  files_owner node["openstack"]["network"]["platform"]["user"]
-  files_group node["openstack"]["network"]["platform"]["group"]
-  files_mode 00700
-end
-
 template "/etc/neutron/rootwrap.conf" do
   source "rootwrap.conf.erb"
   owner node["openstack"]["network"]["platform"]["user"]
