@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: dhcp_agent
@@ -17,55 +18,55 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe "openstack-network::common"
+include_recipe 'openstack-network::common'
 
-platform_options = node["openstack"]["network"]["platform"]
-driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
-main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
+platform_options = node['openstack']['network']['platform']
+driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
+main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
 
-platform_options["neutron_dhcp_packages"].each do |pkg|
+platform_options['neutron_dhcp_packages'].each do |pkg|
   package pkg do
-    options platform_options["package_overrides"]
+    options platform_options['package_overrides']
     action :install
   end
 end
 
-service "neutron-dhcp-agent" do
-  service_name platform_options["neutron_dhcp_agent_service"]
-  supports :status => true, :restart => true
+service 'neutron-dhcp-agent' do
+  service_name platform_options['neutron_dhcp_agent_service']
+  supports status: true, restart: true
 
   action :enable
 end
 
 # Some plugins have DHCP functionality, so we install the plugin
 # Python package and include the plugin-specific recipe here...
-package platform_options["neutron_plugin_package"].gsub("%plugin%", main_plugin) do
-  options platform_options["package_overrides"]
+package platform_options['neutron_plugin_package'].gsub('%plugin%', main_plugin) do
+  options platform_options['package_overrides']
   action :install
   # plugins are installed by the main openstack-neutron package on SUSE
-  not_if { platform_family? "suse" }
+  not_if { platform_family? 'suse' }
 end
 
 execute "neutron-dhcp-setup --plugin #{main_plugin}" do
   only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
-template "/etc/neutron/dnsmasq.conf" do
-  source "dnsmasq.conf.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
+template '/etc/neutron/dnsmasq.conf' do
+  source 'dnsmasq.conf.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
   mode   00644
-  notifies :restart, "service[neutron-dhcp-agent]", :delayed
+  notifies :restart, 'service[neutron-dhcp-agent]', :delayed
 end
 
-template "/etc/neutron/dhcp_agent.ini" do
-  source "dhcp_agent.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
+template '/etc/neutron/dhcp_agent.ini' do
+  source 'dhcp_agent.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
   mode   00644
-  notifies :restart, "service[neutron-dhcp-agent]", :immediately
+  notifies :restart, 'service[neutron-dhcp-agent]', :immediately
 end
 
 # Deal with ubuntu precise dnsmasq 2.59 version by custom
@@ -79,9 +80,9 @@ end
 #
 # Would prefer a PPA or backport but there are none and upstream
 # has no plans to fix
-if node['lsb'] && node['lsb']['codename'] == "precise"
+if node['lsb'] && node['lsb']['codename'] == 'precise'
 
-  platform_options["neutron_dhcp_build_packages"].each do |pkg|
+  platform_options['neutron_dhcp_build_packages'].each do |pkg|
     package pkg do
       action :install
     end
@@ -112,20 +113,20 @@ if node['lsb'] && node['lsb']['codename'] == "precise"
       debian/rules binary
       EOH
     not_if { ::File.exists?(extract_path) }
-    notifies :install, "dpkg_package[dnsmasq-utils]", :immediately
-    notifies :install, "dpkg_package[dnsmasq-base]", :immediately
-    notifies :install, "dpkg_package[dnsmasq]", :immediately
+    notifies :install, 'dpkg_package[dnsmasq-utils]', :immediately
+    notifies :install, 'dpkg_package[dnsmasq-base]', :immediately
+    notifies :install, 'dpkg_package[dnsmasq]', :immediately
   end
 
-  dpkg_package "dnsmasq-utils" do
+  dpkg_package 'dnsmasq-utils' do
     source "#{extract_path}/../dnsmasq-utils_#{dhcp_options['dnsmasq_dpkgversion']}_#{dhcp_options['dnsmasq_architecture']}.deb"
     action :nothing
   end
-  dpkg_package "dnsmasq-base" do
+  dpkg_package 'dnsmasq-base' do
     source "#{extract_path}/../dnsmasq-base_#{dhcp_options['dnsmasq_dpkgversion']}_#{dhcp_options['dnsmasq_architecture']}.deb"
     action :nothing
   end
-  dpkg_package "dnsmasq" do
+  dpkg_package 'dnsmasq' do
     source "#{extract_path}/../dnsmasq_#{dhcp_options['dnsmasq_dpkgversion']}_all.deb"
     action :nothing
   end

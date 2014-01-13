@@ -1,39 +1,40 @@
-require_relative "spec_helper"
+# Encoding: utf-8
+require_relative 'spec_helper'
 
 describe 'openstack-network::server' do
-  describe "redhat" do
+  describe 'redhat' do
     before do
       neutron_stubs
       @chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
+        n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       end
       @node = @chef_run.node
-      @chef_run.converge "openstack-network::server"
+      @chef_run.converge 'openstack-network::server'
     end
 
-    it "does not install openstack-neutron when nova networking" do
+    it 'does not install openstack-neutron when nova networking' do
       chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = chef_run.node
-      node.set["openstack"]["compute"]["network"]["service_type"] = "nova"
-      chef_run.converge "openstack-network::server"
-      expect(chef_run).to_not install_package "openstack-neutron"
+      node.set['openstack']['compute']['network']['service_type'] = 'nova'
+      chef_run.converge 'openstack-network::server'
+      expect(chef_run).to_not install_package 'openstack-neutron'
     end
 
-    it "installs openstack-neutron packages" do
-      expect(@chef_run).to install_package "openstack-neutron"
+    it 'installs openstack-neutron packages' do
+      expect(@chef_run).to install_package 'openstack-neutron'
     end
 
-    it "enables openstack-neutron server service" do
-      expect(@chef_run).to enable_service "neutron-server"
+    it 'enables openstack-neutron server service' do
+      expect(@chef_run).to enable_service 'neutron-server'
     end
 
-    it "does not install openvswitch package" do
+    it 'does not install openvswitch package' do
       chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
-        n.set["openstack"]["compute"]["network"]["service_type"] = "neutron"
+        n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       end
-      chef_run.converge "openstack-network::server"
-      expect(chef_run).not_to install_package "openvswitch"
-      expect(chef_run).not_to enable_service "neutron-openvswitch-agent"
+      chef_run.converge 'openstack-network::server'
+      expect(chef_run).not_to install_package 'openvswitch'
+      expect(chef_run).not_to enable_service 'neutron-openvswitch-agent'
     end
   end
 end

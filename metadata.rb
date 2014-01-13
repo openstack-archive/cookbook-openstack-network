@@ -1,3 +1,5 @@
+# Encoding: utf-8
+
 name              'openstack-network'
 maintainer        'Jay Pipes <jaypipes@gmail.com>'
 license           'Apache 2.0'

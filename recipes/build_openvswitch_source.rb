@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: build_openvswitch_source
@@ -17,11 +18,11 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-platform_options = node["openstack"]["network"]["platform"]
+platform_options = node['openstack']['network']['platform']
 
-platform_options["neutron_openvswitch_build_packages"].each do |pkg|
+platform_options['neutron_openvswitch_build_packages'].each do |pkg|
   package pkg do
     action :install
   end
@@ -41,7 +42,7 @@ remote_file src_filepath do
   not_if { ::File.exists?("#{Chef::Config['file_cache_path']}/#{ovs_options['openvswitch_filename']}") }
 end
 
-bash "disable_openvswitch_before_upgrade" do
+bash 'disable_openvswitch_before_upgrade' do
   cwd '/tmp'
   not_if "dpkg -l | grep openvswitch-switch | grep #{ovs_options['openvswitch_dpkgversion']}"
   code <<-EOH
@@ -65,34 +66,34 @@ bash 'extract_package' do
         tar xzf #{src_filename} -C #{extract_path}
         cd #{extract_path}/#{ovs_options['openvswitch_base_filename']}
         DEB_BUILD_OPTIONS='parallel=8' fakeroot debian/rules binary
-        EOH
-        not_if "dpkg -l | grep openvswitch-switch | grep #{ovs_options['openvswitch_dpkgversion']}"
-        notifies :install, "dpkg_package[openvswitch-common]", :immediately
-        notifies :install, "dpkg_package[openvswitch-datapath-dkms]", :immediately
-        notifies :install, "dpkg_package[openvswitch-pki]", :immediately
-        notifies :install, "dpkg_package[openvswitch-switch]", :immediately
+  EOH
+  not_if "dpkg -l | grep openvswitch-switch | grep #{ovs_options['openvswitch_dpkgversion']}"
+  notifies :install, 'dpkg_package[openvswitch-common]', :immediately
+  notifies :install, 'dpkg_package[openvswitch-datapath-dkms]', :immediately
+  notifies :install, 'dpkg_package[openvswitch-pki]', :immediately
+  notifies :install, 'dpkg_package[openvswitch-switch]', :immediately
 end
 
-dpkg_package "openvswitch-common" do
+dpkg_package 'openvswitch-common' do
   source "#{extract_path}/openvswitch-common_#{ovs_options['openvswitch_dpkgversion']}_#{ovs_options['openvswitch_architecture']}.deb"
   action :nothing
 end
-dpkg_package "openvswitch-common" do
+dpkg_package 'openvswitch-common' do
   source "#{extract_path}/openvswitch-common_#{ovs_options['openvswitch_dpkgversion']}_#{ovs_options['openvswitch_architecture']}.deb"
   action :nothing
 end
 
-dpkg_package "openvswitch-datapath-dkms" do
+dpkg_package 'openvswitch-datapath-dkms' do
   source "#{extract_path}/openvswitch-datapath-dkms_#{ovs_options['openvswitch_dpkgversion']}_all.deb"
   action :nothing
 end
 
-dpkg_package "openvswitch-pki" do
+dpkg_package 'openvswitch-pki' do
   source "#{extract_path}/openvswitch-pki_#{ovs_options['openvswitch_dpkgversion']}_all.deb"
   action :nothing
 end
 
-dpkg_package "openvswitch-switch" do
+dpkg_package 'openvswitch-switch' do
   source "#{extract_path}/openvswitch-switch_#{ovs_options['openvswitch_dpkgversion']}_#{ovs_options['openvswitch_architecture']}.deb"
   action :nothing
 end

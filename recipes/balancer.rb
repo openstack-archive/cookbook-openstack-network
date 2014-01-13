@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: balancer
@@ -20,31 +21,31 @@
 # This recipe should be placed in the run_list of the node that
 # runs the network server or network controller server.
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-platform_options = node["openstack"]["network"]["platform"]
+platform_options = node['openstack']['network']['platform']
 
-service "neutron-server" do
-  service_name platform_options["neutron_server_service"]
-  supports :status => true, :restart => true
+service 'neutron-server' do
+  service_name platform_options['neutron_server_service']
+  supports status: true, restart: true
 
   action :nothing
 end
 
-platform_options["neutron_lb_packages"].each do |pkg|
-   package pkg do
-     action :install
-   end
+platform_options['neutron_lb_packages'].each do |pkg|
+  package pkg do
+    action :install
+  end
 end
 
-directory node["openstack"]["network"]["lbaas_config_path"] do
+directory node['openstack']['network']['lbaas_config_path'] do
   action :create
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
   recursive true
 end
 
 template "#{node["openstack"]["network"]["lbaas_config_path"]}/lbaas_agent.ini" do
-  source "lbaas_agent.ini.erb"
-  notifies :restart, "service[neutron-server]", :immediately
+  source 'lbaas_agent.ini.erb'
+  notifies :restart, 'service[neutron-server]', :immediately
 end

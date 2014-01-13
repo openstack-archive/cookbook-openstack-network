@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: metadata_agent
@@ -17,41 +18,39 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe "openstack-network::common"
+include_recipe 'openstack-network::common'
 
-platform_options = node["openstack"]["network"]["platform"]
-driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
-main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
+platform_options = node['openstack']['network']['platform']
 
-identity_endpoint = endpoint "identity-api"
-service_pass = service_password "openstack-network"
-metadata_secret = secret "secrets", node["openstack"]["network"]["metadata"]["secret_name"]
+identity_endpoint = endpoint 'identity-api'
+service_pass = service_password 'openstack-network'
+metadata_secret = secret 'secrets', node['openstack']['network']['metadata']['secret_name']
 
-template "/etc/neutron/metadata_agent.ini" do
-  source "metadata_agent.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
+template '/etc/neutron/metadata_agent.ini' do
+  source 'metadata_agent.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
   mode   00644
   variables(
-    :identity_endpoint => identity_endpoint,
-    :metadata_secret => metadata_secret,
-    :service_pass => service_pass
+    identity_endpoint: identity_endpoint,
+    metadata_secret: metadata_secret,
+    service_pass: service_pass
   )
-  notifies :restart, "service[neutron-metadata-agent]", :immediately
+  notifies :restart, 'service[neutron-metadata-agent]', :immediately
   action :create
 end
 
-platform_options["neutron_metadata_agent_packages"].each do |pkg|
+platform_options['neutron_metadata_agent_packages'].each do |pkg|
   package pkg do
     action :install
-    options platform_options["package_overrides"]
+    options platform_options['package_overrides']
   end
 end
 
-service "neutron-metadata-agent" do
-  service_name platform_options["neutron_metadata_agent_service"]
-  supports :status => true, :restart => true
+service 'neutron-metadata-agent' do
+  service_name platform_options['neutron_metadata_agent_service']
+  supports status: true, restart: true
   action :enable
 end

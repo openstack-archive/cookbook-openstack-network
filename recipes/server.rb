@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: server
@@ -18,43 +19,42 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
+# Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
   include ::Openstack
 end
 
-include_recipe "openstack-network::common"
+include_recipe 'openstack-network::common'
 
-platform_options = node["openstack"]["network"]["platform"]
-driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
-main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
-core_plugin = node["openstack"]["network"]["core_plugin"]
+platform_options = node['openstack']['network']['platform']
+driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
 
-platform_options = node["openstack"]["network"]["platform"]
+platform_options = node['openstack']['network']['platform']
 
-platform_options["neutron_server_packages"].each do |pkg|
+platform_options['neutron_server_packages'].each do |pkg|
   package pkg do
-    options platform_options["package_overrides"]
+    options platform_options['package_overrides']
     action :install
   end
 end
 
-service "neutron-server" do
-  service_name platform_options["neutron_server_service"]
-  supports :status => true, :restart => true
+service 'neutron-server' do
+  service_name platform_options['neutron_server_service']
+  supports status: true, restart: true
   action :enable
 end
 
-cookbook_file "neutron-ha-tool" do
-  source "neutron-ha-tool.py"
-  path node["openstack"]["network"]["neutron_ha_cmd"]
-  owner "root"
-  group "root"
+cookbook_file 'neutron-ha-tool' do
+  source 'neutron-ha-tool.py'
+  path node['openstack']['network']['neutron_ha_cmd']
+  owner 'root'
+  group 'root'
   mode 00755
 end
 
-if node["openstack"]["network"]["neutron_ha_cmd_cron"]
+if node['openstack']['network']['neutron_ha_cmd_cron']
   # ensure period checks are offset between multiple l3 agent nodes
   # and assumes splay will remain constant (i.e. based on hostname)
   # Generate a uniformly distributed unique number to sleep.
@@ -62,27 +62,27 @@ if node["openstack"]["network"]["neutron_ha_cmd_cron"]
   splay = node['chef_client']['splay'].to_i || 3000
   sleep_time = checksum.to_s.hex % splay
 
-  cron "neutron-ha-healthcheck" do
-    minute node["openstack"]["network"]["cron_l3_healthcheck"]
+  cron 'neutron-ha-healthcheck' do
+    minute node['openstack']['network']['cron_l3_healthcheck']
     command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --l3-agent-migrate > /dev/null 2>&1"
   end
 
-  cron "neutron-ha-replicate-dhcp" do
-    minute node["openstack"]["network"]["cron_replicate_dhcp"]
+  cron 'neutron-ha-replicate-dhcp' do
+    minute node['openstack']['network']['cron_replicate_dhcp']
     command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
   end
 end
 
 # the default SUSE initfile uses this sysconfig file to determine the
 # neutron plugin to use
-template "/etc/sysconfig/neutron" do
-  only_if { platform? "suse" }
-  source "neutron.sysconfig.erb"
-  owner "root"
-  group "root"
+template '/etc/sysconfig/neutron' do
+  only_if { platform? 'suse' }
+  source 'neutron.sysconfig.erb'
+  owner 'root'
+  group 'root'
   mode 00644
   variables(
-    :plugin_conf => node["openstack"]["network"]["plugin_conf_map"][driver_name]
+    plugin_conf: node['openstack']['network']['plugin_conf_map'][driver_name]
   )
-  notifies :restart, "service[neutron-server]"
+  notifies :restart, 'service[neutron-server]'
 end

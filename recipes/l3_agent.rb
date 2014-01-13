@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: l3_agent
@@ -17,50 +18,50 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe "openstack-network::common"
+include_recipe 'openstack-network::common'
 
-platform_options = node["openstack"]["network"]["platform"]
-driver_name = node["openstack"]["network"]["interface_driver"].split('.').last.downcase
-main_plugin = node["openstack"]["network"]["interface_driver_map"][driver_name]
+platform_options = node['openstack']['network']['platform']
+driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
+main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
 
-platform_options["neutron_l3_packages"].each do |pkg|
+platform_options['neutron_l3_packages'].each do |pkg|
   package pkg do
-    options platform_options["package_overrides"]
+    options platform_options['package_overrides']
     action :install
     # The providers below do not use the generic L3 agent...
-    not_if { ["nicira", "plumgrid", "bigswitch"].include?(main_plugin) }
+    not_if { ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin) }
   end
 end
 
-service "neutron-l3-agent" do
-  service_name platform_options["neutron_l3_agent_service"]
-  supports :status => true, :restart => true
+service 'neutron-l3-agent' do
+  service_name platform_options['neutron_l3_agent_service']
+  supports status: true, restart: true
 
   action :enable
 end
 
 execute "neutron-l3-setup --plugin #{main_plugin}" do
-  only_if {
-    platform?(%w(fedora redhat centos)) and not # :pragma-foodcritic: ~FC024 - won't fix this
-    ["nicira", "plumgrid", "bigswitch"].include?(main_plugin)
-  }
+  only_if do
+    platform?(%w(fedora redhat centos)) && # :pragma-foodcritic: ~FC024 - won't fix this
+    !['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
+  end
 end
 
-template "/etc/neutron/l3_agent.ini" do
-  source "l3_agent.ini.erb"
-  owner node["openstack"]["network"]["platform"]["user"]
-  group node["openstack"]["network"]["platform"]["group"]
+template '/etc/neutron/l3_agent.ini' do
+  source 'l3_agent.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
   mode   00644
-  notifies :restart, "service[neutron-l3-agent]", :immediately
+  notifies :restart, 'service[neutron-l3-agent]', :immediately
 end
 
-if not ["nicira", "plumgrid", "bigswitch", "linuxbridge"].include?(main_plugin)
+unless ['nicira', 'plumgrid', 'bigswitch', 'linuxbridge'].include?(main_plugin)
   # See http://docs.openstack.org/trunk/openstack-network/admin/content/install_neutron-l3.html
-  ext_bridge = node["openstack"]["network"]["l3"]["external_network_bridge"]
-  ext_bridge_iface = node["openstack"]["network"]["l3"]["external_network_bridge_interface"]
-  execute "create external network bridge" do
+  ext_bridge = node['openstack']['network']['l3']['external_network_bridge']
+  ext_bridge_iface = node['openstack']['network']['l3']['external_network_bridge_interface']
+  execute 'create external network bridge' do
     command "ovs-vsctl add-br #{ext_bridge} && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
     action :run
     not_if "ovs-vsctl show | grep 'Bridge #{ext_bridge}'"

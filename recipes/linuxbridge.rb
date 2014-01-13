@@ -1,3 +1,4 @@
+# Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
 # Recipe:: linuxbridge
@@ -17,21 +18,21 @@
 # limitations under the License.
 #
 
-['quantum','neutron'].include?(node["openstack"]["compute"]["network"]["service_type"]) || return
+['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe "openstack-network::common"
+include_recipe 'openstack-network::common'
 
-platform_options = node["openstack"]["network"]["platform"]
+platform_options = node['openstack']['network']['platform']
 
-platform_options["neutron_linuxbridge_agent_packages"].each do |pkg|
+platform_options['neutron_linuxbridge_agent_packages'].each do |pkg|
   package pkg do
-    options platform_options["package_overrides"]
+    options platform_options['package_overrides']
     action :install
   end
 end
 
-service "neutron-plugin-linuxbridge-agent" do
-  service_name platform_options["neutron_linuxbridge_agent_service"]
-  supports :status => true, :restart => true
+service 'neutron-plugin-linuxbridge-agent' do
+  service_name platform_options['neutron_linuxbridge_agent_service']
+  supports status: true, restart: true
   action :enable
 end
