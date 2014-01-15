@@ -25,7 +25,7 @@ include_recipe 'openstack-network::common'
 platform_options = node['openstack']['network']['platform']
 
 identity_endpoint = endpoint 'identity-api'
-service_pass = service_password 'openstack-network'
+service_pass = get_password 'service', 'openstack-network'
 metadata_secret = secret 'secrets', node['openstack']['network']['metadata']['secret_name']
 
 template '/etc/neutron/metadata_agent.ini' do

@@ -47,7 +47,7 @@ describe 'openstack-network::linuxbridge' do
 
       it 'has a correct sql_connection value' do
         expect(@chef_run).to render_file(@file.name).with_content(
-          'mysql://neutron:neutron-pass@127.0.0.1:3306/neutron')
+          'mysql://neutron:neutron@127.0.0.1:3306/neutron')
       end
 
       it 'sets sqlalchemy attributes' do

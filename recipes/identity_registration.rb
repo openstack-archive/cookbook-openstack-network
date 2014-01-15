@@ -35,7 +35,7 @@ auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 api_endpoint = endpoint 'network-api'
 
-service_pass = service_password 'openstack-network'
+service_pass = get_password 'service', 'openstack-network'
 service_tenant_name = node['openstack']['network']['service_tenant_name']
 service_user = node['openstack']['network']['service_user']
 service_role = node['openstack']['network']['service_role']

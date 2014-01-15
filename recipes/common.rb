@@ -99,7 +99,7 @@ end
 
 if node['openstack']['network']['mq']['service_type'] == 'rabbitmq'
   rabbit_hosts = rabbit_servers if node['openstack']['network']['rabbit']['ha']
-  rabbit_pass = user_password node['openstack']['network']['rabbit']['username']
+  rabbit_pass = get_password 'user', node['openstack']['network']['rabbit']['username']
 end
 
 identity_endpoint = endpoint 'identity-api'
@@ -107,11 +107,11 @@ identity_admin_endpoint = endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node['openstack']['network']['db']['username']
-db_pass = db_password 'neutron'
+db_pass = get_password "db", 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
 
 api_endpoint = endpoint 'network-api'
-service_pass = service_password 'openstack-network'
+service_pass = get_password "service", 'openstack-network'
 
 if node['openstack']['network']['api']['bind_interface'].nil?
   bind_address = api_endpoint.host
