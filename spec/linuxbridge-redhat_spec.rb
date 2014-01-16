@@ -11,6 +11,7 @@ describe 'openstack-network::linuxbridge' do
         n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       end
       @chef_run.converge 'openstack-network::linuxbridge'
+      @file = @chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini')
     end
 
     it 'does not install linuxbridge agent package when nova networking' do
@@ -27,6 +28,10 @@ describe 'openstack-network::linuxbridge' do
 
     it 'sets the linuxbridge service to start on boot' do
       expect(@chef_run).to enable_service 'neutron-linuxbridge-agent'
+    end
+
+    it 'notifies to create symbolic link' do
+      expect(@file).to notify('link[/etc/neutron/plugin.ini]').to(:create).immediately
     end
 
   end

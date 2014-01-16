@@ -5,7 +5,7 @@
 #
 # Copyright 2013, AT&T
 # Copyright 2013, SUSE Linux GmbH
-# Copyright 2013, IBM Corp.
+# Copyright 2013-2014, IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -196,12 +196,14 @@ end
 # the plugin configuration is a "common" file
 
 template_file = nil
+plugin_file = '/etc/neutron/plugin.ini'
 
 case main_plugin
 when 'bigswitch'
 
   template_file =  '/etc/neutron/plugins/bigswitch/restproxy.ini'
-  template '/etc/neutron/plugins/bigswitch/restproxy.ini' do
+
+  template template_file do
     source 'plugins/bigswitch/restproxy.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -210,13 +212,15 @@ when 'bigswitch'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'brocade'
 
   template_file = '/etc/neutron/plugins/brocade/brocade.ini'
-  template '/etc/neutron/plugins/brocade/brocade.ini' do
+
+  template template_file do
     source 'plugins/brocade/brocade.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -225,13 +229,15 @@ when 'brocade'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'cisco'
 
   template_file = '/etc/neutron/plugins/cisco/cisco_plugins.ini'
-  template '/etc/neutron/plugins/cisco/cisco_plugins.ini' do
+
+  template template_file do
     source 'plugins/cisco/cisco_plugins.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -240,13 +246,15 @@ when 'cisco'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'hyperv'
 
   template_file = '/etc/neutron/plugins/hyperv/hyperv_neutron_plugin.ini.erb'
-  template '/etc/neutron/plugins/hyperv/hyperv_neutron_plugin.ini.erb' do
+
+  template template_file do
     source 'plugins/hyperv/hyperv_neutron_plugin.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -255,13 +263,15 @@ when 'hyperv'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'linuxbridge'
 
   template_file = '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini'
-  template '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
+
+  template template_file do
     source 'plugins/linuxbridge/linuxbridge_conf.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -270,6 +280,7 @@ when 'linuxbridge'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::linuxbridge')
       notifies :restart, 'service[neutron-plugin-linuxbridge-agent]', :delayed
@@ -279,7 +290,8 @@ when 'linuxbridge'
 when 'midonet'
 
   template_file = '/etc/neutron/plugins/metaplugin/metaplugin.ini'
-  template '/etc/neutron/plugins/metaplugin/metaplugin.ini' do
+
+  template template_file do
     source 'plugins/metaplugin/metaplugin.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -288,13 +300,15 @@ when 'midonet'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'nec'
 
   template_file = '/etc/neutron/plugins/nec/nec.ini'
-  template '/etc/neutron/plugins/nec/nec.ini' do
+
+  template template_file do
     source 'plugins/nec/nec.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -303,13 +317,15 @@ when 'nec'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'nicira'
 
   template_file = '/etc/neutron/plugins/nicira/nvp.ini'
-  template '/etc/neutron/plugins/nicira/nvp.ini' do
+
+  template template_file do
     source 'plugins/nicira/nvp.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -318,6 +334,7 @@ when 'nicira'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -325,7 +342,7 @@ when 'openvswitch'
 
   template_file = '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
 
-  template '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini' do
+  template template_file do
     source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -334,6 +351,7 @@ when 'openvswitch'
       sql_connection: sql_connection,
       local_ip: local_ip
     )
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::openvswitch')
       notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
@@ -343,7 +361,8 @@ when 'openvswitch'
 when 'plumgrid'
 
   template_file = '/etc/neutron/plugins/plumgrid/plumgrid.ini'
-  template '/etc/neutron/plugins/plumgrid/plumgrid.ini' do
+
+  template template_file do
     source 'plugins/plumgrid/plumgrid.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -352,13 +371,15 @@ when 'plumgrid'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
 when 'ryu'
 
   template_file = '/etc/neutron/plugins/ryu/ryu.ini'
-  template '/etc/neutron/plugins/ryu/ryu.ini' do
+
+  template template_file do
     source 'plugins/ryu/ryu.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
@@ -367,9 +388,18 @@ when 'ryu'
       sql_connection: sql_connection
     )
 
+    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
+end
+
+link plugin_file do
+  to template_file
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  action :nothing
+  only_if { platform? %w{fedora redhat centos} }
 end
 
 node.set['openstack']['network']['plugin_config_file'] = template_file
