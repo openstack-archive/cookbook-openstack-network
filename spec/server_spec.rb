@@ -177,7 +177,8 @@ describe 'openstack-network::server' do
     describe 'qpid' do
       before do
         @file = @chef_run.template '/etc/neutron/neutron.conf'
-        @chef_run.node.set['openstack']['network']['mq']['service_type'] = 'qpid'
+        @chef_run.node.set['openstack']['mq']['network']['service_type'] = 'qpid'
+        @chef_run.converge 'openstack-network::server'
       end
 
       it 'has qpid_hostname' do
@@ -289,7 +290,7 @@ describe 'openstack-network::server' do
 
       before do
         @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
-          n.set['openstack']['network']['rabbit']['ha'] = true
+          n.set['openstack']['mq']['network']['rabbit']['ha'] = true
           n.set['chef_client']['splay'] = 300
           n.set['openstack']['compute']['network']['service_type'] = 'neutron'
         end

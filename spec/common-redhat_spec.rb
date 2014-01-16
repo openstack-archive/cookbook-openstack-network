@@ -16,7 +16,7 @@ describe 'openstack-network::common' do
     end
 
     it 'installs db2 python packages if explicitly told' do
-      @chef_run.node.set['openstack']['db']['network']['db_type'] = 'db2'
+      @chef_run.node.set['openstack']['db']['network']['service_type'] = 'db2'
       @chef_run.converge 'openstack-network::common'
 
       ['db2-odbc', 'python-ibm-db', 'python-ibm-db-sa'].each do |pkg|

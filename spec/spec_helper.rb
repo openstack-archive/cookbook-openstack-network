@@ -1,5 +1,6 @@
 # Encoding: utf-8
 require 'chefspec'
+require 'chefspec/berkshelf'
 require 'chef/application'
 
 ::LOG_LEVEL = :fatal

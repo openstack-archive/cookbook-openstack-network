@@ -36,39 +36,7 @@ default['openstack']['network']['service_name'] = 'neutron'
 default['openstack']['network']['service_type'] = 'network'
 default['openstack']['network']['description'] = 'OpenStack Networking service'
 
-# The rabbit user's password is stored in an encrypted databag
-# and accessed with openstack-common cookbook library's
-# get_password routine.  You are expected to create
-# the user, pass, vhost in a wrapper rabbitmq cookbook.
 default['openstack']['network']['rabbit_server_chef_role'] = 'rabbitmq-server'
-default['openstack']['network']['rabbit']['username'] = 'guest'
-default['openstack']['network']['rabbit']['vhost'] = '/'
-default['openstack']['network']['rabbit']['port'] = 5672
-default['openstack']['network']['rabbit']['host'] = '127.0.0.1'
-default['openstack']['network']['rabbit']['ha'] = false
-
-# The database username for the neutron database
-default['openstack']['network']['db']['username'] = 'neutron'
-
-# Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
-# sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
-default['openstack']['network']['db']['sql_dbpool_enable'] = 'False'
-
-# Database reconnection retry times - in event connectivity is lost
-default['openstack']['network']['db']['sql_max_retries'] = 10
-
-# Database reconnection interval in seconds - if the initial connection to the
-# database fails
-default['openstack']['network']['db']['reconnect_interval'] = 2
-
-# Minimum number of SQL connections to keep open in a pool
-default['openstack']['network']['db']['sql_min_pool_size'] = 1
-
-# Maximum number of SQL connections to keep open in a pool
-default['openstack']['network']['db']['sql_max_pool_size'] = 5
-
-# Timeout in seconds before idle sql connections are reaped
-default['openstack']['network']['db']['sql_idle_timeout'] = 3600
 
 # Used in the Keystone authtoken middleware configuration
 default['openstack']['network']['service_tenant_name'] = 'service'
@@ -92,25 +60,6 @@ default['openstack']['network']['api']['auth']['cache_dir'] = '/var/cache/neutro
 # it will bind to the API endpoint's host.
 default['openstack']['network']['api']['bind_interface'] = nil
 default['openstack']['network']['api']['bind_port'] = 9696
-
-# MQ options
-default['openstack']['network']['mq']['service_type'] = node['openstack']['mq']['service_type']
-default['openstack']['network']['mq']['qpid']['host'] = '127.0.0.1'
-default['openstack']['network']['mq']['qpid']['port'] = '5672'
-default['openstack']['network']['mq']['qpid']['qpid_hosts'] = ['127.0.0.1:5672']
-
-default['openstack']['network']['mq']['qpid']['username'] = ''
-default['openstack']['network']['mq']['qpid']['password'] = ''
-default['openstack']['network']['mq']['qpid']['sasl_mechanisms'] = ''
-default['openstack']['network']['mq']['qpid']['reconnect'] = true
-default['openstack']['network']['mq']['qpid']['reconnect_timeout'] = 0
-default['openstack']['network']['mq']['qpid']['reconnect_limit'] = 0
-default['openstack']['network']['mq']['qpid']['reconnect_interval_min'] = 0
-default['openstack']['network']['mq']['qpid']['reconnect_interval_max'] = 0
-default['openstack']['network']['mq']['qpid']['reconnect_interval'] = 0
-default['openstack']['network']['mq']['qpid']['heartbeat'] = 60
-default['openstack']['network']['mq']['qpid']['protocol'] = 'tcp'
-default['openstack']['network']['mq']['qpid']['tcp_nodelay'] = true
 
 # logging attribute
 default['openstack']['network']['syslog']['use'] = false

@@ -128,19 +128,19 @@ control_exchange = neutron
 # allow_overlapping_ips = False
 allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] -%>
 
-<% if node["openstack"]["network"]["mq"]["service_type"] == "rabbitmq"  %>
+<% if node["openstack"]["mq"]["network"]["service_type"] == "rabbitmq"  %>
 ##### RABBITMQ #####
-rabbit_userid=<%= node["openstack"]["network"]["rabbit"]["username"] %>
+rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
 rabbit_password=<%= @rabbit_pass %>
-rabbit_virtual_host=<%= node["openstack"]["network"]["rabbit"]["vhost"] %>
-<% if node["openstack"]["network"]["rabbit"]["ha"] -%>
+rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
+<% if node["openstack"]["mq"]["network"]["rabbit"]["ha"] -%>
 # Use HA queues in RabbitMQ (x-ha-policy: all).You need to
 # wipe RabbitMQ database when changing this option. (boolean value)
 rabbit_hosts=<%= @rabbit_hosts %>
 rabbit_ha_queues=True
 <% else -%>
-rabbit_host=<%= node["openstack"]["network"]["rabbit"]["host"] %>
-rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
+rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
+rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
 <% end -%>
 # Maximum retries with trying to connect to RabbitMQ
 # (the default of 0 implies an infinite retry count)
@@ -149,25 +149,25 @@ rabbit_port=<%= node["openstack"]["network"]["rabbit"]["port"] %>
 # rabbit_retry_interval = 1
 <% end %>
 
-<% if node["openstack"]["network"]["mq"]["service_type"] == "qpid"  %>
+<% if node["openstack"]["mq"]["network"]["service_type"] == "qpid"  %>
 ##### QPID #####
 rpc_backend=neutron.openstack.common.rpc.impl_qpid
-qpid_hostname=<%= node["openstack"]["network"]["mq"]["qpid"]["host"] %>
-qpid_port=<%= node["openstack"]["network"]["mq"]["qpid"]["port"] %>
+qpid_hostname=<%= node["openstack"]["mq"]["network"]["qpid"]["host"] %>
+qpid_port=<%= node["openstack"]["mq"]["network"]["qpid"]["port"] %>
 
-qpid_password=<%= node["openstack"]["network"]["mq"]["qpid"]["password"] %>
-qpid_username=<%= node["openstack"]["network"]["mq"]["qpid"]["username"] %>
-qpid_sasl_mechanisms=<%= node["openstack"]["network"]["mq"]["qpid"]["sasl_mechanisms"] %>
-qpid_reconnect=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect"] %>
-qpid_reconnect_timeout=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_timeout"] %>
-qpid_reconnect_limit=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_limit"] %>
-qpid_reconnect_interval_min=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_min"] %>
-qpid_reconnect_interval_max=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval_max"] %>
-qpid_reconnect_interval=<%= node["openstack"]["network"]["mq"]["qpid"]["reconnect_interval"] %>
-qpid_heartbeat=<%= node["openstack"]["network"]["mq"]["qpid"]["heartbeat"] %>
+qpid_password=<%= node["openstack"]["mq"]["network"]["qpid"]["password"] %>
+qpid_username=<%= node["openstack"]["mq"]["network"]["qpid"]["username"] %>
+qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["network"]["qpid"]["sasl_mechanisms"] %>
+qpid_reconnect=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect"] %>
+qpid_reconnect_timeout=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_timeout"] %>
+qpid_reconnect_limit=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_limit"] %>
+qpid_reconnect_interval_min=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_min"] %>
+qpid_reconnect_interval_max=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_max"] %>
+qpid_reconnect_interval=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval"] %>
+qpid_heartbeat=<%= node["openstack"]["mq"]["network"]["qpid"]["heartbeat"] %>
 # qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
-qpid_protocol=<%= node["openstack"]["network"]["mq"]["qpid"]["protocol"] %>
-qpid_tcp_nodelay=<%= node["openstack"]["network"]["mq"]["qpid"]["tcp_nodelay"] %>
+qpid_protocol=<%= node["openstack"]["mq"]["network"]["qpid"]["protocol"] %>
+qpid_tcp_nodelay=<%= node["openstack"]["mq"]["network"]["qpid"]["tcp_nodelay"] %>
 
 <% end %>
 

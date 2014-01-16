@@ -51,7 +51,7 @@ platform_options['neutron_packages'].each do |pkg|
   end
 end
 
-db_type = node['openstack']['db']['network']['db_type']
+db_type = node['openstack']['db']['network']['service_type']
 platform_options["#{db_type}_python_packages"].each do |pkg|
   package pkg do
     action :install
@@ -97,16 +97,16 @@ template '/etc/neutron/policy.json' do
   notifies :restart, 'service[neutron-server]', :delayed
 end
 
-if node['openstack']['network']['mq']['service_type'] == 'rabbitmq'
-  rabbit_hosts = rabbit_servers if node['openstack']['network']['rabbit']['ha']
-  rabbit_pass = get_password 'user', node['openstack']['network']['rabbit']['username']
+if node['openstack']['mq']['network']['service_type'] == 'rabbitmq'
+  rabbit_hosts = rabbit_servers if node['openstack']['mq']['network']['rabbit']['ha']
+  rabbit_pass = get_password 'user', node['openstack']['mq']['network']['rabbit']['userid']
 end
 
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
-db_user = node['openstack']['network']['db']['username']
+db_user = node['openstack']['db']['network']['username']
 db_pass = get_password "db", 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
 
