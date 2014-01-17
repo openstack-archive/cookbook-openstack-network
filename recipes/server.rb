@@ -40,6 +40,23 @@ platform_options['neutron_server_packages'].each do |pkg|
   end
 end
 
+# Migrate network database
+# If the database has never migrated, make the current version of alembic_version to havana,
+# else migrate the database to latest version.
+bash "migrate network database" do
+  plugin_config_file = node['openstack']['network']['plugin_config_file']
+  migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  code <<-EOF
+current_version_line=`#{migrate_command} current 2>&1 | tail -n 1`
+# determine if the $current_version_line ends with ": None"
+if [[ $current_version_line == *:\\ None ]]; then
+  #{migrate_command} stamp havana
+else
+  #{migrate_command} upgrade head
+fi
+EOF
+end
+
 service 'neutron-server' do
   service_name platform_options['neutron_server_service']
   supports status: true, restart: true

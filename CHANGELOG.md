@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.0.1:
+* Add network database migration
+
 ## 8.0.0:
 * Support neutron deployment by search and replace quantum with neutron
 

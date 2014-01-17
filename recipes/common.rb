@@ -370,6 +370,8 @@ when 'ryu'
 
 end
 
+node.set['openstack']['network']['plugin_config_file'] = template_file
+
 template '/etc/default/neutron-server' do
   source 'neutron-server.erb'
   owner 'root'
