@@ -46,7 +46,7 @@ MOCK_NODE_NETWORK_DATA =
 
 def neutron_stubs
   ::Chef::Recipe.any_instance.stub(:rabbit_servers)
-    .and_return '1.1.1.1:5672,2.2.2.2:5672'
+    .and_return('1.1.1.1:5672,2.2.2.2:5672')
   ::Chef::Recipe.any_instance.stub(:config_by_role)
     .with('rabbitmq-server', 'queue').and_return(
       host: 'rabbit-host',
@@ -54,19 +54,18 @@ def neutron_stubs
     )
   ::Chef::Recipe.any_instance.stub(:config_by_role)
     .with('glance-api', 'glance').and_return []
-  ::Chef::Recipe.any_instance.stub(:get_password).and_return ''
   ::Chef::Recipe.any_instance.stub(:secret)
     .with('secrets', 'openstack_identity_bootstrap_token')
-    .and_return 'bootstrap-token'
+    .and_return('bootstrap-token')
   ::Chef::Recipe.any_instance.stub(:secret)
     .with('secrets', 'neutron_metadata_secret')
-    .and_return 'metadata-secret'
+    .and_return('metadata-secret')
   ::Chef::Recipe.any_instance.stub(:get_password)
     .with('db', anything())
-    .and_return 'neutron'
+    .and_return('neutron')
   ::Chef::Recipe.any_instance.stub(:get_password)
     .with('service', 'openstack-network')
-    .and_return 'neutron-pass'
+    .and_return('neutron-pass')
   ::Chef::Recipe.any_instance.stub(:get_password)
     .with('user', 'guest')
     .and_return('rabbit-password')
