@@ -49,10 +49,6 @@ package platform_options['neutron_plugin_package'].gsub('%plugin%', main_plugin)
   not_if { platform_family? 'suse' }
 end
 
-execute "neutron-dhcp-setup --plugin #{main_plugin}" do
-  only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
-end
-
 template '/etc/neutron/dnsmasq.conf' do
   source 'dnsmasq.conf.erb'
   owner node['openstack']['network']['platform']['user']
