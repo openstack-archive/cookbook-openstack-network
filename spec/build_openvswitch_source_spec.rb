@@ -17,7 +17,7 @@ describe 'openvswitch::build_openvswitch_source' do
     node.set['openstack']['compute']['network']['service_type'] = 'nova'
     chef_run.converge 'openstack-network::openvswitch'
     chef_run.converge 'openstack-network::build_openvswitch_source'
-    ['build-essential', 'pkg-config', 'fakeroot', 'libssl-dev', 'openssl', 'debhelper', 'autoconf'].each do |pkg|
+    %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf).each do |pkg|
       expect(chef_run).to_not install_package pkg
     end
   end
@@ -25,7 +25,7 @@ describe 'openvswitch::build_openvswitch_source' do
   # since our mocked version of ubuntu is precise, our compile
   # utilities should be installed to build OVS from source
   it 'installs openvswitch build dependencies' do
-    ['build-essential', 'pkg-config', 'fakeroot', 'libssl-dev', 'openssl', 'debhelper', 'autoconf'].each do |pkg|
+    %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf).each do |pkg|
       expect(@chef_run).to install_package pkg
     end
   end

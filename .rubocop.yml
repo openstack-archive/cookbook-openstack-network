@@ -3,11 +3,11 @@ AllCops:
     - Gemfile
     - metadata.rb
     - attributes/**
+    - spec/**
 
   Excludes:
     - files/**
     - recipes/**
-    - spec/**
     - templates/**
 
 # UTF-8 headers not generally in these files
