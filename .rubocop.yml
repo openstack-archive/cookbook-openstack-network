@@ -2,19 +2,24 @@ AllCops:
   Includes:
     - Gemfile
     - metadata.rb
+    - attributes/**
+
+  Excludes:
+    - files/**
+    - recipes/**
+    - spec/**
+    - templates/**
 
 # UTF-8 headers not generally in these files
 Encoding:
-  Enabled: false
+  Exclude:
+    - metadata.rb
+    - Gemfile
 
 # ignore long lines
 LineLength:
   Enabled: false
 
-# ignore long methods
-MethodLength:
-  Enabled: false
-
 # ignore word arrays
 WordArray:
-  Enabled: false
+  MinSize: 3
