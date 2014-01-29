@@ -24,7 +24,7 @@ describe 'openstack-network::dhcp_agent' do
     # since our mocked version of ubuntu is precise, our compile
     # utilities should be installed to build dnsmasq
     it 'installs dnsmasq build dependencies' do
-      ['build-essential', 'pkg-config', 'libidn11-dev', 'libdbus-1-dev', 'libnetfilter-conntrack-dev', 'gettext'].each do |pkg|
+      %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext).each do |pkg|
         expect(@chef_run).to install_package pkg
       end
     end

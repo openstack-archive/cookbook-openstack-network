@@ -45,7 +45,7 @@ MOCK_NODE_NETWORK_DATA =
     }
   }
 
-def neutron_stubs
+def neutron_stubs # rubocop:disable MethodLength
   ::Chef::Recipe.any_instance.stub(:rabbit_servers)
     .and_return('1.1.1.1:5672,2.2.2.2:5672')
   ::Chef::Recipe.any_instance.stub(:config_by_role)
@@ -62,7 +62,7 @@ def neutron_stubs
     .with('secrets', 'neutron_metadata_secret')
     .and_return('metadata-secret')
   ::Chef::Recipe.any_instance.stub(:get_password)
-    .with('db', anything())
+    .with('db', anything)
     .and_return('neutron')
   ::Chef::Recipe.any_instance.stub(:get_password)
     .with('service', 'openstack-network')
