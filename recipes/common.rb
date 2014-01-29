@@ -107,11 +107,11 @@ identity_admin_endpoint = endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node['openstack']['db']['network']['username']
-db_pass = get_password "db", 'neutron'
+db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
 
 api_endpoint = endpoint 'network-api'
-service_pass = get_password "service", 'openstack-network'
+service_pass = get_password 'service', 'openstack-network'
 
 if node['openstack']['network']['api']['bind_interface'].nil?
   bind_address = api_endpoint.host

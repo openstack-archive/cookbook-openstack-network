@@ -4,10 +4,10 @@ AllCops:
     - metadata.rb
     - attributes/**
     - spec/**
+    - recipes/**
 
   Excludes:
     - files/**
-    - recipes/**
     - templates/**
 
 # UTF-8 headers not generally in these files

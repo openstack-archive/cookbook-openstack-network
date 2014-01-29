@@ -43,7 +43,7 @@ end
 # Migrate network database
 # If the database has never migrated, make the current version of alembic_version to havana,
 # else migrate the database to latest version.
-bash "migrate network database" do
+bash 'migrate network database' do
   plugin_config_file = node['openstack']['network']['plugin_config_file']
   migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
