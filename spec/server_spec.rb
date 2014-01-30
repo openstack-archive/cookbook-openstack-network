@@ -109,6 +109,13 @@ describe 'openstack-network::server' do
         'report_interval = 4')
     end
 
+    it 'sets rpc_backend correctly' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'rpc_backend=neutron.openstack.common.rpc.impl_kombu')
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        'rpc_backend=neutron.openstack.common.rpc.impl_qpid')
+    end
+
     it 'it sets root_helper' do
       expect(@chef_run).to render_file(@file.name).with_content(
         'root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"')
@@ -179,6 +186,13 @@ describe 'openstack-network::server' do
         @file = @chef_run.template '/etc/neutron/neutron.conf'
         @chef_run.node.set['openstack']['mq']['network']['service_type'] = 'qpid'
         @chef_run.converge 'openstack-network::server'
+      end
+
+      it 'sets rpc_backend correctly' do
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'rpc_backend=neutron.openstack.common.rpc.impl_qpid')
+        expect(@chef_run).not_to render_file(@file.name).with_content(
+          'rpc_backend=neutron.openstack.common.rpc.impl_kombu')
       end
 
       it 'has qpid_hostname' do
