@@ -65,6 +65,7 @@ api_paste_config = api-paste.ini
 # The strategy to be used for auth.
 # Supported values are 'keystone'(default), 'noauth'.
 # auth_strategy = keystone
+auth_strategy = <%= node["openstack"]["network"]['auth_strategy'] %>
 
 # Base MAC address. The first 3 octets will remain unchanged. If the
 # 4h octet is not 00, it will also used. The others will be

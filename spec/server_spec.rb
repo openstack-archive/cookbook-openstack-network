@@ -104,6 +104,11 @@ describe 'openstack-network::server' do
         'agent_down_time = 15')
     end
 
+    it 'it sets auth_strategy correctly' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'auth_strategy = keystone')
+    end
+
     it 'it sets agent report interval correctly' do
       expect(@chef_run).to render_file(@file.name).with_content(
         'report_interval = 4')
