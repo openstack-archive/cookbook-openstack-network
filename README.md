@@ -116,11 +116,12 @@ License and Author
 |                      |  Salman Baset (<sabaset@us.ibm.com>)               |
 |                      |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
 |                      |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
+|                      |  Mark Vanderwiel(<vanderwl@us.ibm.com>)            |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013, SUSE Linux GmbH               |
 |                      |  Copyright (c) 2012, Rackspace US, Inc.            |
-|                      |  Copyright (c) 2013, IBM Corp.                     |
+|                      |  Copyright (c) 2013-2014, IBM Corp.                |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

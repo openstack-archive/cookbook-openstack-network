@@ -42,13 +42,6 @@ service 'neutron-l3-agent' do
   action :enable
 end
 
-execute "neutron-l3-setup --plugin #{main_plugin}" do
-  only_if do
-    platform?(%w(fedora redhat centos)) && # :pragma-foodcritic: ~FC024 - won't fix this
-    !['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
-  end
-end
-
 template '/etc/neutron/l3_agent.ini' do
   source 'l3_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']

@@ -84,10 +84,6 @@ service 'neutron-plugin-openvswitch-agent' do
   action :enable
 end
 
-execute 'neutron-node-setup --plugin openvswitch' do
-  only_if { platform?(%w(fedora redhat centos)) } # :pragma-foodcritic: ~FC024 - won't fix this
-end
-
 unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
   int_bridge = node['openstack']['network']['openvswitch']['integration_bridge']
   execute 'create internal network bridge' do
