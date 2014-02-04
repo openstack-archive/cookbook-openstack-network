@@ -8,6 +8,8 @@ This file is used to list changes made in each version of cookbook-openstack-net
 ## 8.0.1:
 * Add network database migration
 * Remove unneeded and redundant rhel setup script calls
+* Deprecate node['openstack']['network']['neutron_loadbalancer'] in favor of
+  node['openstack']['network']['service_plugins']
 
 ## 8.0.0:
 * Support neutron deployment by search and replace quantum with neutron

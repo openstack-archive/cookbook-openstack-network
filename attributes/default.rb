@@ -123,6 +123,11 @@ default['openstack']['network']['plugins'] = ['openvswitch', 'openvswitch-agent'
 # the core plugin to use for neutron
 default['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2'
 
+# additional service plugins to use for neutron
+# e.g. neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin
+# for the loadbalancer reference implementation
+default['openstack']['network']['service_plugins'] = []
+
 # The bridging interface driver.
 #
 # Options are:
@@ -282,8 +287,9 @@ default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_s
 
 # ============================= LBaaS Agent Configuration ==================
 
-# Enable or disable neutron loadbalancer
-default['openstack']['network']['neutron_loadbalancer'] = false
+# node['openstack']['network']['neutron_loadbalancer'] is deprecated.  Use
+# node['openstack']['network']['service_plugins'] for the loadbalancer plugin.
+# See that attribute for details.
 
 # Plugin configuration path
 default['openstack']['network']['lbaas_config_path'] = '/etc/neutron/plugins/services/agent_loadbalancer'

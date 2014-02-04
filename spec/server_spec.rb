@@ -218,6 +218,18 @@ describe 'openstack-network::server' do
         'rabbit_virtual_host=/')
     end
 
+    it 'sets service_plugins' do
+      @file = @chef_run.template '/etc/neutron/neutron.conf'
+      @chef_run.node.set['openstack']['network']['service_plugins'] = %w{
+        neutron.foo
+        neutron.bar
+      }
+      @chef_run.converge 'openstack-network::server'
+
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'service_plugins = neutron.foo,neutron.bar')
+    end
+
     describe 'qpid' do
       before do
         @file = @chef_run.template '/etc/neutron/neutron.conf'
