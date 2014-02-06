@@ -1,25 +1,21 @@
 AllCops:
   Includes:
-    - Gemfile
     - metadata.rb
+    - Gemfile
     - attributes/**
-    - spec/**
+    - libraries/**
+    - providers/**
     - recipes/**
+    - resources/**
+    - spec/**
 
-  Excludes:
-    - files/**
-    - templates/**
-
-# UTF-8 headers not generally in these files
 Encoding:
   Exclude:
     - metadata.rb
     - Gemfile
 
-# ignore long lines
 LineLength:
   Enabled: false
 
-# ignore word arrays
 WordArray:
   MinSize: 3

@@ -33,15 +33,15 @@ MOCK_NODE_NETWORK_DATA =
             'fe80::a00:27ff:feca:ab08' => { 'scope' => 'Link', 'prefixlen' => '64', 'family' => 'inet6' },
             '10.0.0.2' => { 'netmask' => '255.255.255.0', 'broadcast' => '10.0.0.255', 'family' => 'inet' },
             '08:00:27:CA:AB:08' => { 'family' => 'lladdr' }
-          },
+          }
         },
         'lo' => {
           'addresses' => {
             '::1' => { 'scope' => 'Node', 'prefixlen' => '128', 'family' => 'inet6' },
             '127.0.0.1' => { 'netmask' => '255.0.0.0', 'family' => 'inet' }
-          },
-        },
-      },
+          }
+        }
+      }
     }
   }
 
