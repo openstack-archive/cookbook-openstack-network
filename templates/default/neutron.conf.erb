@@ -130,6 +130,7 @@ allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"
 
 <% if node["openstack"]["mq"]["network"]["service_type"] == "rabbitmq"  %>
 ##### RABBITMQ #####
+rpc_backend=neutron.openstack.common.rpc.impl_kombu
 rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
 rabbit_password=<%= @rabbit_pass %>
 rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
