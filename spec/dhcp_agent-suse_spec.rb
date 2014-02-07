@@ -3,11 +3,11 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::dhcp_agent' do
 
-  describe 'opensuse' do
+  describe 'suse' do
 
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::SUSE_OPTS do |n|
         n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       end
       @chef_run.converge 'openstack-network::dhcp_agent'

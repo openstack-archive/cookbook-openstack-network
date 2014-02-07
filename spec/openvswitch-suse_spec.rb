@@ -2,10 +2,10 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::openvswitch' do
-  describe 'opensuse' do
+  describe 'suse' do
     before do
       neutron_stubs
-      @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::SUSE_OPTS do |n|
         n.set['chef_client']['splay'] = 300
         n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       end
