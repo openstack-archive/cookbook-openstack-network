@@ -52,6 +52,7 @@ if node['openstack']['network']['openvswitch']['use_source_version']
 else
   platform_options['neutron_openvswitch_packages'].each do |pkg|
     package pkg do
+      options platform_options['package_overrides']
       action :install
     end
   end

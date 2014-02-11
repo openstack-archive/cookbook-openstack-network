@@ -31,6 +31,38 @@ describe 'openstack-network::server' do
       expect(@chef_run).to enable_service 'neutron-server'
     end
 
+    it 'allows overriding service names' do
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.set['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
+      chef_run.converge 'openstack-network::server'
+
+      expect(chef_run).to enable_service 'my-neutron-server'
+    end
+
+    it 'allows overriding package options' do
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.set['openstack']['network']['platform']['package_overrides'] = '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes'
+      chef_run.converge 'openstack-network::server'
+
+      expect(chef_run).to install_package('neutron-server').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
+    end
+
+    it 'allows overriding package names' do
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+      node = chef_run.node
+      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.set['openstack']['network']['platform']['neutron_server_packages'] = ['my-neutron', 'my-other-neutron']
+      chef_run.converge 'openstack-network::server'
+
+      %w{my-neutron my-other-neutron}.each do |pkg|
+        expect(chef_run).to install_package(pkg)
+      end
+    end
+
     it 'does not install openvswitch package or the agent' do
       expect(@chef_run).not_to install_package 'openvswitch'
       expect(@chef_run).not_to install_package 'neutron-plugin-openvswitch-agent'

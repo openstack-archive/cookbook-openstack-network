@@ -53,6 +53,44 @@ describe 'openstack-network::openvswitch' do
     expect(@chef_run).to enable_service 'neutron-plugin-openvswitch-agent'
   end
 
+  it 'allows overriding the service names' do
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+    node.set['openstack']['network']['platform']['neutron_openvswitch_service'] = 'my-ovs-server'
+    node.set['openstack']['network']['platform']['neutron_openvswitch_agent_service'] = 'my-ovs-agent'
+    chef_run.converge 'openstack-network::openvswitch'
+
+    %w{my-ovs-server my-ovs-agent}.each do |service|
+      expect(chef_run).to enable_service service
+    end
+  end
+
+  it 'allows overriding package options' do
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+    node.set['openstack']['network']['platform']['package_overrides'] = '--my-override1 --my-override2'
+    chef_run.converge 'openstack-network::openvswitch'
+
+    %w{openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent}.each do |pkg|
+      expect(chef_run).to install_package(pkg).with(options: '--my-override1 --my-override2')
+    end
+  end
+
+  it 'allows overriding package names' do
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+    node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
+    node.set['openstack']['network']['platform']['neutron_openvswitch_agent_packages'] = ['my-openvswitch-agent', 'my-other-openvswitch-agent']
+    chef_run.converge 'openstack-network::openvswitch'
+
+    %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
+      expect(chef_run).to install_package(pkg)
+    end
+  end
+
   describe 'ovs-dpctl-top' do
     before do
       @file = @chef_run.cookbook_file('ovs-dpctl-top')
