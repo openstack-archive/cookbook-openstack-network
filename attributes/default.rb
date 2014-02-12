@@ -27,6 +27,7 @@ default['openstack']['network']['custom_template_banner'] = '
 
 default['openstack']['network']['verbose'] = 'False'
 default['openstack']['network']['debug'] = 'False'
+default['openstack']['network']['auth_strategy'] = 'keystone'
 
 # Gets set in the Network Endpoint when registering with Keystone
 default['openstack']['network']['region'] = 'RegionOne'
