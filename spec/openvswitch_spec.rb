@@ -4,6 +4,7 @@ require_relative 'spec_helper'
 describe 'openstack-network::openvswitch' do
   before do
     neutron_stubs
+    @kmod_command = '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod'
     @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
       n.automatic_attrs['kernel']['release'] = '1.2.3'
       n.set['openstack']['network']['local_ip_interface'] = 'eth0'
@@ -89,6 +90,31 @@ describe 'openstack-network::openvswitch' do
     %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
       expect(chef_run).to install_package(pkg)
     end
+  end
+
+  it 'creates execute resource when openvswitch-datasource-dkms package is being installed' do
+    resource = @chef_run.find_resource('execute', @kmod_command).to_hash
+
+    expect(resource).to include(
+      action: [:nothing],
+      command: @kmod_command
+    )
+  end
+
+  it 'does not create execute resource when openvswitch-datasource-dkms package is not being installed' do
+    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+    node = chef_run.node
+    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+    node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
+    chef_run.converge 'openstack-network::openvswitch'
+
+    resource = chef_run.find_resource('execute', @kmod_command)
+    expect(resource).to eq(nil)
+
+  end
+
+  it 'notifies :run to the force-reload-kmod execute resource when openvswitch-datapath-dkms is installed' do
+    expect(@chef_run.package('openvswitch-datapath-dkms')).to notify("execute[#{@kmod_command}]").to(:run).immediately
   end
 
   describe 'ovs-dpctl-top' do
