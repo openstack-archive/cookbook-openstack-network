@@ -66,12 +66,12 @@ default['openstack']['network']['api']['bind_port'] = 9696
 default['openstack']['network']['syslog']['use'] = false
 
 # The driver for Quota management in Neutron. Possible values:
-#  neutron.quota.ConfDriver (default)
-#  neutron.quota.DbDriver
+#  neutron.quota.ConfDriver
+#  neutron.db.quota_db.DbQuotaDriver (default)
 #
 # Note: set this to the DbDriver if you want to be able to update
-# quotas for networks/subnets/security groups!
-default['openstack']['network']['quota']['driver'] = 'neutron.quota.ConfDriver'
+# quotas for networks/subnets/security groups
+default['openstack']['network']['quota']['driver'] = 'neutron.db.quota_db.DbQuotaDriver'
 
 # default quotas will be used when no more specific tenant entry exists
 # when using the DBDriver - override them below to adjust the default
