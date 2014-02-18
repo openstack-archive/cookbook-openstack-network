@@ -29,6 +29,17 @@ describe 'openstack-network::dhcp_agent' do
       end
     end
 
+    it 'skips dnsmasq build when asked to' do
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+      node = @chef_run.node
+      node.set['openstack']['compute']['network']['service_type'] = 'quantum'
+      node.set['openstack']['network']['dhcp']['dnsmasq_compile'] = false
+      @chef_run.converge 'openstack-network::dhcp_agent'
+      %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext).each do |pkg|
+        expect(@chef_run).to_not install_package pkg
+      end
+    end
+
     it 'installs quamtum dhcp package' do
       expect(@chef_run).to install_package 'neutron-dhcp-agent'
     end

@@ -76,8 +76,7 @@ end
 #
 # Would prefer a PPA or backport but there are none and upstream
 # has no plans to fix
-if node['lsb'] && node['lsb']['codename'] == 'precise'
-
+if node['lsb'] && node['lsb']['codename'] == 'precise' && node['openstack']['network']['dhcp']['dnsmasq_compile'] == true
   platform_options['neutron_dhcp_build_packages'].each do |pkg|
     package pkg do
       action :install

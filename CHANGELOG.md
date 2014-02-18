@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.1.1
+* allow dnsmasq source build to be optional
+
 ## 8.1.0
 * Add client recipe
 

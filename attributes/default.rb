@@ -198,6 +198,9 @@ default['openstack']['network']['dhcp']['enable_metadata_network'] = 'False'
 # See https://lists.launchpad.net/openstack/msg11696.html
 default['openstack']['network']['dhcp']['dnsmasq_url'] = 'https://github.com/guns/dnsmasq/archive/v2.65.tar.gz'
 
+# allow a wrapper to do this another way or use it's own package
+default['openstack']['network']['dhcp']['dnsmasq_compile'] = true
+
 # The name of the file we will fetch
 default['openstack']['network']['dhcp']['dnsmasq_filename'] = 'v2.65.tar.gz'
 
