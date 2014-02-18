@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.1.0
+* Add client recipe
+
 ## 8.0.1:
 * Add network database migration
 * Remove unneeded and redundant rhel setup script calls

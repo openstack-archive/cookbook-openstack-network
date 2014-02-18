@@ -29,6 +29,11 @@ The following cookbooks are dependencies:
 Recipes
 =======
 
+client
+------
+
+- Install the network client packages
+
 server
 ------
 
