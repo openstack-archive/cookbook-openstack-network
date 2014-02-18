@@ -78,4 +78,8 @@ def neutron_stubs # rubocop:disable MethodLength
   stub_command('ip link show eth1').and_return(false)
 end
 
+# README(galstrom21): This will remove any coverage warnings from
+#   dependent cookbooks
+ChefSpec::Coverage.filters << '*/openstack-network'
+
 at_exit { ChefSpec::Coverage.report! }
