@@ -114,6 +114,22 @@ if node['lsb'] && node['lsb']['codename'] == 'precise'
     notifies :install, 'dpkg_package[dnsmasq]', :immediately
   end
 
+  # wait for dnsmasq to start properly. Don't wait forever
+  ruby_block 'wait for dnsmasq' do
+    block do
+      count = 5
+      counter = 0
+      while counter < count
+        run = Mixlib::ShellOut.new('dig +time=5 @localhost | grep -q root-server[s]').run_command
+        break unless run.exitstatus > 0
+        counter += 1
+        Chef::Log.fatal('dnsmasq never became ready') if counter == count
+        sleep 1
+      end
+    end
+    action :nothing
+  end
+
   dpkg_package 'dnsmasq-utils' do
     source "#{extract_path}/../dnsmasq-utils_#{dhcp_options['dnsmasq_dpkgversion']}_#{dhcp_options['dnsmasq_architecture']}.deb"
     action :nothing
@@ -125,6 +141,7 @@ if node['lsb'] && node['lsb']['codename'] == 'precise'
   dpkg_package 'dnsmasq' do
     source "#{extract_path}/../dnsmasq_#{dhcp_options['dnsmasq_dpkgversion']}_all.deb"
     action :nothing
+    notifies :create, 'ruby_block[wait for dnsmasq]', :immediately
   end
 
 end
