@@ -58,6 +58,24 @@ else
   end
 end
 
+if platform?('ubuntu', 'debian')
+
+  # NOTE:(mancdaz):sometimes the openvswitch module does not get reloaded
+  # properly when openvswitch-datapath-dkms recompiles it.  This ensures
+  # that it does
+
+  begin
+    if resources('package[openvswitch-datapath-dkms]')
+      execute '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod' do
+        action :nothing
+        subscribes :run, resources('package[openvswitch-datapath-dkms]'), :immediately
+      end
+    end
+  rescue Chef::Exceptions::ResourceNotFound # rubocop:disable HandleExceptions
+  end
+
+end
+
 service 'neutron-openvswitch-switch' do
   service_name platform_options['neutron_openvswitch_service']
   supports status: true, restart: true
