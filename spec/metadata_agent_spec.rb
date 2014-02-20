@@ -45,8 +45,9 @@ describe 'openstack-network::metadata_agent' do
           'auth_url = http://127.0.0.1:5000/v2.0')
       end
       it 'sets auth region correctly' do
+        @chef_run.node.set['openstack']['network']['region'] = 'testRegion'
         expect(@chef_run).to render_file(@file.name).with_content(
-          'auth_region = RegionOne')
+          'auth_region = testRegion')
       end
       it 'sets admin tenant name' do
         expect(@chef_run).to render_file(@file.name).with_content(

@@ -57,6 +57,23 @@ describe 'openstack-network::identity_registration' do
     )
   end
 
+  it 'overrides network endpoint region' do
+    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+    @chef_run.node.set['openstack']['network']['region'] = 'netRegion'
+    @chef_run.node.set['openstack']['compute']['network']['service_type'] = 'quantum'
+    @chef_run.converge 'openstack-network::identity_registration'
+
+    resource = @chef_run.find_resource(
+      'openstack-identity_register',
+      'Register Network Endpoint'
+    ).to_hash
+
+    expect(resource).to include(
+      endpoint_region: 'netRegion',
+      action: [:create_endpoint]
+    )
+  end
+
   it 'registers service tenant' do
     resource = @chef_run.find_resource(
       'openstack-identity_register',
