@@ -218,6 +218,18 @@ describe 'openstack-network::server' do
         'rabbit_virtual_host=/')
     end
 
+    it 'has default dhcp_lease_duration setting' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'dhcp_lease_duration = 86400')
+    end
+
+    it 'has configurable dhcp_lease_duration setting' do
+      @chef_run.node.set['openstack']['network']['dhcp_lease_duration'] = 3600
+      @chef_run.converge 'openstack-network::server'
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'dhcp_lease_duration = 3600')
+    end
+
     it 'sets service_plugins' do
       @file = @chef_run.template '/etc/neutron/neutron.conf'
       @chef_run.node.set['openstack']['network']['service_plugins'] = %w{

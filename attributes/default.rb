@@ -163,6 +163,9 @@ default['openstack']['network']['allow_overlapping_ips'] = 'False'
 # use neutron root wrap
 default['openstack']['network']['use_rootwrap'] = true
 
+# DHCP lease duration
+default['openstack']['network']['dhcp_lease_duration'] = 86_400
+
 # ============================= DHCP Agent Configuration ===================
 
 # The scheduler class to use for scheduling to DHCP agents

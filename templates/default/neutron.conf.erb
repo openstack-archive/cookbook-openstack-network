@@ -76,7 +76,7 @@ auth_strategy = <%= node["openstack"]["network"]['auth_strategy'] %>
 # mac_generation_retries = 16
 
 # DHCP Lease duration (in seconds)
-# dhcp_lease_duration = 120
+dhcp_lease_duration = <%= node["openstack"]["network"]["dhcp_lease_duration"] %>
 
 # Allow sending resource operation notification to DHCP agent
 # dhcp_agent_notification = True
