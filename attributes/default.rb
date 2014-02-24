@@ -30,7 +30,7 @@ default['openstack']['network']['debug'] = 'False'
 default['openstack']['network']['auth_strategy'] = 'keystone'
 
 # Gets set in the Network Endpoint when registering with Keystone
-default['openstack']['network']['region'] = 'RegionOne'
+default['openstack']['network']['region'] = node['openstack']['region']
 default['openstack']['network']['service_user'] = 'neutron'
 default['openstack']['network']['service_role'] = 'admin'
 default['openstack']['network']['service_name'] = 'neutron'
