@@ -223,6 +223,9 @@ default['openstack']['network']['dhcp']['dnsmasq_architecture'] = 'amd64'
 # The debian package version that the above tarball will produce
 default['openstack']['network']['dhcp']['dnsmasq_dpkgversion'] = '2.65-1'
 
+# Limit number of leases to prevent a denial-of-service.
+default['openstack']['network']['dhcp']['dnsmasq_lease_max'] = 16777216
+
 # Upstream resolver to use
 # This will be used by dnsmasq to resolve recursively
 # but will not be used if the tenant specifies a dns

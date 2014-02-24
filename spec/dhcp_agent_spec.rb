@@ -86,6 +86,15 @@ describe 'openstack-network::dhcp_agent' do
       it 'checks dhcp domain' do
         expect(@chef_run).to render_file(@file.name).with_content(/^dhcp_domain = openstacklocal$/)
       end
+      it 'has default dnsmasq_lease_max setting' do
+        expect(@chef_run).to render_file(@file.name).with_content(/^dnsmasq_lease_max = 16777216$/)
+      end
+      it 'has configurable dnsmasq_lease_max setting' do
+        node = @chef_run.node
+        node.set['openstack']['network']['dhcp']['dnsmasq_lease_max'] = 16777215
+        @chef_run.converge 'openstack-network::dhcp_agent'
+        expect(@chef_run).to render_file(@file.name).with_content(/^dnsmasq_lease_max = 16777215$/)
+      end
     end
 
     describe '/etc/neutron/dnsmasq.conf' do

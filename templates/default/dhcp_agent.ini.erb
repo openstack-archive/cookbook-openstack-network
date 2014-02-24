@@ -53,3 +53,5 @@ dhcp_domain = <%= node["openstack"]["network"]["dhcp"]["default_domain"] %>
 # like the mtu passed to the virtual machine
 dnsmasq_config_file = /etc/neutron/dnsmasq.conf
 
+# Limit number of leases to prevent a denial-of-service.
+dnsmasq_lease_max = <%= node["openstack"]["network"]["dhcp"]["dnsmasq_lease_max"] %>
