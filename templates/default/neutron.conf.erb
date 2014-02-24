@@ -191,7 +191,8 @@ qpid_tcp_nodelay=<%= node["openstack"]["mq"]["network"]["qpid"]["tcp_nodelay"] %
 # Logging driver
 # notification_driver = neutron.openstack.common.notifier.log_notifier
 # RPC driver. DHCP agents needs it.
-notification_driver = neutron.openstack.common.notifier.rpc_notifier
+#notification_driver = neutron.openstack.common.notifier.rpc_notifier
+notification_driver = <%= node["openstack"]["network"]["notification_driver"] %>
 
 # default_notification_level is used to form actual topic name(s) or to set logging level
 default_notification_level = INFO
@@ -202,7 +203,7 @@ default_notification_level = INFO
 
 # Defined in rpc_notifier, can be comma separated values.
 # The actual topic names will be %s.%(default_notification_level)s
-notification_topics = notifications
+notification_topics = <%= node["openstack"]["mq"]["network"]["notification_topics"] %>
 
 # Default maximum number of items returned in a single response,
 # value == infinite and value < 0 means no max limit, and value must

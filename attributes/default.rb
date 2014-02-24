@@ -178,6 +178,9 @@ default['openstack']['network']['use_rootwrap'] = true
 # DHCP lease duration
 default['openstack']['network']['dhcp_lease_duration'] = 86400
 
+# Driver or drivers to handle sending notifications
+default['openstack']['network']['notification_driver'] = 'neutron.openstack.common.notifier.rpc_notifier'
+
 # ============================= DHCP Agent Configuration ===================
 
 # The scheduler class to use for scheduling to DHCP agents

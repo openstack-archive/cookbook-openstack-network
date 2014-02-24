@@ -236,6 +236,32 @@ describe 'openstack-network::server' do
         /^service_plugins =/)
     end
 
+    it 'has default notification_driver setting' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'notification_driver = neutron.openstack.common.notifier.rpc_notifier')
+    end
+
+    it 'has configurable notification_driver setting' do
+      driver = 'neutron.openstack.common.notifier.no_op_notifier'
+      @file = @chef_run.template '/etc/neutron/neutron.conf'
+      @chef_run.node.set['openstack']['network']['notification_driver'] = driver
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "notification_driver = #{driver}")
+    end
+
+    it 'has default notification_topics setting' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'notification_topics = notifications')
+    end
+
+    it 'has configurable notification_topics setting' do
+      topics = 'notifications1,notifications2'
+      @file = @chef_run.template '/etc/neutron/neutron.conf'
+      @chef_run.node.set['openstack']['mq']['network']['notification_topics'] = topics
+      expect(@chef_run).to render_file(@file.name).with_content(
+        "notification_topics = #{topics}")
+    end
+
     it 'sets service_plugins' do
       @chef_run.node.set['openstack']['network']['service_plugins'] = %w{
         neutron.foo
