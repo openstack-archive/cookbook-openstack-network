@@ -90,6 +90,21 @@ TODO: move rabbit parameters under openstack["network"]["mq"]
 * `openstack["network"]["mq"]["qpid"]["protocol"]` - Protocol to use. Default tcp.
 * `openstack["network"]["mq"]["qpid"]["tcp_nodelay"]` - Disable the Nagle algorithm. default disabled.
 
+Linuxbridge plugin attributes
+-----------------------------
+* `openstack['openstack']['network']['linuxbridge']['tenant_network_type']` - Type of network to allocate for tenant networks. (default 'local')
+* `openstack['openstack']['network']['linuxbridge']['network_vlan_ranges']` - Comma-separated list of <physical_network>[:<vlan_min>:<vlan_max>] tuples enumerating ranges of VLAN IDs
+* `openstack['openstack']['network']['linuxbridge']['physical_interface_mappings']` - (ListOpt) Comma-separated list of <physical_network>:<physical_interface> tuples mapping physical network names
+* `openstack['openstack']['network']['linuxbridge']['enable_vxlan']` - (BoolOpt) enable VXLAN on the agent. (default false)
+* `openstack['openstack']['network']['linuxbridge']['ttl']` - (IntOpt) use specific TTL for vxlan interface protocol packets
+* `openstack['openstack']['network']['linuxbridge']['tos']` - (IntOpt) use specific TOS for vxlan interface protocol packets
+* `openstack['openstack']['network']['linuxbridge']['vxlan_group']` - (StrOpt) multicast group to use for broadcast emulation. (default '224.0.0.1')
+* `openstack['openstack']['network']['linuxbridge']['local_ip']` - (StrOpt) Local IP address to use for VXLAN endpoints (required). (default '127.0.0.1')
+* `openstack['openstack']['network']['linuxbridge']['local_ip_interface']` - (StrOpt) Local IP address of the specified interface. (default nil)
+* `openstack['openstack']['network']['linuxbridge']['l2_population']` - (BoolOpt) Flag to enable l2population extension. (default false)
+* `openstack['openstack']['network']['linuxbridge']['polling_interval']` - Agent polling interval in seconds. (default 2)
+* `openstack['openstack']['network']['linuxbridge']['rpc_support_old_agents']` - (BoolOpt) Enable server RPC compatibility with old (pre-havana). (default false)
+* `openstack['openstack']['network']['linuxbridge']['firewall_driver']` - Firewall driver for realizing neutron security group function
 
 Templates
 =========

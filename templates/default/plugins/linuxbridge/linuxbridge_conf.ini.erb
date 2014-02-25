@@ -1,5 +1,5 @@
 <%= node["openstack"]["network"]["custom_template_banner"] %>
-[VLANS]
+[vlans]
 # (StrOpt) Type of network to allocate for tenant networks. The
 # default value 'local' is useful only for single-box testing and
 # provides no connectivity between hosts. You MUST change this to
@@ -23,7 +23,7 @@ tenant_network_type = <%= node["openstack"]["network"]["linuxbridge"]["tenant_ne
 # Example: network_vlan_ranges = physnet1:1000:2999
 network_vlan_ranges = <%= node["openstack"]["network"]["linuxbridge"]["network_vlan_ranges"] %>
 
-[LINUX_BRIDGE]
+[linux_bridge]
 # (ListOpt) Comma-separated list of
 # <physical_network>:<physical_interface> tuples mapping physical
 # network names to the agent's node-specific physical network
@@ -33,12 +33,46 @@ network_vlan_ranges = <%= node["openstack"]["network"]["linuxbridge"]["network_v
 #
 # Default: physical_interface_mappings =
 # Example: physical_interface_mappings = physnet1:eth1
-physical_interface_mappings = <%= node["openstack"]["network"]["linuxbridge"]["physical_interface_mappings"] %>
+physical_interface_mappings = <%= node['openstack']['network']['linuxbridge']['physical_interface_mappings'] %>
 
-[AGENT]
+[vxlan]
+# (BoolOpt) enable VXLAN on the agent
+# VXLAN support can be enabled when agent is managed by ml2 plugin using
+# linuxbridge mechanism driver. Useless if set while using linuxbridge plugin.
+enable_vxlan = <%= node['openstack']['network']['linuxbridge']['enable_vxlan'] %>
+
+# (IntOpt) use specific TTL for vxlan interface protocol packets
+ttl = <%= node['openstack']['network']['linuxbridge']['ttl'] %>
+
+# (IntOpt) use specific TOS for vxlan interface protocol packets
+tos = <%= node['openstack']['network']['linuxbridge']['tos'] %>
+
+# (StrOpt) multicast group to use for broadcast emulation.
+# This group must be the same on all the agents.
+vxlan_group = <%= node['openstack']['network']['linuxbridge']['vxlan_group'] %>
+
+# (StrOpt) Local IP address to use for VXLAN endpoints (required)
+local_ip = <%= @local_ip %>
+
+# (BoolOpt) Flag to enable l2population extension. This option should be used
+# in conjunction with ml2 plugin l2population mechanism driver (in that case,
+# both linuxbridge and l2population mechanism drivers should be loaded).
+# It enables plugin to populate VXLAN forwarding table, in order to limit
+# the use of broadcast emulation (multicast will be turned off if kernel and
+# iproute2 supports unicast flooding - requires 3.11 kernel and iproute2 3.10)
+l2_population = <%= node['openstack']['network']['linuxbridge']['l2_population'] %>
+
+[agent]
 # Agent's polling interval in seconds
-polling_interval = 2
+polling_interval = <%= node['openstack']['network']['linuxbridge']['polling_interval'] %>
 
-[SECURITYGROUP]
+# (BoolOpt) Enable server RPC compatibility with old (pre-havana)
+# agents.
+#
+# rpc_support_old_agents = False
+# Example: rpc_support_old_agents = True
+rpc_support_old_agents = <%= node['openstack']['network']['linuxbridge']['rpc_support_old_agents'] %>
+
+[securitygroup]
 # Firewall driver for realizing neutron security group function
-firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+firewall_driver = <%= node['openstack']['network']['linuxbridge']['firewall_driver'] %>
