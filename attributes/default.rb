@@ -164,7 +164,7 @@ default['openstack']['network']['allow_overlapping_ips'] = 'False'
 default['openstack']['network']['use_rootwrap'] = true
 
 # DHCP lease duration
-default['openstack']['network']['dhcp_lease_duration'] = 86_400
+default['openstack']['network']['dhcp_lease_duration'] = 86400
 
 # ============================= DHCP Agent Configuration ===================
 
@@ -499,10 +499,10 @@ default['openstack']['network']['cisco']['vlan_name_prefix'] = 'q-'
 # Maximum number of ports
 default['openstack']['network']['cisco']['max_ports'] = 100
 # Max number of port profiles
-default['openstack']['network']['cisco']['max_port_profiles'] = 65_568
+default['openstack']['network']['cisco']['max_port_profiles'] = 65568
 
 # Maximum number of networks
-default['openstack']['network']['cisco']['max_networks'] = 65_568
+default['openstack']['network']['cisco']['max_networks'] = 65568
 
 # Module and class path for switch model
 default['openstack']['network']['cisco']['model_class'] = 'neutron.plugins.cisco.models.virt_phy_sw_v2.VirtualPhysicalSwitchModelV2'
