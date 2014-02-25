@@ -63,35 +63,6 @@ default_l2_gw_service_uuid = <%= node["openstack"]["network"]["nicira"]["default
 default_iface_name = <%= node["openstack"]["network"]["nicira"]["default_iface_name"] %>
 
 
-[DATABASE]
-# This line MUST be changed to actually run the plugin.
-# Example:
-# sql_connection = mysql://root:neutron@127.0.0.1:3306/nvp_neutron
-# Replace 127.0.0.1 above with the IP address of the database used by the
-# main neutron server. (Leave it as is if the database runs on this host.)
-sql_connection = <%= @sql_connection %>
-
-# Number of reconnection attempts to the DB; Set to -1 to try indefinitely
-# sql_max_retries = 10
-
-# Period between reconnection attempts to the DB
-# reconnect_interval = 2
-
-# Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
-# sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
-
-# sql_dbpool_enable = False
-
-# Minimum number of SQL connections to keep open in a pool
-# sql_min_pool_size = 1
-
-# Maximum number of SQL connections to keep open in a pool
-# sql_max_pool_size = 5
-
-# Timeout in seconds before idle sql connections are reaped
-# sql_idle_timeout = 3600
-
-
 [QUOTAS]
 # number of network gateways allowed per tenant, -1 means unlimited
 quota_network_gateway = <%= node["openstack"]["network"]["nicira"]["quota_network_gateway"] %>

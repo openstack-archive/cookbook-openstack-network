@@ -1,27 +1,4 @@
 <%= node["openstack"]["network"]["custom_template_banner"] %>
-[DATABASE]
-# This line MUST be changed to actually run the plugin.
-# Example:
-# sql_connection = mysql://neutron:password@127.0.0.1:3306/hyperv_neutron
-# Replace 127.0.0.1 above with the IP address of the database used by the
-# main neutron server. (Leave it as is if the database runs on this host.)
-sql_connection = <%= @sql_connection %>
-# Database reconnection retry times - in event connectivity is lost
-# set to -1 implies an infinite retry count
-# sql_max_retries = 10
-# Database reconnection interval in seconds - if the initial connection to the
-# database fails
-reconnect_interval = 2
-# Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
-# sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
-# sql_dbpool_enable = False
-# Minimum number of SQL connections to keep open in a pool
-# sql_min_pool_size = 1
-# Maximum number of SQL connections to keep open in a pool
-# sql_max_pool_size = 5
-# Timeout in seconds before idle sql connections are reaped
-# sql_idle_timeout = 3600
-
 [HYPERV]
 # (StrOpt) Type of network to allocate for tenant networks. The
 # default value 'local' is useful only for single-box testing and
