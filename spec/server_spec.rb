@@ -493,5 +493,35 @@ describe 'openstack-network::server' do
       expect(@chef_run).to render_file(@file.name).with_content(
         'service_provider = provider2')
     end
+
+    describe '/etc/neutron/plugins/ml2/ml2_conf.ini' do
+      before do
+        @file = @chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini')
+      end
+
+      it 'has proper owner' do
+        expect(@file.owner).to eq('neutron')
+        expect(@file.group).to eq('neutron')
+      end
+
+      it 'has proper modes' do
+        expect(sprintf('%o', @file.mode)).to eq '644'
+      end
+
+      [
+        /^type_drivers = local,flat,vlan,gre,vxlan$/,
+        /^tenant_network_types = local$/,
+        /^mechanism_drivers = $/,
+        /^flat_networks = $/,
+        /^network_vlan_ranges = $/,
+        /^tunnel_id_ranges = $/,
+        /^vni_ranges = $/,
+        /^vxlan_group = $/
+      ].each do |content|
+        it "has a #{content.source[1...-1]} line" do
+          expect(@chef_run).to render_file(@file.name).with_content(content)
+        end
+      end
+    end
   end
 end

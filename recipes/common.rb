@@ -194,6 +194,15 @@ end
 # physical servers like the l3 agent, so we assume
 # the plugin configuration is a "common" file
 
+template '/etc/neutron/plugins/ml2/ml2_conf.ini' do
+  source 'plugins/ml2/ml2_conf.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00644
+
+  notifies :restart, 'service[neutron-server]', :delayed
+end
+
 template_file = nil
 plugin_file = '/etc/neutron/plugin.ini'
 

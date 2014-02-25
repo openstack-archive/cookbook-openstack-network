@@ -106,12 +106,23 @@ Linuxbridge plugin attributes
 * `openstack['openstack']['network']['linuxbridge']['rpc_support_old_agents']` - (BoolOpt) Enable server RPC compatibility with old (pre-havana). (default false)
 * `openstack['openstack']['network']['linuxbridge']['firewall_driver']` - Firewall driver for realizing neutron security group function
 
+Modular Layer 2 Plugin Configuration
+------------------------------------
+* `openstack['openstack']['network']['ml2']['type_drivers']` - (ListOpt) List of network type driver entrypoints to be loaded from the neutron.ml2.type_drivers namespace.
+* `openstack['openstack']['network']['ml2']['tenant_network_types']` - (ListOpt) Ordered list of net work_types to allocate as tenant networks. (default local)
+* `openstack['openstack']['network']['ml2']['mechanism_drivers']` - (ListOpt) Ordered list of networ king mechanism driver entrypoints to be loaded from the neutron.ml2.mechanism_drivers namespace.
+* `openstack['openstack']['network']['ml2']['flat_networks']` - (ListOpt) List of physical_network names with which flat networks can be created.
+* `openstack['openstack']['network']['ml2']['network_vlan_ranges']` - (ListOpt) List of <physical_network>[:<vlan_min>:<vlan_max>] tuples specifying physical_network names usable for VLAN provider and tenant networks
+* `openstack['openstack']['network']['ml2']['tunnel_id_ranges']` - (ListOpt) Comma-separated list of <tun_min>:<tun_max> tuples enumerating ranges of GRE tunnel IDs that are available for tenant network allocation
+* `openstack['openstack']['network']['ml2']['vni_ranges']` - (ListOpt) Comma-separated list of <vni_min>:<vni_max> tuples enumerating ranges of VXLAN VNI IDs that are available for tenant network allocation.
+* `openstack['openstack']['network']['ml2']['vxlan_group']` - (StrOpt) Multicast group for the VXLAN interface.
+
 Templates
 =========
-
 * `api-paste.ini.erb` - Paste config for OpenStack Network server
 * `neutron.conf.erb` - Config file for OpenStack Network server
 * `policy.json.erb` - Configuration of ACLs for glance API server
+* `ml2_conf.ini.erb` - Configuration of Network ML2 Plugins
 
 Testing
 =======

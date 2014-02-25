@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.4.0
+* Add new template for ml2 plugin
+
 ## 8.3.0
 * Add new attributes to support vxlan in linuxbridge plugin template
 

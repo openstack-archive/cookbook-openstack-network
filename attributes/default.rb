@@ -4,6 +4,7 @@
 # Attributes:: default
 #
 # Copyright 2013, AT&T
+# Copyright 2014, IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -824,6 +825,63 @@ default['openstack']['network']['ryu']['firewall_driver'] = 'neutron.agent.linux
 # Agent's polling interval in seconds
 default['openstack']['network']['ryu']['polling_interval'] = 2
 
+# ============================= ML2 Plugin Configuration ===================
+# (ListOpt) List of network type driver entrypoints to be loaded from
+# the neutron.ml2.type_drivers namespace.
+#
+# type_drivers = local,flat,vlan,gre,vxlan
+# Example: type_drivers = flat,vlan,gre,vxlan
+default['openstack']['network']['ml2']['type_drivers'] = 'local,flat,vlan,gre,vxlan'
+
+# (ListOpt) Ordered list of network_types to allocate as tenant
+# networks. The default value 'local' is useful for single-box testing
+# but provides no connectivity between hosts.
+#
+# tenant_network_types = local
+# Example: tenant_network_types = vlan,gre,vxlan
+default['openstack']['network']['ml2']['tenant_network_types'] = 'local'
+
+# (ListOpt) Ordered list of networking mechanism driver entrypoints
+# to be loaded from the neutron.ml2.mechanism_drivers namespace.
+# mechanism_drivers =
+# Example: mechanism_drivers = arista
+# Example: mechanism_drivers = cisco,logger
+default['openstack']['network']['ml2']['mechanism_drivers'] = ''
+
+# (ListOpt) List of physical_network names with which flat networks
+# can be created. Use * to allow flat networks with arbitrary
+# physical_network names.
+#
+# flat_networks =
+# Example:flat_networks = physnet1,physnet2
+# Example:flat_networks = *
+default['openstack']['network']['ml2']['flat_networks'] = ''
+
+# (ListOpt) List of <physical_network>[:<vlan_min>:<vlan_max>] tuples
+# specifying physical_network names usable for VLAN provider and
+# tenant networks, as well as ranges of VLAN tags on each
+# physical_network available for allocation as tenant networks.
+#
+# network_vlan_ranges =
+# Example: network_vlan_ranges = physnet1:1000:2999,physnet2
+default['openstack']['network']['ml2']['network_vlan_ranges'] = ''
+
+# (ListOpt) Comma-separated list of <tun_min>:<tun_max> tuples enumerating
+# ranges of GRE tunnel IDs that are available for tenant network allocation
+default['openstack']['network']['ml2']['tunnel_id_ranges'] = ''
+
+# (ListOpt) Comma-separated list of <vni_min>:<vni_max> tuples enumerating
+# ranges of VXLAN VNI IDs that are available for tenant network allocation.
+default['openstack']['network']['ml2']['vni_ranges'] = ''
+
+# (StrOpt) Multicast group for the VXLAN interface. When configured, will
+# enable sending all broadcast traffic to this multicast group. When left
+# unconfigured, will disable multicast VXLAN mode.
+#
+# vxlan_group =
+# Example: vxlan_group = 239.1.1.1
+default['openstack']['network']['ml2']['vxlan_group'] = ''
+
 # platform-specific settings
 case platform
 when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
@@ -834,7 +892,7 @@ when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
     'db2_python_packages' => ['db2-odbc', 'python-ibm-db', 'python-ibm-db-sa'],
     'postgresql_python_packages' => ['python-psycopg2'],
     'nova_network_packages' => ['openstack-nova-network'],
-    'neutron_packages' => ['openstack-neutron'],
+    'neutron_packages' => ['openstack-neutron', 'openstack-neutron-ml2'],
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron'],
     'neutron_dhcp_build_packages' => [],
