@@ -54,7 +54,9 @@ core_plugin = <%= @core_plugin %>
 
 # Advanced service modules
 # service_plugins =
+<% if node['openstack']['network']['service_plugins'].any? %>
 service_plugins = <%= node['openstack']['network']['service_plugins'].join(',') %>
+<% end %>
 
 # Paste configuration file
 api_paste_config = api-paste.ini

@@ -230,8 +230,12 @@ describe 'openstack-network::server' do
         'dhcp_lease_duration = 3600')
     end
 
+    it 'does not set service_plugins when attribute is []' do
+      expect(@chef_run).not_to render_file(@file.name).with_content(
+        /^service_plugins =/)
+    end
+
     it 'sets service_plugins' do
-      @file = @chef_run.template '/etc/neutron/neutron.conf'
       @chef_run.node.set['openstack']['network']['service_plugins'] = %w{
         neutron.foo
         neutron.bar
