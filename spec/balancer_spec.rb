@@ -27,16 +27,26 @@ describe 'openstack-network::balancer' do
       end
     end
 
-    it 'creates directory /etc/neutron/plugins/services/agent_loadbalancer' do
-      expect(@chef_run).to create_directory '/etc/neutron/plugins/services/agent_loadbalancer'
-    end
+    describe 'lbaas_agent.ini' do
+      before do
+        @file = @chef_run.template '/etc/neutron/lbaas_agent.ini'
+      end
 
-    it 'balancer config' do
-      configf = '/etc/neutron/plugins/services/agent_loadbalancer/lbaas_agent.ini'
-      expect(@chef_run).to create_template(configf)
-      expect(@chef_run).to render_file(configf).with_content(/periodic_interval = 10/)
-      expect(@chef_run).to render_file(configf).with_content(
-        /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/)
+      it 'has proper owner' do
+        expect(@file.owner).to eq('neutron')
+        expect(@file.group).to eq('neutron')
+      end
+
+      it 'has proper mode' do
+        expect(sprintf('%o', @file.mode)).to eq '640'
+      end
+
+      it 'has default settings' do
+        expect(@chef_run).to render_file(@file.name).with_content(/periodic_interval = 10/)
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/)
+      end
+
     end
 
   end
