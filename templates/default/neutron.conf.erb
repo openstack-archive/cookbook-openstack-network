@@ -325,4 +325,61 @@ admin_user = <%= node["openstack"]["network"]["service_user"] %>
 admin_password = <%= @service_pass %>
 signing_dir = <%= node["openstack"]["network"]["api"]["agent"]["signing_dir"] %>
 
+[database]
+# This line MUST be changed to actually run the plugin.
+# Example:
+# connection = mysql://root:nova@127.0.0.1:3306/neutron_linux_bridge
+# Replace 127.0.0.1 above with the IP address of the database used by the
+# main neutron server. (Leave it as is if the database runs on this host.)
+connection = <%= @sql_connection %>
+
+# The SQLAlchemy connection string used to connect to the slave database
+slave_connection = <%= node['openstack']['db']['network']['slave_connection'] %>
+
+# Database reconnection retry times - in event connectivity is lost
+# set to -1 implies an infinite retry count
+max_retries = <%= node['openstack']['db']['network']['max_retries'] %>
+
+# Database reconnection interval in seconds - if the initial connection to the
+# database fails
+retry_interval = <%= node['openstack']['db']['network']['retry_interval'] %>
+
+# Minimum number of SQL connections to keep open in a pool
+min_pool_size = <%= node['openstack']['db']['network']['min_pool_size'] %>
+
+# Maximum number of SQL connections to keep open in a pool
+max_pool_size = <%= node['openstack']['db']['network']['max_pool_size'] %>
+
+# Timeout in seconds before idle sql connections are reaped
+idle_timeout = <%= node['openstack']['db']['network']['idle_timeout'] %>
+
+# If set, use this value for max_overflow with sqlalchemy
+max_overflow = <%= node['openstack']['db']['network']['max_overflow'] %>
+
+# Verbosity of SQL debugging information. 0=None, 100=Everything
+connection_debug = <%= node['openstack']['db']['network']['connection_debug'] %>
+
+# Add python stack traces to SQL as comment strings
+connection_trace = <%= node['openstack']['db']['network']['connection_trace'] %>
+
+# If set, use this value for pool_timeout with sqlalchemy
+pool_timeout = <%= node['openstack']['db']['network']['pool_timeout'] %>
+
+[service_providers]
+# Specify service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
+# Must be in form:
+# service_provider=<service_type>:<name>:<driver>[:default]
+# List of allowed service type include LOADBALANCER, FIREWALL, VPN
+# Combination of <service type> and <name> must be unique; <driver> must also be unique
+# this is multiline option, example for default provider:
+# service_provider=LOADBALANCER:name:lbaas_plugin_driver_path:default
+# example of non-default provider:
+# service_provider=FIREWALL:name2:firewall_driver_path
+# --- Reference implementations ---
+<% if node['openstack']['network']['service_provider'].any? %>
+  <% node['openstack']['network']['service_provider'].each do |provider| %>
+service_provider = <%= provider %>
+  <% end %>
+<% end %>
+
 # ===========  end of items for agent management extension =====

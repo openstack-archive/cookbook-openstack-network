@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.2.0
+* Move the database section into neutron.conf from plugins
+* Make the service_provider attribute configurable
+
 ## 8.1.1
 * allow dnsmasq source build to be optional
 

@@ -194,16 +194,5 @@ describe 'openstack-network::openvswitch' do
     it 'it uses local_ip from eth0 when local_ip_interface is set' do
       expect(@chef_run).to render_file(@file.name).with_content('local_ip = 10.0.0.3')
     end
-
-    it 'sets sqlalchemy attributes' do
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'sql_dbpool_enable = False')
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'sql_min_pool_size = 1')
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'sql_max_pool_size = 5')
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'sql_idle_timeout = 3600')
-    end
   end
 end

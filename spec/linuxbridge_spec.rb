@@ -44,22 +44,6 @@ describe 'openstack-network::linuxbridge' do
       it 'has proper modes' do
         expect(sprintf('%o', @file.mode)).to eq '644'
       end
-
-      it 'has a correct sql_connection value' do
-        expect(@chef_run).to render_file(@file.name).with_content(
-          'mysql://neutron:neutron@127.0.0.1:3306/neutron')
-      end
-
-      it 'sets sqlalchemy attributes' do
-        expect(@chef_run).to render_file(@file.name).with_content(
-          'sql_dbpool_enable = False')
-        expect(@chef_run).to render_file(@file.name).with_content(
-          'sql_min_pool_size = 1')
-        expect(@chef_run).to render_file(@file.name).with_content(
-          'sql_max_pool_size = 5')
-        expect(@chef_run).to render_file(@file.name).with_content(
-          'sql_idle_timeout = 3600')
-      end
     end
   end
 end

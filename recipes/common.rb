@@ -161,7 +161,8 @@ template '/etc/neutron/neutron.conf' do
     rabbit_pass: rabbit_pass,
     core_plugin: core_plugin,
     identity_endpoint: identity_endpoint,
-    service_pass: service_pass
+    service_pass: service_pass,
+    sql_connection: sql_connection
   )
 
   notifies :restart, 'service[neutron-server]', :delayed
@@ -208,9 +209,6 @@ when 'bigswitch'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -225,9 +223,6 @@ when 'brocade'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -242,9 +237,6 @@ when 'cisco'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -259,9 +251,6 @@ when 'hyperv'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -276,9 +265,6 @@ when 'linuxbridge'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -296,9 +282,6 @@ when 'midonet'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -313,9 +296,6 @@ when 'nec'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -330,9 +310,6 @@ when 'nicira'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -348,7 +325,6 @@ when 'openvswitch'
     group node['openstack']['network']['platform']['group']
     mode 00644
     variables(
-      sql_connection: sql_connection,
       local_ip: local_ip
     )
     notifies :create, "link[#{plugin_file}]", :immediately
@@ -367,9 +343,6 @@ when 'plumgrid'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -384,9 +357,6 @@ when 'ryu'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    variables(
-      sql_connection: sql_connection
-    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed

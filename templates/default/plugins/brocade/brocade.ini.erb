@@ -15,22 +15,6 @@ ostype = <%= node["openstack"]["network"]["brocade"]["switch_ostype"] %>
 # address  = 10.24.84.38
 # ostype   = NOS
 
-[DATABASE]
-# sql_connection = sqlite://
-# Enable the use of eventlet's db_pool for MySQL. The flags sql_min_pool_size,
-# sql_max_pool_size and sql_idle_timeout are relevant only if this is enabled.
-# sql_dbpool_enable = False
-# Minimum number of SQL connections to keep open in a pool
-# sql_min_pool_size = 1
-# Maximum number of SQL connections to keep open in a pool
-# sql_max_pool_size = 5
-# Timeout in seconds before idle sql connections are reaped
-# sql_idle_timeout = 3600
-#
-# Example:
-# sql_connection = mysql://root:pass@localhost/brcd_neutron?charset=utf8
-sql_connection = <%= @sql_connection %>
-
 [PHYSICAL_INTERFACE]
 # physical_interface = <physical network name>
 #

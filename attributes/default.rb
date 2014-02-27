@@ -120,6 +120,18 @@ default['openstack']['network']['cron_replicate_dhcp'] = '*/1'
 # default by the main openstack-neutron package
 default['openstack']['network']['plugins'] = ['openvswitch', 'openvswitch-agent']
 
+# (ListOpt) Specify service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
+# Must be in form:
+# service_provider=<service_type>:<name>:<driver>[:default]
+# List of allowed service type include LOADBALANCER, FIREWALL, VPN
+# Combination of <service type> and <name> must be unique; <driver> must also be unique
+# this is multiline option, example for default provider:
+# service_provider=LOADBALANCER:name:lbaas_plugin_driver_path:default
+# example of non-default provider:
+# service_provider=FIREWALL:name2:firewall_driver_path
+# --- Reference implementations ---
+default['openstack']['network']['service_provider'] = []
+
 # the core plugin to use for neutron
 default['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2'
 

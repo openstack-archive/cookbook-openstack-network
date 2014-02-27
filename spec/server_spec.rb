@@ -9,6 +9,7 @@ describe 'openstack-network::server' do
       n.set['openstack']['mq']['host'] = '127.0.0.1'
       n.set['chef_client']['splay'] = 300
       n.set['openstack']['network']['quota']['driver'] = 'my.quota.Driver'
+      n.set['openstack']['network']['service_provider'] = ['provider1', 'provider2']
     end
     @chef_run.converge 'openstack-network::server'
   end
@@ -425,6 +426,43 @@ describe 'openstack-network::server' do
       stub_command(/python/).and_return(true)
       chef_run.converge 'openstack-network::server'
       expect(chef_run).not_to create_file('/etc/sysconfig/neutron')
+    end
+
+    describe 'database' do
+      it 'has a correct sql_connection value' do
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'mysql://neutron:neutron@127.0.0.1:3306/neutron')
+      end
+
+      it 'sets sqlalchemy attributes' do
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'slave_connection =')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'max_retries = 10')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'retry_interval = 10')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'min_pool_size = 1')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'max_pool_size = 10')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'idle_timeout = 3600')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'max_overflow = 20')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'connection_debug = 0')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'connection_trace = false')
+        expect(@chef_run).to render_file(@file.name).with_content(
+          'pool_timeout = 10')
+      end
+    end
+
+    it 'sets service_provider attributes' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'service_provider = provider1')
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'service_provider = provider2')
     end
   end
 end

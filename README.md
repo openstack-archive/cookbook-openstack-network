@@ -57,6 +57,8 @@ Identity-registration
 Attributes
 ==========
 
+* `openstack['openstack']['network']['service_provider']` - Array of service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
+
 TODO: Add DB2 support on other platforms
 * `openstack["network"]["platform"]["db2_python_packages"]` - Array of DB2 python packages, only available on redhat platform
 
