@@ -312,9 +312,6 @@ default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_s
 # node['openstack']['network']['service_plugins'] for the loadbalancer plugin.
 # See that attribute for details.
 
-# Plugin configuration path
-default['openstack']['network']['lbaas_config_path'] = '/etc/neutron/plugins/services/agent_loadbalancer'
-
 # Number of seconds between sync of LBaaS agent with Neutron API server
 default['openstack']['network']['lbaas']['periodic_interval'] = 10
 

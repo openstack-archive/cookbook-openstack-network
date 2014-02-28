@@ -38,14 +38,10 @@ platform_options['neutron_lb_packages'].each do |pkg|
   end
 end
 
-directory node['openstack']['network']['lbaas_config_path'] do
-  action :create
+template '/etc/neutron/lbaas_agent.ini' do
+  source 'lbaas_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  recursive true
-end
-
-template "#{node["openstack"]["network"]["lbaas_config_path"]}/lbaas_agent.ini" do
-  source 'lbaas_agent.ini.erb'
+  mode 00640
   notifies :restart, 'service[neutron-server]', :immediately
 end
