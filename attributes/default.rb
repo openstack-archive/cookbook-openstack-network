@@ -822,7 +822,7 @@ when 'suse'
     'neutron_dhcp_packages' => ['openstack-neutron-dhcp-agent'],
     'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron-l3-agent'],
-    'neutron_lb_packages' => ['openstack-neutron-lbaas', 'haproxy'],
+    'neutron_lb_packages' => ['openstack-neutron-lbaas-agent'],
     # plugins are installed by the main openstack-neutron package on SUSE
     'neutron_plugin_package' => '',
     'neutron_metadata_agent_packages' => ['openstack-neutron-metadata-agent'],
