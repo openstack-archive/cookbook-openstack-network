@@ -127,7 +127,7 @@ License and Author
 |                      |  Mark Vanderwiel(<vanderwl@us.ibm.com>)            |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
-|                      |  Copyright (c) 2013, SUSE Linux GmbH               |
+|                      |  Copyright (c) 2013-2014, SUSE Linux GmbH          |
 |                      |  Copyright (c) 2012, Rackspace US, Inc.            |
 |                      |  Copyright (c) 2013-2014, IBM Corp.                |
 
