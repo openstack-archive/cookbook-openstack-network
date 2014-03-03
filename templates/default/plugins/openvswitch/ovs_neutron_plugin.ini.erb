@@ -111,8 +111,6 @@ firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %
 #-----------------------------------------------------------------------------
 #
 # 1. With VLANs on eth1.
-# [DATABASE]
-# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_neutron
 # [OVS]
 # network_vlan_ranges = default:2000:3999
 # tunnel_id_ranges =
@@ -122,8 +120,6 @@ firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %
 # Add the following setting, if you want to log to a file
 #
 # 2. With tunneling.
-# [DATABASE]
-# sql_connection = mysql://root:nova@127.0.0.1:3306/ovs_neutron
 # [OVS]
 # network_vlan_ranges =
 # tunnel_id_ranges = 1:1000
