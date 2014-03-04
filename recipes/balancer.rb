@@ -25,13 +25,6 @@
 
 platform_options = node['openstack']['network']['platform']
 
-service 'neutron-server' do
-  service_name platform_options['neutron_server_service']
-  supports status: true, restart: true
-
-  action :nothing
-end
-
 platform_options['neutron_lb_packages'].each do |pkg|
   package pkg do
     action :install
@@ -43,5 +36,12 @@ template '/etc/neutron/lbaas_agent.ini' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode 00640
-  notifies :restart, 'service[neutron-server]', :immediately
+end
+
+service 'neutron-lb-agent' do
+  service_name platform_options['neutron_lb_agent_service']
+  supports status: true, restart: true
+  action :enable
+  subscribes :restart, 'template[/etc/neutron/neutron.conf]', :delayed
+  subscribes :restart, 'template[/etc/neutron/lbaas_agent.ini]', :delayed
 end

@@ -27,7 +27,7 @@ interface_driver =
 
 # The agent requires a driver to manage the loadbalancer.  HAProxy is the
 # opensource version.
-device_driver = neutron.plugins.services.agent_loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver
+device_driver = <%= node['openstack']['network']['lbaas']['device_driver'] %>
 
 # Allow overlapping IP (Must have kernel build with CONFIG_NET_NS=y and
 # iproute2 package that supports namespaces).

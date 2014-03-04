@@ -27,6 +27,14 @@ describe 'openstack-network::balancer' do
       end
     end
 
+    it 'enables agent service' do
+      expect(@chef_run).to enable_service 'neutron-lb-agent'
+    end
+
+    it 'subscribes to config files' do
+      pending 'TODO: implement once we upgrade to ChefSpec 3.2.0'
+    end
+
     describe 'lbaas_agent.ini' do
       before do
         @file = @chef_run.template '/etc/neutron/lbaas_agent.ini'
@@ -45,6 +53,16 @@ describe 'openstack-network::balancer' do
         expect(@chef_run).to render_file(@file.name).with_content(/periodic_interval = 10/)
         expect(@chef_run).to render_file(@file.name).with_content(
           /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/)
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /device_driver = neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver/)
+      end
+
+      it 'has configurable device_driver setting' do
+        node = @chef_run.node
+        node.set['openstack']['network']['lbaas']['device_driver'] = 'SomeRandomDriver'
+        @chef_run.converge 'openstack-network::balancer'
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /device_driver = SomeRandomDriver/)
       end
 
     end
