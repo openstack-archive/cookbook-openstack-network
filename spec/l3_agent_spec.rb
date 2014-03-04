@@ -72,28 +72,28 @@ describe 'openstack-network::l3_agent' do
       cmd = 'ovs-vsctl add-br br-ex && ovs-vsctl add-port br-ex eth1'
 
       it "doesn't add the external bridge if it already exists" do
-        stub_command(/ovs-vsctl show/).and_return(true)
+        stub_command(/ovs-vsctl br-exists/).and_return(true)
         stub_command(/ip link show eth1/).and_return(true)
         @chef_run.converge 'openstack-network::l3_agent'
         expect(@chef_run).not_to run_execute(cmd)
       end
 
       it "doesn't add the external bridge if the physical interface doesn't exist" do
-        stub_command(/ovs-vsctl show/).and_return(true)
+        stub_command(/ovs-vsctl br-exists/).and_return(true)
         stub_command(/ip link show eth1/).and_return(false)
         @chef_run.converge 'openstack-network::l3_agent'
         expect(@chef_run).not_to run_execute(cmd)
       end
 
       it 'adds the external bridge if it does not yet exist' do
-        stub_command(/ovs-vsctl show/).and_return(false)
+        stub_command(/ovs-vsctl br-exists/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
         @chef_run.converge 'openstack-network::l3_agent'
         expect(@chef_run).to run_execute(cmd)
       end
 
       it 'adds the external bridge if the physical interface exists' do
-        stub_command(/ovs-vsctl show/).and_return(false)
+        stub_command(/ovs-vsctl br-exists/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
         @chef_run.converge 'openstack-network::l3_agent'
         expect(@chef_run).to run_execute(cmd)
