@@ -79,7 +79,7 @@ end
 service 'neutron-openvswitch-switch' do
   service_name platform_options['neutron_openvswitch_service']
   supports status: true, restart: true
-  action [:enable, :restart]
+  action [:enable, :start]
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::server')
