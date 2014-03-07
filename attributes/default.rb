@@ -49,10 +49,10 @@ default['openstack']['network']['service_user'] = 'neutron'
 default['openstack']['network']['service_role'] = 'admin'
 
 # The maximum number of seconds we will wait for an agent to checkin
-default['openstack']['network']['api']['agent']['agent_down_time'] = 15
+default['openstack']['network']['api']['agent']['agent_down_time'] = 75
 
 # The default agent reporting interval in seconds
-default['openstack']['network']['api']['agent']['agent_report_interval'] = 4
+default['openstack']['network']['api']['agent']['agent_report_interval'] = 30
 
 # The agent signing directory for api server
 default['openstack']['network']['api']['agent']['signing_dir'] = '/var/lib/neutron/keystone-signing'
