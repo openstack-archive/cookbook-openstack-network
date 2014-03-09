@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.3.0
+* Add new attributes to support vxlan in linuxbridge plugin template
+
 ## 8.2.0
 * Move the database section into neutron.conf from plugins
 * Make the service_provider attribute configurable

@@ -451,6 +451,53 @@ default['openstack']['network']['linuxbridge']['network_vlan_ranges'] = ''
 # Example: physical_interface_mappings = physnet1:eth1
 default['openstack']['network']['linuxbridge']['physical_interface_mappings'] = ''
 
+# (BoolOpt) enable VXLAN on the agent
+# VXLAN support can be enabled when agent is managed by ml2 plugin using
+# linuxbridge mechanism driver. Useless if set while using linuxbridge plugin.
+default['openstack']['network']['linuxbridge']['enable_vxlan'] = false
+
+# (IntOpt) use specific TTL for vxlan interface protocol packets
+default['openstack']['network']['linuxbridge']['ttl'] = ''
+
+# (IntOpt) use specific TOS for vxlan interface protocol packets
+default['openstack']['network']['linuxbridge']['tos'] = ''
+
+# (StrOpt) multicast group to use for broadcast emulation.
+# This group must be the same on all the agents.
+default['openstack']['network']['linuxbridge']['vxlan_group'] = '224.0.0.1'
+
+# (StrOpt) Local IP address to use for VXLAN endpoints (required)
+default['openstack']['network']['linuxbridge']['local_ip'] = '127.0.0.1'
+# Uncomment this line for the agent if tunnel_id_ranges (above) is not
+# empty for the server. Set local_ip to be the local IP address of
+# this hypervisor or set the local_ip_interface parameter to use the IP
+# address of the specified interface.  If local_ip_interface is set
+# it will take precedence.
+default['openstack']['network']['linuxbridge']['local_ip_interface'] = nil
+
+# (BoolOpt) Flag to enable l2population extension. This option should be used
+# in conjunction with ml2 plugin l2population mechanism driver (in that case,
+# both linuxbridge and l2population mechanism drivers should be loaded).
+# It enables plugin to populate VXLAN forwarding table, in order to limit
+# the use of broadcast emulation (multicast will be turned off if kernel and
+# iproute2 supports unicast flooding - requires 3.11 kernel and iproute2 3.10)
+default['openstack']['network']['linuxbridge']['l2_population'] = false
+
+# Agent's polling interval in seconds
+default['openstack']['network']['linuxbridge']['polling_interval'] = 2
+
+# (BoolOpt) Enable server RPC compatibility with old (pre-havana)
+# agents.
+#
+# rpc_support_old_agents = False
+# Example: rpc_support_old_agents = True
+default['openstack']['network']['linuxbridge']['rpc_support_old_agents'] = false
+
+# Firewall driver for realizing neutron security group function
+# firewall_driver = neutron.agent.firewall.NoopFirewallDriver
+# Example: firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+default['openstack']['network']['linuxbridge']['firewall_driver'] = 'neutron.agent.firewall.NoopFirewallDriver'
+
 # ============================= BigSwitch Plugin Configuration =============
 
 # Not really sure what this is...

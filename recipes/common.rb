@@ -123,13 +123,6 @@ else
   bind_port = node['openstack']['network']['api']['bind_port']
 end
 
-# retrieve the local interface for tunnels
-if node['openstack']['network']['openvswitch']['local_ip_interface'].nil?
-  local_ip = node['openstack']['network']['openvswitch']['local_ip']
-else
-  local_ip = address_for node['openstack']['network']['openvswitch']['local_ip_interface']
-end
-
 platform_options['neutron_client_packages'].each do |pkg|
   package pkg do
     action :upgrade
@@ -259,12 +252,21 @@ when 'hyperv'
 when 'linuxbridge'
 
   template_file = '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini'
+  # retrieve the local interface for tunnels
+  if node['openstack']['network']['linuxbridge']['local_ip_interface'].nil?
+    local_ip = node['openstack']['network']['linuxbridge']['local_ip']
+  else
+    local_ip = address_for node['openstack']['network']['linuxbridge']['local_ip_interface']
+  end
 
   template template_file do
     source 'plugins/linuxbridge/linuxbridge_conf.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
+    variables(
+      local_ip: local_ip
+    )
 
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
@@ -318,6 +320,12 @@ when 'nicira'
 when 'openvswitch'
 
   template_file = '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
+  # retrieve the local interface for tunnels
+  if node['openstack']['network']['openvswitch']['local_ip_interface'].nil?
+    local_ip = node['openstack']['network']['openvswitch']['local_ip']
+  else
+    local_ip = address_for node['openstack']['network']['openvswitch']['local_ip_interface']
+  end
 
   template template_file do
     source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
