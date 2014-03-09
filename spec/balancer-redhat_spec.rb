@@ -16,5 +16,9 @@ describe 'openstack-network::balancer' do
         expect(@chef_run).to install_package pack
       end
     end
+
+    it 'enables agent service' do
+      expect(@chef_run).to enable_service 'neutron-lb-agent'
+    end
   end
 end

@@ -315,6 +315,8 @@ default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_s
 # node['openstack']['network']['service_plugins'] for the loadbalancer plugin.
 # See that attribute for details.
 
+default['openstack']['network']['lbaas']['device_driver'] = 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver'
+
 # Number of seconds between sync of LBaaS agent with Neutron API server
 default['openstack']['network']['lbaas']['periodic_interval'] = 10
 
@@ -806,6 +808,7 @@ when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_server_packages' => [],
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
+    'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch',
     'neutron_openvswitch_agent_service' => 'neutron-openvswitch-agent',
@@ -836,6 +839,7 @@ when 'suse'
     'neutron_server_packages' => [],
     'neutron_dhcp_agent_service' => 'openstack-neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'openstack-neutron-l3-agent',
+    'neutron_lb_agent_service' => 'openstack-neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'openstack-neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',
     'neutron_openvswitch_agent_service' => 'openstack-neutron-openvswitch-agent',
@@ -865,6 +869,7 @@ when 'ubuntu'
     'neutron_server_packages' => ['neutron-server'],
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
+    'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',
     'neutron_openvswitch_agent_service' => 'neutron-plugin-openvswitch-agent',
