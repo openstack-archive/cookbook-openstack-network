@@ -211,7 +211,7 @@ describe 'openstack-network::server' do
 
     it 'has rabbit_password' do
       expect(@chef_run).to render_file(@file.name).with_content(
-        'rabbit_password=rabbit-pass')
+        'rabbit_password=mq-pass')
     end
 
     it 'has rabbit_virtual_host' do
@@ -275,8 +275,11 @@ describe 'openstack-network::server' do
 
     describe 'qpid' do
       before do
-        @file = @chef_run.template '/etc/neutron/neutron.conf'
-        @chef_run.node.set['openstack']['mq']['network']['service_type'] = 'qpid'
+        @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
+          n.set['openstack']['compute']['network']['service_type'] = 'neutron'
+          n.set['openstack']['mq']['network']['service_type'] = 'qpid'
+          n.set['openstack']['mq']['network']['qpid']['username'] = 'guest'
+        end
         @chef_run.converge 'openstack-network::server'
       end
 
@@ -299,12 +302,12 @@ describe 'openstack-network::server' do
 
       it 'has qpid_username' do
         expect(@chef_run).to render_file(@file.name).with_content(
-          'qpid_username=')
+          'qpid_username=guest')
       end
 
       it 'has qpid_password' do
         expect(@chef_run).to render_file(@file.name).with_content(
-          'qpid_password=')
+          'qpid_password=mq-pass')
       end
 
       it 'has qpid_sasl_mechanisms' do

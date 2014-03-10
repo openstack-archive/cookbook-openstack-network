@@ -69,7 +69,7 @@ def neutron_stubs # rubocop:disable MethodLength
     .and_return('neutron-pass')
   ::Chef::Recipe.any_instance.stub(:get_password)
     .with('user', 'guest')
-    .and_return('rabbit-password')
+    .and_return('mq-pass')
   ::Chef::Application.stub(:fatal!)
 
   stub_command('dpkg -l | grep openvswitch-switch | grep 1.10.2-1').and_return(true)

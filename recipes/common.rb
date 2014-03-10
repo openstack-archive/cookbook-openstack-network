@@ -99,9 +99,13 @@ template '/etc/neutron/policy.json' do
   notifies :restart, 'service[neutron-server]', :delayed
 end
 
-if node['openstack']['mq']['network']['service_type'] == 'rabbitmq'
+mq_service_type = node['openstack']['mq']['network']['service_type']
+
+if mq_service_type == 'rabbitmq'
   rabbit_hosts = rabbit_servers if node['openstack']['mq']['network']['rabbit']['ha']
-  rabbit_pass = get_password 'user', node['openstack']['mq']['network']['rabbit']['userid']
+  mq_password = get_password 'user', node['openstack']['mq']['network']['rabbit']['userid']
+elsif mq_service_type == 'qpid'
+  mq_password = get_password 'user', node['openstack']['mq']['network']['qpid']['username']
 end
 
 identity_endpoint = endpoint 'identity-api'
@@ -151,7 +155,8 @@ template '/etc/neutron/neutron.conf' do
     bind_address: bind_address,
     bind_port: bind_port,
     rabbit_hosts: rabbit_hosts,
-    rabbit_pass: rabbit_pass,
+    mq_service_type: mq_service_type,
+    mq_password: mq_password,
     core_plugin: core_plugin,
     identity_endpoint: identity_endpoint,
     service_pass: service_pass,
