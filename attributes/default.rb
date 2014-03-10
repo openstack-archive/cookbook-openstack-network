@@ -113,13 +113,6 @@ default['openstack']['network']['neutron_ha_cmd'] = '/usr/local/bin/neutron-ha-t
 default['openstack']['network']['cron_l3_healthcheck'] = '*/1'
 default['openstack']['network']['cron_replicate_dhcp'] = '*/1'
 
-# the plugins to install on the server.  this will be
-# neutron-plugin-%plugin% and the first plugin in the
-# list should match the core plugin below
-# N.B. this will be ignored on SUSE as all plugins are installed by
-# default by the main openstack-neutron package
-default['openstack']['network']['plugins'] = ['openvswitch', 'openvswitch-agent']
-
 # (ListOpt) Specify service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
 # Must be in form:
 # service_provider=<service_type>:<name>:<driver>[:default]
