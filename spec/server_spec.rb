@@ -142,6 +142,21 @@ describe 'openstack-network::server' do
         'auth_strategy = keystone')
     end
 
+    it 'it sets state_path correctly' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'state_path = /var/lib/neutron')
+    end
+
+    it 'it sets lock_path correctly' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'lock_path = $state_path/lock')
+    end
+
+    it 'it sets log_dir correctly' do
+      expect(@chef_run).to render_file(@file.name).with_content(
+        'log_dir = /var/log/neutron')
+    end
+
     it 'it sets agent report interval correctly' do
       expect(@chef_run).to render_file(@file.name).with_content(
         'report_interval = 4')

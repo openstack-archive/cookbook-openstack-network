@@ -29,6 +29,9 @@ default['openstack']['network']['verbose'] = 'False'
 default['openstack']['network']['debug'] = 'False'
 default['openstack']['network']['auth_strategy'] = 'keystone'
 
+default['openstack']['network']['state_path'] = '/var/lib/neutron'
+default['openstack']['network']['lock_path'] = '$state_path/lock'
+
 # Gets set in the Network Endpoint when registering with Keystone
 default['openstack']['network']['region'] = node['openstack']['region']
 default['openstack']['network']['service_user'] = 'neutron'
@@ -63,6 +66,7 @@ default['openstack']['network']['api']['bind_interface'] = nil
 default['openstack']['network']['api']['bind_port'] = 9696
 
 # logging attribute
+default['openstack']['network']['log_dir'] = '/var/log/neutron'
 default['openstack']['network']['syslog']['use'] = false
 
 # The driver for Quota management in Neutron. Possible values:
