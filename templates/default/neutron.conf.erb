@@ -8,10 +8,10 @@ verbose = <%= node["openstack"]["network"]["verbose"] %>
 
 # Where to store Neutron state files.  This directory must be writable by the
 # user executing the agent.
-# state_path = /var/lib/neutron
+state_path = <%= node["openstack"]["network"]["state_path"] %>
 
 # Where to store lock files
-lock_path = $state_path/lock
+lock_path = <%= node["openstack"]["network"]["lock_path"] %>
 
 # log_format = %(asctime)s %(levelname)8s [%(name)s] %(message)s
 # log_date_format = %Y-%m-%d %H:%M:%S
@@ -31,7 +31,7 @@ log_config = /etc/openstack/logging.conf
 
 # use_stderr = True
 # log_file =
-# log_dir =
+log_dir = <%= node['openstack']['network']['log_dir'] %>
 
 # publish_errors = False
 
