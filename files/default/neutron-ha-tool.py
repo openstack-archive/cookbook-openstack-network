@@ -57,6 +57,8 @@ def parse_args():
                     default=False, help='Rebalance router count on all l3 agents')
     ap.add_argument('--replicate-dhcp', action='store_true',
                     default=False, help='Replicate DHCP configuration to all agents')
+    ap.add_argument('--now', action='store_true',
+                    default=False, help='Migrate Routers immediately without a delay.')
     return ap.parse_args()
 
 def setup_logging(args):
@@ -86,7 +88,7 @@ def run(args):
 
     if args.l3_agent_migrate:
         LOG.info("Performing L3 Agent Migration for Offline L3 Agents")
-        l3_agent_migrate(qclient, args.noop)
+        l3_agent_migrate(qclient, args.noop, args.now)
 
     if args.l3_agent_rebalance:
         LOG.info("Rebalancing L3 Agent Router Count")
@@ -190,7 +192,7 @@ def l3_agent_check(qclient, noop=False):
 
                LOG.info("Would like to migrate router=%s to agent=%s", router_id, target_id)
 
-def l3_agent_migrate(qclient, noop=False):
+def l3_agent_migrate(qclient, noop=False, now=False):
     """
     Walk the l3 agents searching for agents that are offline.  For those that are
     offline, we will retrieve a list of routers on them and migrate them to a
@@ -198,6 +200,9 @@ def l3_agent_migrate(qclient, noop=False):
 
     :param qclient: A neutronclient
     :param noop: Optional noop flag
+    :param now: Optional. If false (the default), we'll wait for a random amount
+                of time (between 30 and 60 seconds) before migration. If true,
+                routers are migrated immediately.
 
     """
 
@@ -213,18 +218,18 @@ def l3_agent_migrate(qclient, noop=False):
            LOG.exception("There are no l3 agents alive to migrate routers onto")
 
        timeout = 0
+       if not now:
+           while timeout < TAKEOVER_DELAY:
 
-       while timeout < TAKEOVER_DELAY:
+               agent_list_new = list_agents(qclient)
+               agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
+               if len(agent_dead_list_new) < len(agent_dead_list):
+                   LOG.info("Skipping router failover since an agent came online while ensuring agents offline for seconds=%s" % TAKEOVER_DELAY)
+                   sys.exit(0)
 
-           agent_list_new = list_agents(qclient)
-           agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
-           if len(agent_dead_list_new) < len(agent_dead_list):
-               LOG.info("Skipping router failover since an agent came online while ensuring agents offline for seconds=%s" % TAKEOVER_DELAY)
-               sys.exit(0)
-
-           LOG.info("Agent found offline for seconds=%s but waiting seconds=%s before migration" % (timeout, TAKEOVER_DELAY))
-           timeout += 1
-           time.sleep(1)
+               LOG.info("Agent found offline for seconds=%s but waiting seconds=%s before migration" % (timeout, TAKEOVER_DELAY))
+               timeout += 1
+               time.sleep(1)
 
 
        for agent_id in agent_dead_list:
