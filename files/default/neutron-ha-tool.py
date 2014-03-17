@@ -190,7 +190,11 @@ def l3_agent_check(qclient, noop=False):
                    LOG.warn("There are no l3 agents alive we could migrate routers onto")
                    target_id = None
 
+               migration_count+=1
                LOG.info("Would like to migrate router=%s to agent=%s", router_id, target_id)
+
+       if migration_count > 0:
+          sys.exit(2)
 
 def l3_agent_migrate(qclient, noop=False, now=False):
     """
