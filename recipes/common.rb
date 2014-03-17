@@ -112,6 +112,8 @@ identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
+auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['network']['api']['auth']['version']
+
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
@@ -158,7 +160,8 @@ template '/etc/neutron/neutron.conf' do
     mq_service_type: mq_service_type,
     mq_password: mq_password,
     core_plugin: core_plugin,
-    identity_endpoint: identity_endpoint,
+    auth_uri: auth_uri,
+    identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     sql_connection: sql_connection
   )
@@ -171,12 +174,6 @@ template '/etc/neutron/api-paste.ini' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode   00640
-  variables(
-    'auth_uri' => auth_uri,
-    'identity_admin_endpoint' => identity_admin_endpoint,
-    'identity_endpoint' => identity_endpoint,
-    'service_pass' => service_pass
-  )
 
   notifies :restart, 'service[neutron-server]', :delayed
 end

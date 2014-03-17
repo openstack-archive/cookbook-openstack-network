@@ -60,6 +60,9 @@ default['openstack']['network']['api']['agent']['signing_dir'] = '/var/lib/neutr
 # Keystone PKI signing directory.
 default['openstack']['network']['api']['auth']['cache_dir'] = '/var/cache/neutron/api'
 
+# The auth api version used to interact with identity service.
+default['openstack']['network']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
+
 # If bind_interface is set, the neutron API service will bind to the
 # address on this interface and use the port in bind_port. Otherwise,
 # it will bind to the API endpoint's host.
