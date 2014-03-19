@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Copyright 2013 AT&T Services, Inc.
 # All Rights Reserved.
@@ -20,17 +19,16 @@
 import logging
 import os
 import sys
-import json
 import argparse
 import random
 import time
 from logging.handlers import SysLogHandler
 from collections import OrderedDict
-from random import choice
 from neutronclient.neutron import client
 
+
 LOG = logging.getLogger('neutron-ha-tool')
-LOG_FORMAT='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 LOG_DATE = '%m-%d %H:%M'
 DESCRIPTION = "neutron High Availability Tool"
 TAKEOVER_DELAY = int(random.random()*30+30)
@@ -61,30 +59,31 @@ def parse_args():
                     default=False, help='Migrate Routers immediately without a delay.')
     return ap.parse_args()
 
+
 def setup_logging(args):
     level = logging.INFO
     if args.debug:
         level = logging.DEBUG
     logging.basicConfig(level=level, format=LOG_FORMAT, date_fmt=LOG_DATE)
-    handler = SysLogHandler(address = '/dev/log')
+    handler = SysLogHandler(address='/dev/log')
     syslog_formatter = logging.Formatter('%(name)s: %(levelname)s %(message)s')
     handler.setFormatter(syslog_formatter)
     LOG.addHandler(handler)
 
-def run(args):
 
+def run(args):
     # instantiate client
     qclient = client.Client('2.0', auth_url=os.environ['OS_AUTH_URL'],
-                                   username=os.environ['OS_USERNAME'],
-                                   tenant_name=os.environ['OS_TENANT_NAME'],
-                                   password=os.environ['OS_PASSWORD'])
+                            username=os.environ['OS_USERNAME'],
+                            tenant_name=os.environ['OS_TENANT_NAME'],
+                            password=os.environ['OS_PASSWORD'])
 
     # set json return type
     qclient.format = 'json'
 
     if args.l3_agent_check:
         LOG.info("Performing L3 Agent Health Check")
-        l3_agent_check(qclient, args.noop)
+        l3_agent_check(qclient)
 
     if args.l3_agent_migrate:
         LOG.info("Performing L3 Agent Migration for Offline L3 Agents")
@@ -97,6 +96,7 @@ def run(args):
     if args.replicate_dhcp:
         LOG.info("Performing DHCP Replication of Networks to Agents")
         replicate_dhcp(qclient, args.noop)
+
 
 def l3_agent_rebalance(qclient, noop=False):
     """
@@ -113,7 +113,7 @@ def l3_agent_rebalance(qclient, noop=False):
     # u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff', u'configurations': {u'router_id': u'', u'gateway_external_network_id': u'', u'handle_internal_only_routers': True,
     # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'neutron.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
 
-    l3_agent_dict={}
+    l3_agent_dict = {}
     agents = list_agents(qclient, agent_type='L3 agent')
     num_agents = len(agents)
     if num_agents <= 1:
@@ -121,17 +121,16 @@ def l3_agent_rebalance(qclient, noop=False):
         return
 
     for l3_agent in agents:
-        num_routers=l3_agent['configurations']['routers']
         l3_agent_dict[l3_agent['id']] = list_routers_on_l3_agent(qclient, l3_agent['id'])
 
     ordered_l3_agent_dict = OrderedDict(sorted(l3_agent_dict.items(), key=lambda t: len(t[0])))
     ordered_l3_agent_list = list(ordered_l3_agent_dict)
     num_agents = len(ordered_l3_agent_list)
     LOG.info("Agent list: %s", ordered_l3_agent_list[0:(num_agents-1/2)+1])
-    i=0
+    i = 0
     for agent in ordered_l3_agent_list[0:num_agents-1/2]:
-        low_agent_id=ordered_l3_agent_list[i]
-        hgh_agent_id=ordered_l3_agent_list[-(i+1)]
+        low_agent_id = ordered_l3_agent_list[i]
+        hgh_agent_id = ordered_l3_agent_list[-(i+1)]
 
         # do nothing if we end up comparing the same router
         if low_agent_id == hgh_agent_id:
@@ -155,17 +154,19 @@ def l3_agent_rebalance(qclient, noop=False):
                     low_agent_router_count += 1
                     hgh_agent_router_count -= 1
                 except:
-                    LOG.traceback("Failed to migrate router=%s from agent=%s to agent=%s" % (router_id, hgh_agent_id, low_agent_id))
+                    LOG.exception("Failed to migrate router=%s from agent=%s "
+                                  "to agent=%s", router_id, hgh_agent_id,
+                                  low_agent_id)
                     continue
-        i+=1
+        i += 1
 
-def l3_agent_check(qclient, noop=False):
+
+def l3_agent_check(qclient):
     """
     Walk the l3 agents searching for agents that are offline.  Show routers
-    that are offline and where we would migrate them too.
+    that are offline and where we would migrate them to.
 
     :param qclient: A neutronclient
-    :param noop: Optional noop flag
 
     """
 
@@ -173,25 +174,25 @@ def l3_agent_check(qclient, noop=False):
     agent_list = list_agents(qclient)
     agent_dead_list = agent_dead_id_list(agent_list, 'L3 agent')
     agent_alive_list = agent_alive_id_list(agent_list, 'L3 agent')
-    LOG.info("There are %s offline L3 agents and %s online L3 agents", len(agent_dead_list), len(agent_alive_list))
+    LOG.info("There are %s offline L3 agents and %s online L3 agents",
+             len(agent_dead_list), len(agent_alive_list))
 
     if len(agent_dead_list) > 0:
+        for agent_id in agent_dead_list:
+            LOG.info("Querying agent_id=%s for routers to migrate", agent_id)
+            router_id_list = list_routers_on_l3_agent(qclient, agent_id)
 
-       for agent_id in agent_dead_list:
+            for router_id in router_id_list:
+                try:
+                    target_id = random.choice(agent_alive_list)
+                except IndexError:
+                    LOG.warn("There are no l3 agents alive we could "
+                             "migrate routers onto.")
+                    target_id = None
 
-           LOG.info("Querying agent_id=%s for routers to migrate", agent_id)
-           router_id_list = list_routers_on_l3_agent(qclient, agent_id)
-
-           for router_id in router_id_list:
-
-               try:
-                   target_id = choice(agent_alive_list)
-               except:
-                   LOG.warn("There are no l3 agents alive we could migrate routers onto")
-                   target_id = None
-
-               migration_count+=1
-               LOG.info("Would like to migrate router=%s to agent=%s", router_id, target_id)
+                migration_count += 1
+                LOG.info("Would like to migrate router=%s to agent=%s",
+                         router_id, target_id)
 
        if migration_count > 0:
           sys.exit(2)
@@ -217,77 +218,75 @@ def l3_agent_migrate(qclient, noop=False, now=False):
     LOG.info("There are %s offline L3 agents and %s online L3 agents", len(agent_dead_list), len(agent_alive_list))
 
     if len(agent_dead_list) > 0:
+        if len(agent_alive_list) < 1:
+            LOG.exception("There are no l3 agents alive to migrate routers onto")
 
-       if len(agent_alive_list) < 1:
-           LOG.exception("There are no l3 agents alive to migrate routers onto")
+        timeout = 0
+        if not now:
+            while timeout < TAKEOVER_DELAY:
 
-       timeout = 0
-       if not now:
-           while timeout < TAKEOVER_DELAY:
+                agent_list_new = list_agents(qclient)
+                agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
+                if len(agent_dead_list_new) < len(agent_dead_list):
+                    LOG.info("Skipping router failover since an agent came "
+                             "online while ensuring agents offline for %s "
+                             "seconds", TAKEOVER_DELAY)
+                    sys.exit(0)
 
-               agent_list_new = list_agents(qclient)
-               agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
-               if len(agent_dead_list_new) < len(agent_dead_list):
-                   LOG.info("Skipping router failover since an agent came online while ensuring agents offline for seconds=%s" % TAKEOVER_DELAY)
-                   sys.exit(0)
+                LOG.info("Agent found offline for seconds=%s but waiting "
+                         "seconds=%s before migration", timeout, TAKEOVER_DELAY)
+                timeout += 1
+                time.sleep(1)
 
-               LOG.info("Agent found offline for seconds=%s but waiting seconds=%s before migration" % (timeout, TAKEOVER_DELAY))
-               timeout += 1
-               time.sleep(1)
+        for agent_id in agent_dead_list:
+            LOG.info("Querying agent_id=%s for routers to migrate", agent_id)
+            router_id_list = list_routers_on_l3_agent(qclient, agent_id)
 
+            for router_id in router_id_list:
 
-       for agent_id in agent_dead_list:
+                target_id = random.choice(agent_alive_list)
+                LOG.info("Migrating router=%s to agent=%s", router_id, target_id)
 
-           LOG.info("Querying agent_id=%s for routers to migrate", agent_id)
-           router_id_list = list_routers_on_l3_agent(qclient, agent_id)
+                try:
+                    if not noop:
+                        migrate_router(qclient, router_id, agent_id, target_id)
+                        migration_count += 1
+                except:
+                    LOG.exception("There was an error migrating a router")
+                    continue
 
-           for router_id in router_id_list:
+        LOG.info("%s routers required migration from offline L3 agents", migration_count)
 
-               target_id = choice(agent_alive_list)
-               LOG.info("Migrating router=%s to agent=%s", router_id, target_id)
-               router_body = {'router_id': router_id}
-
-               try:
-
-                   if not noop:
-                       migrate_router(qclient, router_id, agent_id, target_id)
-                   migration_count+=1
-
-               except:
-
-                   LOG.exception("There was an error migrating a router")
-                   continue
-
-       LOG.info("%s routers required migration from offline L3 agents", migration_count)
 
 def replicate_dhcp(qclient, noop=False):
     """
-    Retrieve a network list and then probe each DHCP agent to ensure they have that
-    network assigned.
+    Retrieve a network list and then probe each DHCP agent to ensure
+    they have that network assigned.
 
     :param qclient: A neutronclient
     :param noop: Optional noop flag
+
     """
 
-    added=0
+    added = 0
     networks = list_networks(qclient)
     network_id_list = [n['id'] for n in networks]
     agents = list_agents(qclient, agent_type='DHCP agent')
     LOG.info("Replicating %s networks to %s DHCP agents", len(networks), len(agents))
     for dhcp_agent_id in [a['id'] for a in agents]:
-       networks_on_agent = qclient.list_networks_on_dhcp_agent(dhcp_agent_id)['networks']
-       network_id_on_agent = [n['id'] for n in networks_on_agent]
-       for network_id in network_id_list:
-           if network_id not in network_id_on_agent:
-               try:
-                   dhcp_body = {'network_id': network_id}
-                   if not noop:
-                       qclient.add_network_to_dhcp_agent(dhcp_agent_id, dhcp_body)
-                   LOG.info("Added missing network=%s to dhcp agent=%s", network_id, dhcp_agent_id)
-                   added+=1
-               except:
-                   LOG.exception("Failed to add network_id=%s to dhcp_agent=%s", network_id, dhcp_agent_id)
-                   continue
+        networks_on_agent = qclient.list_networks_on_dhcp_agent(dhcp_agent_id)['networks']
+        network_id_on_agent = [n['id'] for n in networks_on_agent]
+        for network_id in network_id_list:
+            if network_id not in network_id_on_agent:
+                try:
+                    dhcp_body = {'network_id': network_id}
+                    if not noop:
+                        qclient.add_network_to_dhcp_agent(dhcp_agent_id, dhcp_body)
+                    LOG.info("Added missing network=%s to dhcp agent=%s", network_id, dhcp_agent_id)
+                    added += 1
+                except:
+                    LOG.exception("Failed to add network_id=%s to dhcp_agent=%s", network_id, dhcp_agent_id)
+                    continue
 
     LOG.info("Added %s networks to DHCP agents", added)
 
@@ -311,8 +310,7 @@ def migrate_router(qclient, router_id, agent_id, target_id):
 
     # ensure it is removed or log an error
     if router_id in list_routers_on_l3_agent(qclient, agent_id):
-       LOG.exception("Failed to remove router_id=%s from agent_id=%s", router_id, agent_id)
-
+        LOG.exception("Failed to remove router_id=%s from agent_id=%s", router_id, agent_id)
 
     # add the router id to a live agent
     router_body = {'router_id': router_id}
@@ -320,7 +318,7 @@ def migrate_router(qclient, router_id, agent_id, target_id):
 
     # ensure it is removed or log an error
     if router_id not in list_routers_on_l3_agent(qclient, target_id):
-       LOG.exception("Failed to add router_id=%s from agent_id=%s", router_id, agent_id)
+        LOG.exception("Failed to add router_id=%s from agent_id=%s", router_id, agent_id)
 
 
 def list_networks(qclient):
@@ -334,6 +332,7 @@ def list_networks(qclient):
     LOG.debug("list_networks: %s", resp)
     return resp['networks']
 
+
 def list_dhcp_agent_networks(qclient, agent_id):
     """
     Return a list of network ids assigned to a particular DHCP agent
@@ -345,7 +344,6 @@ def list_dhcp_agent_networks(qclient, agent_id):
     resp = qclient.list_networks_on_dhcp_agent(agent_id)
     LOG.debug("list_networks_on_dhcp_agent: %s", resp)
     return [s['id'] for s in resp['networks']]
-
 
 
 def list_routers(qclient):
@@ -363,6 +361,7 @@ def list_routers(qclient):
     LOG.debug("list_routers: %s", resp)
     return resp['routers']
 
+
 def list_routers_on_l3_agent(qclient, agent_id):
     """
     Return a list of router ids on an agent
@@ -374,42 +373,80 @@ def list_routers_on_l3_agent(qclient, agent_id):
     LOG.debug("list_routers_on_l3_agent: %s", resp)
     return [r['id'] for r in resp['routers']]
 
+
 def list_agents(qclient, agent_type=None):
-    """
-    Return a list of agent objects
+    """Return a list of agent objects
 
     :param qclient: A neutronclient
 
-    # openvswitch
-    #
-    # {u'agents': [{u'binary': u'neutron-openvswitch-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:25'
-    # u'alive': True, u'topic': u'N/A', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'Open vSwitch agent', u'created_at': u'2013-07-02 14:50:57',
-    # u'started_at': u'2013-07-02 14:50:57', u'id': u'3a577f1d-d86e-4f1a-a395-8d4c8e4df1e2', u'configurations': {u'devices': 10}},
-    #
-    # dhcp
-    #
-    # {u'binary': u'neutron-dhcp-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True,
-    # u'topic': u'dhcp_agent', u'host': u'o5r4.int.san3.attcompute.com', u'agent_type': u'DHCP agent', u'created_at': u'2013-06-26 16:21:02', u'started_at':
-    #  u'2013-06-28 13:32:52', u'id': u'3e8be28e-05a0-472b-9288-a59f8d8d2271', u'configurations': {u'subnets': 4, u'use_namespaces': True, u'dhcp_driver':
-    # u'neutron.agent.linux.dhcp.Dnsmasq', u'networks': 4, u'dhcp_lease_time': 120, u'ports': 38}},
-    #
-    # l3
-    #
-    # {u'binary': u'neutron-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
-    # u'l3_agent', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'L3 agent', u'created_at': u'2013-07-02 14:50:58', u'started_at': u'2013-07-02 18:00:55',
-    # u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff', u'configurations': {u'router_id': u'', u'gateway_external_network_id': u'', u'handle_internal_only_routers': True,
-    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'neutron.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
+
+    # {u'agents': [
+
+    #   {u'binary': u'neutron-openvswitch-agent',
+    #    u'description': None,
+    #    u'admin_state_up': True,
+    #    u'heartbeat_timestamp': u'2013-07-02 22:20:25',
+    #    u'alive': True,
+    #    u'topic': u'N/A',
+    #    u'host': u'o3r3.int.san3.attcompute.com',
+    #    u'agent_type': u'Open vSwitch agent',
+    #    u'created_at': u'2013-07-02 14:50:57',
+    #    u'started_at': u'2013-07-02 14:50:57',
+    #    u'id': u'3a577f1d-d86e-4f1a-a395-8d4c8e4df1e2',
+    #    u'configurations': {u'devices': 10}},
+
+    #   {u'binary': u'neutron-dhcp-agent',
+    #    u'description': None,
+    #    u'admin_state_up': True,
+    #    u'heartbeat_timestamp': u'2013-07-02 22:20:23',
+    #    u'alive': True,
+    #    u'topic': u'dhcp_agent',
+    #    u'host': u'o5r4.int.san3.attcompute.com',
+    #    u'agent_type': u'DHCP agent',
+    #    u'created_at': u'2013-06-26 16:21:02',
+    #    u'started_at': u'2013-06-28 13:32:52',
+    #    u'id': u'3e8be28e-05a0-472b-9288-a59f8d8d2271',
+    #    u'configurations': {
+    #         u'subnets': 4,
+    #         u'use_namespaces': True,
+    #         u'dhcp_driver': u'neutron.agent.linux.dhcp.Dnsmasq',
+    #         u'networks': 4,
+    #         u'dhcp_lease_time': 120,
+    #         u'ports': 38}},
+
+
+    #   {u'binary': u'neutron-l3-agent',
+    #    u'description': None,
+    #    u'admin_state_up': True,
+    #    u'heartbeat_timestamp': u'2013-07-02 22:20:23',
+    #    u'alive': True,
+    #    u'topic': u'l3_agent',
+    #    u'host': u'o3r3.int.san3.attcompute.com',
+    #    u'agent_type': u'L3 agent',
+    #    u'created_at': u'2013-07-02 14:50:58',
+    #    u'started_at': u'2013-07-02 18:00:55',
+    #    u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff',
+    #    u'configurations': {
+    #         u'router_id': u'',
+    #         u'gateway_external_network_id': u'',
+    #         u'handle_internal_only_routers': True,
+    #         u'use_namespaces': True,
+    #         u'routers': 5,
+    #         u'interfaces': 3,
+    #         u'floating_ips': 9,
+    #         u'interface_driver':
+    #             u'neutron.agent.linux.interface.OVSInterfaceDriver',
+    #         u'ex_gw_ports': 3}},
+
     """
 
     resp = qclient.list_agents()
     LOG.debug("list_agents: %s", resp)
     if agent_type:
-       filtered=[]
-       for agent in resp['agents']:
-           if agent['agent_type'] == agent_type:
-               filtered.append(agent)
-       return filtered
+        return [agent for agent in resp['agents']
+                if agent['agent_type'] == agent_type]
     return resp['agents']
+
 
 def agent_alive_id_list(agent_list, agent_type):
     """
@@ -418,11 +455,9 @@ def agent_alive_id_list(agent_list, agent_type):
     :param agent_list: API response for list_agents()
 
     """
-    live_list=[]
-    for agent in agent_list:
-       if agent['agent_type'] == agent_type and agent['alive'] is True:
-           live_list.append(agent['id'])
-    return live_list
+    return [agent for agent in agent_list
+            if agent['agent_type'] == agent_type and agent['alive'] is True]
+
 
 def agent_dead_id_list(agent_list, agent_type):
     """
@@ -431,14 +466,11 @@ def agent_dead_id_list(agent_list, agent_type):
     :param agent_list: API response for list_agents()
 
     """
-    dead_list=[]
-    for agent in agent_list:
-       if agent['agent_type'] == agent_type and agent['alive'] is False:
-           dead_list.append(agent['id'])
-    return dead_list
+    return [agent for agent in agent_list
+            if agent['agent_type'] == agent_type and agent['alive'] is False]
+
 
 if __name__ == '__main__':
-
     args = parse_args()
     setup_logging(args)
 
