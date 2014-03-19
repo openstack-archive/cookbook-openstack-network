@@ -217,7 +217,7 @@ default['openstack']['network']['dhcp']['enable_metadata_network'] = 'False'
 # platform, dnsmasq will be installed as a package
 #
 # See https://lists.launchpad.net/openstack/msg11696.html
-default['openstack']['network']['dhcp']['dnsmasq_url'] = 'https://github.com/guns/dnsmasq/archive/v2.65.tar.gz'
+default['openstack']['network']['dhcp']['dnsmasq_url'] = 'https://codeload.github.com/guns/dnsmasq/tar.gz/v2.65'
 
 # allow a wrapper to do this another way or use it's own package
 default['openstack']['network']['dhcp']['dnsmasq_compile'] = true
