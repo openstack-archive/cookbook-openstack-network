@@ -144,6 +144,7 @@ default['openstack']['network']['service_plugins'] = []
 #
 #   - neutron.agent.linux.interface.OVSInterfaceDriver
 #   - neutron.agent.linux.interface.BridgeInterfaceDriver
+#   - neutron.agent.linux.interface.Ml2InterfaceDriver
 #
 
 default['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
@@ -151,12 +152,14 @@ default['openstack']['network']['interface_driver'] = 'neutron.agent.linux.inter
 # maps the above driver to a plugin name
 default['openstack']['network']['interface_driver_map'] = {
    'ovsinterfacedriver' => 'openvswitch',
-   'bridgeinterfacedriver' => 'linuxbridge'
+   'bridgeinterfacedriver' => 'linuxbridge',
+   'ml2interfacedriver' => 'ml2'
 }
 
 default['openstack']['network']['plugin_conf_map'] = {
   'ovsinterfacedriver' => 'openvswitch/ovs_neutron_plugin.ini',
-  'bridgeinterfacedriver' => 'linuxbridge/linuxbridge_conf.ini'
+  'bridgeinterfacedriver' => 'linuxbridge/linuxbridge_conf.ini',
+  'ml2interfacedriver' => 'ml2/ml2_conf.ini'
 }
 
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
