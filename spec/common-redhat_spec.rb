@@ -19,7 +19,7 @@ describe 'openstack-network::common' do
       @chef_run.node.set['openstack']['db']['network']['service_type'] = 'db2'
       @chef_run.converge 'openstack-network::common'
 
-      ['db2-odbc', 'python-ibm-db', 'python-ibm-db-sa'].each do |pkg|
+      ['python-ibm-db', 'python-ibm-db-sa'].each do |pkg|
         expect(@chef_run).to install_package pkg
       end
     end
