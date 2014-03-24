@@ -43,9 +43,11 @@ end
 # Migrate network database
 # If the database has never migrated, make the current version of alembic_version to havana,
 # else migrate the database to latest version.
+# The node['openstack']['network']['plugin_config_file'] attribute is set in the common.rb recipe
+
 bash 'migrate network database' do
   plugin_config_file = node['openstack']['network']['plugin_config_file']
-  migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file #{plugin_config_file}"
+  migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
 current_version_line=`#{migrate_command} current 2>&1 | tail -n 1`
 # determine if the $current_version_line ends with ": None"

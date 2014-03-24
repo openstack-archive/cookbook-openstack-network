@@ -521,7 +521,15 @@ describe 'openstack-network::server' do
 
     describe '/etc/neutron/plugins/ml2/ml2_conf.ini' do
       before do
+        @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+        @chef_run.node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+        @chef_run.node.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.Ml2InterfaceDriver'
+        @chef_run.converge 'openstack-network::server'
         @file = @chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini')
+      end
+
+      it 'create template ml2_conf.ini' do
+        expect(@chef_run).to render_file(@file.name)
       end
 
       it 'has proper owner' do
