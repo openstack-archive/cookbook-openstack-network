@@ -194,8 +194,9 @@ def l3_agent_check(qclient):
                 LOG.info("Would like to migrate router=%s to agent=%s",
                          router_id, target_id)
 
-       if migration_count > 0:
-          sys.exit(2)
+        if migration_count > 0:
+            sys.exit(2)
+
 
 def l3_agent_migrate(qclient, noop=False, now=False):
     """
