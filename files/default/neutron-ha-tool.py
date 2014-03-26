@@ -76,7 +76,8 @@ def run(args):
     qclient = client.Client('2.0', auth_url=os.environ['OS_AUTH_URL'],
                             username=os.environ['OS_USERNAME'],
                             tenant_name=os.environ['OS_TENANT_NAME'],
-                            password=os.environ['OS_PASSWORD'])
+                            password=os.environ['OS_PASSWORD'],
+                            endpoint_type='internalURL')
 
     # set json return type
     qclient.format = 'json'
