@@ -45,6 +45,8 @@ def parse_args():
     ap = argparse.ArgumentParser(description=DESCRIPTION)
     ap.add_argument('-d', '--debug', action='store_true',
                     default=False, help='Show debugging output')
+    ap.add_argument('-q', '--quiet', action='store_true',
+                    default=False, help='Only show error and warning messages')
     ap.add_argument('-n', '--noop', action='store_true',
                     default=False, help='Do not do any modifying operations (dry-run)')
     ap.add_argument('--l3-agent-check', action='store_true',
@@ -62,6 +64,8 @@ def parse_args():
 
 def setup_logging(args):
     level = logging.INFO
+    if args.quiet:
+        level = logging.WARN
     if args.debug:
         level = logging.DEBUG
     logging.basicConfig(level=level, format=LOG_FORMAT, date_fmt=LOG_DATE)
@@ -191,7 +195,7 @@ def l3_agent_check(qclient):
                     target_id = None
 
                 migration_count += 1
-                LOG.info("Would like to migrate router=%s to agent=%s",
+                LOG.warn("Would like to migrate router=%s to agent=%s",
                          router_id, target_id)
 
         if migration_count > 0:
@@ -479,7 +483,7 @@ if __name__ == '__main__':
         run(args)
         sys.exit(0)
     except Exception as err:
-        print "ERROR: %s" % err
+        LOG.error(err)
         sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(1)
