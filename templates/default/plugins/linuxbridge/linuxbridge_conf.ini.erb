@@ -76,3 +76,6 @@ rpc_support_old_agents = <%= node['openstack']['network']['linuxbridge']['rpc_su
 [securitygroup]
 # Firewall driver for realizing neutron security group function
 firewall_driver = <%= node['openstack']['network']['linuxbridge']['firewall_driver'] %>
+
+# It should be false when you use nova security group.
+enable_security_group = <%= node['openstack']['network']['linuxbridge']['enable_security_group'] %>

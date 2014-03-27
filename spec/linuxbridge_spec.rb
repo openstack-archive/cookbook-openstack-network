@@ -8,6 +8,7 @@ describe 'openstack-network::linuxbridge' do
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       node.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.BridgeInterfaceDriver'
+      node.set['openstack']['network']['core_plugin'] = 'neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2'
 
       runner.converge(described_recipe)
     end
@@ -48,32 +49,24 @@ describe 'openstack-network::linuxbridge' do
           'local_ip = 127.0.0.1')
       end
 
-      it 'sets xvlan attributes' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'enable_vxlan = false')
-        expect(chef_run).to render_file(file.name).with_content(
-          'ttl = ')
-        expect(chef_run).to render_file(file.name).with_content(
-          'tos = ')
-        expect(chef_run).to render_file(file.name).with_content(
-          'vxlan_group = 224.0.0.1')
-        expect(chef_run).to render_file(file.name).with_content(
-          'l2_population = false')
-        expect(chef_run).to render_file(file.name).with_content(
-          'polling_interval = 2')
-        expect(chef_run).to render_file(file.name).with_content(
-          'rpc_support_old_agents = false')
-      end
-
-      it 'sets securitygroup attributes' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'firewall_driver = neutron.agent.firewall.NoopFirewallDriver')
-      end
-
-      it 'it uses local_ip from eth0 when local_ip_interface is set' do
-        node.set['openstack']['endpoints']['network-linuxbridge']['bind_interface'] = 'eth0'
-
-        expect(chef_run).to render_file(file.name).with_content('local_ip = 10.0.0.2')
+      [
+        /^tenant_network_type = local$/,
+        /^network_vlan_ranges = $/,
+        /^physical_interface_mappings = $/,
+        /^enable_vxlan = false$/,
+        /^ttl = $/,
+        /^tos = $/,
+        /^vxlan_group = 224.0.0.1$/,
+        /^local_ip = 127.0.0.1$/,
+        /^l2_population = false$/,
+        /^polling_interval = 2$/,
+        /^rpc_support_old_agents = false$/,
+        /^firewall_driver = neutron.agent.firewall.NoopFirewallDriver$/,
+        /^enable_security_group = True$/
+      ].each do |content|
+        it "has #{content.source[1...-1]} line" do
+          expect(chef_run).to render_file(file.name).with_content(content)
+        end
       end
     end
   end

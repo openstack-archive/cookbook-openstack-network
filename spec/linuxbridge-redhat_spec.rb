@@ -9,6 +9,7 @@ describe 'openstack-network::linuxbridge' do
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       node.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.BridgeInterfaceDriver'
+      node.set['openstack']['network']['core_plugin'] = 'neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2'
 
       runner.converge(described_recipe)
     end

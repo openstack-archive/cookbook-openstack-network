@@ -130,8 +130,8 @@ default['openstack']['network']['cron_replicate_dhcp'] = '*/1'
 # --- Reference implementations ---
 default['openstack']['network']['service_provider'] = []
 
-# the core plugin to use for neutron
-default['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2'
+# The core plugin to use for neutron
+default['openstack']['network']['core_plugin'] = 'neutron.plugins.ml2.plugin.Ml2Plugin'
 
 # additional service plugins to use for neutron
 # e.g. neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin
@@ -139,27 +139,27 @@ default['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ov
 default['openstack']['network']['service_plugins'] = []
 
 # The bridging interface driver.
-#
+# This is used by the L3, DHCP and LBaaS agents.
 # Options are:
 #
 #   - neutron.agent.linux.interface.OVSInterfaceDriver
 #   - neutron.agent.linux.interface.BridgeInterfaceDriver
-#   - neutron.agent.linux.interface.Ml2InterfaceDriver
 #
-
 default['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
 
-# maps the above driver to a plugin name
-default['openstack']['network']['interface_driver_map'] = {
-   'ovsinterfacedriver' => 'openvswitch',
-   'bridgeinterfacedriver' => 'linuxbridge',
-   'ml2interfacedriver' => 'ml2'
+# Maps the above core plugin driver to a simple name
+# This is used in the neutron_plugin_package package name and common recipe case statements
+default['openstack']['network']['core_plugin_map'] = {
+   'ovsneutronpluginv2' => 'openvswitch',
+   'linuxbridgepluginv2' => 'linuxbridge',
+   'ml2plugin' => 'ml2'
 }
 
+# This is used by SUSE to setup the sysconfig neutron initfile
 default['openstack']['network']['plugin_conf_map'] = {
-  'ovsinterfacedriver' => 'openvswitch/ovs_neutron_plugin.ini',
-  'bridgeinterfacedriver' => 'linuxbridge/linuxbridge_conf.ini',
-  'ml2interfacedriver' => 'ml2/ml2_conf.ini'
+  'ovsneutronpluginv2' => 'openvswitch/ovs_neutron_plugin.ini',
+  'linuxbridgepluginv2' => 'linuxbridge/linuxbridge_conf.ini',
+  'ml2plugin' => 'ml2/ml2_conf.ini'
 }
 
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
@@ -352,9 +352,19 @@ default['openstack']['network']['openvswitch']['tenant_network_type'] = 'local'
 default['openstack']['network']['openvswitch']['network_vlan_ranges'] = nil
 
 # Set to True in the server and the agents to enable support
-# for GRE networks. Requires kernel support for OVS patch ports and
-# GRE tunneling.
+# for GRE or VXLAN networks. Requires kernel support for OVS patch ports and
+# GRE or VXLAN tunneling.
+#
+# WARNING: This option will be deprecated in the Icehouse release, at which
+#          point setting tunnel_type below will be required to enable
+#          tunneling.
 default['openstack']['network']['openvswitch']['enable_tunneling'] = 'False'
+
+# The type of tunnel network, if any, supported by the plugin. If
+# this is set, it will cause tunneling to be enabled. If this is not set and
+# the option enable_tunneling is set, this will default to 'gre'.
+# 'gre' or 'vxlan'
+default['openstack']['network']['openvswitch']['tunnel_type'] = ''
 
 # Comma-separated list of <tun_min>:<tun_max> tuples
 # enumerating ranges of GRE tunnel IDs that are available for tenant
@@ -391,8 +401,15 @@ default['openstack']['network']['openvswitch']['tun_peer_patch_port'] = nil
 # Example: bridge_mappings = physnet1:br-eth1
 default['openstack']['network']['openvswitch']['bridge_mappings'] = nil
 
+# Agent's polling interval in seconds
+default['openstack']['network']['openvswitch']['polling_interval'] = 2
+
 # Firewall driver for realizing neutron security group function
 default['openstack']['network']['openvswitch']['fw_driver'] = 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
+
+# Controls if neutron security group is enabled or not.
+# It should be false when you use nova security group.
+default['openstack']['network']['openvswitch']['enable_security_group'] = 'True'
 
 # The newest version of OVS which comes with 12.04 Precise is 1.4.0
 # Which is legacy. Should we compile a newer version from source?
@@ -486,6 +503,10 @@ default['openstack']['network']['linuxbridge']['rpc_support_old_agents'] = false
 # firewall_driver = neutron.agent.firewall.NoopFirewallDriver
 # Example: firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 default['openstack']['network']['linuxbridge']['firewall_driver'] = 'neutron.agent.firewall.NoopFirewallDriver'
+
+# Controls if neutron security group is enabled or not.
+# It should be false when you use nova security group.
+default['openstack']['network']['linuxbridge']['enable_security_group'] = 'True'
 
 # ============================= BigSwitch Plugin Configuration =============
 
@@ -844,7 +865,7 @@ default['openstack']['network']['ml2']['tenant_network_types'] = 'local'
 # mechanism_drivers =
 # Example: mechanism_drivers = arista
 # Example: mechanism_drivers = cisco,logger
-default['openstack']['network']['ml2']['mechanism_drivers'] = ''
+default['openstack']['network']['ml2']['mechanism_drivers'] = 'openvswitch'
 
 # (ListOpt) List of physical_network names with which flat networks
 # can be created. Use * to allow flat networks with arbitrary
@@ -879,6 +900,10 @@ default['openstack']['network']['ml2']['vni_ranges'] = ''
 # vxlan_group =
 # Example: vxlan_group = 239.1.1.1
 default['openstack']['network']['ml2']['vxlan_group'] = ''
+
+# Controls if neutron security group is enabled or not.
+# It should be false when you use nova security group.
+default['openstack']['network']['ml2']['enable_security_group'] = 'True'
 
 # platform-specific settings
 case platform_family

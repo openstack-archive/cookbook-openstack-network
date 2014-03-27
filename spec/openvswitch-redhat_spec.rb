@@ -7,6 +7,7 @@ describe 'openstack-network::openvswitch' do
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.set['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2'
 
       runner.converge(described_recipe)
     end

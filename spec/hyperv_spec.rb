@@ -7,7 +7,8 @@ describe 'openstack-network::hyperv' do
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-      node.set['openstack']['network']['interface_driver_map']['ovsinterfacedriver'] = 'hyperv'
+      node.set['openstack']['network']['core_plugin'] = 'neutron.plugins.hyperv.hyperv_neutron_plugin.HyperVNeutronPlugin'
+      node.set['openstack']['network']['core_plugin_map'] = { 'hypervneutronplugin' => 'hyperv' }
       runner.converge(described_recipe)
     end
 

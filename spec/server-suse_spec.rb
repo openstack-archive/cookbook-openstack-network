@@ -41,13 +41,17 @@ describe 'openstack-network::server' do
         )
       end
 
-      it 'has the correct plugin config location - ovs by default' do
+      it 'has the correct plugin config location - ml2 by default' do
         expect(chef_run).to render_file(file.name).with_content(
-          '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini')
+          '/etc/neutron/plugins/ml2/ml2_conf.ini')
       end
 
       it 'uses linuxbridge when configured to use it' do
-        node.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.BridgeInterfaceDriver'
+        chef_run = ::ChefSpec::Runner.new ::SUSE_OPTS do |n|
+          n.set['openstack']['network']['core_plugin'] = 'neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2'
+          n.set['openstack']['compute']['network']['service_type'] = 'neutron'
+        end
+        chef_run.converge 'openstack-network::server'
 
         expect(chef_run).to render_file(file.name).with_content(
           '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini')

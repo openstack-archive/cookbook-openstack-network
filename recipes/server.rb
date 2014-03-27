@@ -29,9 +29,7 @@ end
 include_recipe 'openstack-network::common'
 
 platform_options = node['openstack']['network']['platform']
-driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
-
-platform_options = node['openstack']['network']['platform']
+core_plugin = node['openstack']['network']['core_plugin']
 
 platform_options['neutron_server_packages'].each do |pkg|
   package pkg do
@@ -102,7 +100,7 @@ template '/etc/sysconfig/neutron' do
   group 'root'
   mode 00644
   variables(
-    plugin_conf: node['openstack']['network']['plugin_conf_map'][driver_name]
+    plugin_conf: node['openstack']['network']['plugin_conf_map'][core_plugin.split('.').last.downcase]
   )
   notifies :restart, 'service[neutron-server]'
 end

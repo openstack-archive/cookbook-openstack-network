@@ -30,8 +30,8 @@ end
 include_recipe 'openstack-network::common'
 
 platform_options = node['openstack']['network']['platform']
-driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
-main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
+core_plugin = node['openstack']['network']['core_plugin']
+main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
 
 if platform_family?('debian')
 

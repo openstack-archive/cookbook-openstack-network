@@ -10,6 +10,7 @@ describe 'openstack-network::openvswitch' do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       node.set['openstack']['endpoints']['network-openvswitch']['bind_interface'] = 'eth0'
       node.set['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
+      node.set['openstack']['network']['core_plugin'] = 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2'
       node.automatic_attrs['kernel']['release'] = '1.2.3'
 
       runner.converge(described_recipe)
@@ -135,43 +136,33 @@ describe 'openstack-network::openvswitch' do
         )
       end
 
-      it 'uses default network_vlan_range' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^network_vlan_ranges =/)
+      [
+        /^network_vlan_ranges =$/,
+        /^tunnel_id_ranges =$/,
+        /^int_peer_patch_port =$/,
+        /^tun_peer_patch_port =$/,
+        /^bridge_mappings =$/
+      ].each do |content|
+        it "does not have a #{content.source[1...-1]} line" do
+          expect(chef_run).not_to render_file(file.name).with_content(content)
+        end
       end
 
-      it 'uses default tunnel_id_ranges' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^tunnel_id_ranges =/)
-      end
-
-      it 'uses default integration_bridge' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'integration_bridge = br-int')
-      end
-
-      it 'uses default tunnel bridge' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'tunnel_bridge = br-tun')
-      end
-
-      it 'uses default int_peer_patch_port' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^int_peer_patch_port =/)
-      end
-
-      it 'uses default tun_peer_patch_port' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^tun_peer_patch_port =/)
-      end
-
-      it 'it has firewall driver' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver')
-      end
-
-      it 'it uses local_ip from eth0 when bind_interface is set' do
-        expect(chef_run).to render_file(file.name).with_content('local_ip = 10.0.0.3')
+      [
+        /^tenant_network_type = local$/,
+        /^enable_tunneling = False$/,
+        /^tunnel_type = $/,
+        /^integration_bridge = br-int$/,
+        /^local_ip = 10.0.0.2$/,
+        /^integration_bridge = br-int$/,
+        /^tunnel_bridge = br-tun$/,
+        /^polling_interval = 2$/,
+        /^firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver$/,
+        /^enable_security_group = True$/
+      ].each do |content|
+        it "has a #{content.source[1...-1]} line" do
+          expect(chef_run).to render_file(file.name).with_content(content)
+        end
       end
     end
   end

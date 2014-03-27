@@ -487,7 +487,7 @@ describe 'openstack-network::server' do
 
       it 'has a correct plugin config path' do
         expect(chef_run).to render_file(file.name).with_content(
-          '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini')
+          '/etc/neutron/plugins/ml2/ml2_conf.ini')
       end
     end
 
@@ -509,12 +509,13 @@ describe 'openstack-network::server' do
       [
         /^type_drivers = local,flat,vlan,gre,vxlan$/,
         /^tenant_network_types = local$/,
-        /^mechanism_drivers = $/,
+        /^mechanism_drivers = openvswitch$/,
         /^flat_networks = $/,
         /^network_vlan_ranges = $/,
         /^tunnel_id_ranges = $/,
         /^vni_ranges = $/,
-        /^vxlan_group = $/
+        /^vxlan_group = $/,
+        /^enable_security_group = True$/
       ].each do |content|
         it "has a #{content.source[1...-1]} line" do
           expect(chef_run).to render_file(file.name).with_content(content)

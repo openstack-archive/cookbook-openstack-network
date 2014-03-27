@@ -27,11 +27,17 @@ network_vlan_ranges = <%= node["openstack"]["network"]["openvswitch"]["network_v
 <% end -%>
 
 # (BoolOpt) Set to True in the server and the agents to enable support
-# for GRE networks. Requires kernel support for OVS patch ports and
-# GRE tunneling.
+# for GRE or VXLAN networks. Requires kernel support for OVS patch ports and
+# GRE or VXLAN tunneling.
 #
 # Default: enable_tunneling = False
 enable_tunneling = <%= node["openstack"]["network"]["openvswitch"]["enable_tunneling"] %>
+
+# (StrOpt) The type of tunnel network, if any, supported by the plugin. If
+# this is set, it will cause tunneling to be enabled. If this is not set and
+# the option enable_tunneling is set, this will default to 'gre'.
+# 'gre' or 'vxlan'
+tunnel_type = <%= node["openstack"]["network"]["openvswitch"]["tunnel_type"] %>
 
 # (ListOpt) Comma-separated list of <tun_min>:<tun_max> tuples
 # enumerating ranges of GRE tunnel IDs that are available for tenant
@@ -77,8 +83,6 @@ tun_peer_patch_port = <%= node["openstack"]["network"]["openvswitch"]["tun_peer_
 # Uncomment this line for the agent if tunnel_id_ranges (above) is not
 # empty for the server. Set local-ip to be the local IP address of
 # this hypervisor.
-#
-# Default: local_ip =
 local_ip = <%= @local_ip %>
 
 # (ListOpt) Comma-separated list of <physical_network>:<bridge> tuples
@@ -97,14 +101,16 @@ bridge_mappings = <%= node["openstack"]["network"]["openvswitch"]["bridge_mappin
 
 [AGENT]
 # Agent's polling interval in seconds
-polling_interval = 2
+polling_interval = <%= node['openstack']['network']['openvswitch']['polling_interval'] %>
 
 [SECURITYGROUP]
 # Firewall driver for realizing neutron security group function
 # Default: firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
-<% if node["openstack"]["network"]["openvswitch"]["fw_driver"] -%>
 firewall_driver = <%= node["openstack"]["network"]["openvswitch"]["fw_driver"] %>
-<% end -%>
+
+# Controls if neutron security group is enabled or not.
+# It should be false when you use nova security group.
+enable_security_group = <%= node['openstack']['network']['openvswitch']['enable_security_group'] %>
 
 #-----------------------------------------------------------------------------
 # Sample Configurations.

@@ -31,9 +31,8 @@ end
 
 platform_options = node['openstack']['network']['platform']
 
-driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
-main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
 core_plugin = node['openstack']['network']['core_plugin']
+main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
 
 if node['openstack']['network']['syslog']['use']
   include_recipe 'openstack-common::logging'
@@ -368,6 +367,8 @@ when 'ryu'
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
+else
+  Chef::Log.fatal("Main plugin #{main_plugin}is not supported")
 end
 
 link plugin_file do

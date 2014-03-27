@@ -43,7 +43,7 @@ describe 'openstack-network::dhcp_agent' do
     end
 
     it 'installs plugin packages' do
-      expect(chef_run).to install_package 'neutron-plugin-openvswitch'
+      expect(chef_run).to install_package 'neutron-plugin-ml2'
     end
 
     it 'starts the dhcp agent on boot' do

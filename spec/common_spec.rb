@@ -31,5 +31,24 @@ describe 'openstack-network::common' do
       expect(chef_run).to install_package('python-mysqldb')
     end
 
+    describe 'neutron.conf' do
+      let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
+
+      it 'has proper owner' do
+        expect(file.owner).to eq('neutron')
+        expect(file.group).to eq('neutron')
+      end
+
+      it 'has proper modes' do
+        expect(sprintf('%o', file.mode)).to eq '644'
+      end
+
+      it 'has default core plugin' do
+        expect(chef_run).to render_file(file.name).with_content(
+          /^core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin/)
+      end
+
+      # TODO: flush out rest of template attributes
+    end
   end
 end

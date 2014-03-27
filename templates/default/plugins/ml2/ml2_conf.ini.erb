@@ -58,3 +58,8 @@ vni_ranges = <%= node['openstack']['network']['ml2']['vni_ranges'] %>
 # vxlan_group =
 # Example: vxlan_group = 239.1.1.1
 vxlan_group = <%= node['openstack']['network']['ml2']['vxlan_group'] %>
+
+[securitygroup]
+# Controls if neutron security group is enabled or not.
+# It should be false when you use nova security group.
+enable_security_group = <%= node['openstack']['network']['ml2']['enable_security_group'] %>

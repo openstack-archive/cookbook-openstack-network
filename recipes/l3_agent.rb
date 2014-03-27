@@ -23,8 +23,8 @@
 include_recipe 'openstack-network::common'
 
 platform_options = node['openstack']['network']['platform']
-driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
-main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
+core_plugin = node['openstack']['network']['core_plugin']
+main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
 
 platform_options['neutron_l3_packages'].each do |pkg|
   package pkg do
@@ -51,8 +51,10 @@ template '/etc/neutron/l3_agent.ini' do
   notifies :restart, 'service[neutron-l3-agent]', :immediately
 end
 
-unless %w(nicira plumgrid bigswitch linuxbridge).include?(main_plugin)
-  # See http://docs.openstack.org/trunk/openstack-network/admin/content/install_neutron-l3.html
+driver_name = node['openstack']['network']['interface_driver'].split('.').last
+# See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
+case driver_name
+when 'OVSInterfaceDriver'
   ext_bridge = node['openstack']['network']['l3']['external_network_bridge']
   ext_bridge_iface = node['openstack']['network']['l3']['external_network_bridge_interface']
   execute 'create external network bridge' do
@@ -61,4 +63,6 @@ unless %w(nicira plumgrid bigswitch linuxbridge).include?(main_plugin)
     not_if "ovs-vsctl br-exists #{ext_bridge}"
     only_if "ip link show #{ext_bridge_iface}"
   end
+when 'BridgeInterfaceDriver'
+  # TODO: Handle linuxbridge case
 end
