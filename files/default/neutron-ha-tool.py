@@ -461,7 +461,7 @@ def agent_alive_id_list(agent_list, agent_type):
     :param agent_list: API response for list_agents()
 
     """
-    return [agent for agent in agent_list
+    return [agent['id'] for agent in agent_list
             if agent['agent_type'] == agent_type and agent['alive'] is True]
 
 
@@ -472,7 +472,7 @@ def agent_dead_id_list(agent_list, agent_type):
     :param agent_list: API response for list_agents()
 
     """
-    return [agent for agent in agent_list
+    return [agent['id'] for agent in agent_list
             if agent['agent_type'] == agent_type and agent['alive'] is False]
 
 
