@@ -29,6 +29,11 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
+# Make Openstack object available in Chef::Resource::RubyBlock
+class ::Chef::Resource::RubyBlock
+  include ::Openstack
+end
+
 platform_options = node['openstack']['network']['platform']
 
 driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
@@ -140,6 +145,39 @@ service 'neutron-server' do
   action :nothing
 end
 
+# Nova interactions
+nova_endpoint = endpoint 'compute-api'
+# TODO(MRV): Need to allow for this in common.
+# Neutron will append the admin_tenant_id for these nova interaction calls,
+# remove the tenant_id so we don't end up with two of them on the url.
+# Need to also allow for getting at nova endpoint version.
+# https://github.com/openstack/neutron/blob/master/neutron/common/config.py#L89
+# https://github.com/openstack/neutron/blob/master/neutron/notifiers/nova.py#L43
+nova_version = node['openstack']['network']['nova']['url_version']
+nova_endpoint = uri_from_hash('host' => nova_endpoint.host.to_s, 'port' => nova_endpoint.port.to_s, 'path' => nova_version)
+nova_admin_pass = get_password 'service', 'openstack-compute'
+ruby_block 'query service tenant uuid' do
+  # query keystone for the service tenant uuid
+  block do
+    begin
+      admin_user = node['openstack']['identity']['admin_user']
+      admin_tenant = node['openstack']['identity']['admin_tenant_name']
+      env = openstack_command_env admin_user, admin_tenant
+      tenant_id = identity_uuid 'tenant', 'name', 'service', env
+      Chef::Log.error('service tenant UUID for nova_admin_tenant_id not found.') if tenant_id.nil?
+      node.set['openstack']['network']['nova']['admin_tenant_id'] = tenant_id
+    rescue RuntimeError => e
+      Chef::Log.error("Could not query service tenant UUID for nova_admin_tenant_id. Error was #{e.message}")
+    end
+  end
+  action :run
+  only_if do
+    (node['openstack']['network']['nova']['notify_nova_on_port_status_changes'] == 'True' ||
+    node['openstack']['network']['nova']['notify_nova_on_port_data_changes'] == 'True') &&
+    node['openstack']['network']['nova']['admin_tenant_id'].nil?
+  end
+end
+
 template '/etc/neutron/neutron.conf' do
   source 'neutron.conf.erb'
   owner node['openstack']['network']['platform']['user']
@@ -155,7 +193,9 @@ template '/etc/neutron/neutron.conf' do
     auth_uri: auth_uri,
     identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
-    sql_connection: sql_connection
+    sql_connection: sql_connection,
+    nova_endpoint: nova_endpoint,
+    nova_admin_pass: nova_admin_pass
   )
 
   notifies :restart, 'service[neutron-server]', :delayed

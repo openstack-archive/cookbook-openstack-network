@@ -187,6 +187,31 @@ default['openstack']['network']['rpc_thread_pool_size'] = 64
 default['openstack']['network']['rpc_conn_pool_size'] = 30
 default['openstack']['network']['rpc_response_timeout'] = 60
 
+# ======== Neutron Nova interactions ==========
+# Send notification to nova when port status is active.
+default['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'True'
+
+# Send notifications to nova when port data (fixed_ips/floatingips) change
+# so nova can update it's cache.
+default['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'True'
+
+# Name of nova region to use. Useful if keystone manages more than one region
+default['openstack']['network']['nova']['region_name'] = node['openstack']['region']
+
+# Username for connection to nova in admin context
+default['openstack']['network']['nova']['admin_username'] = 'nova'
+
+# Version for connection to nova
+# TODO: (MRV) Need to allow for this in Common.
+default['openstack']['network']['nova']['url_version'] = '/v2'
+
+# The uuid of the nova tenant
+# Nil will cause the uuid to be queried from keystone.
+default['openstack']['network']['nova']['admin_tenant_id'] = nil
+
+# Number of seconds between sending events to nova if there are any events to send
+default['openstack']['network']['nova']['send_events_interval'] = 2
+
 # ============================= DHCP Agent Configuration ===================
 
 # The scheduler class to use for scheduling to DHCP agents
