@@ -18,5 +18,3 @@ end
 
 depends           'openstack-identity', '~> 8.0'
 depends           'openstack-common', '~> 8.2'
-depends           'mysql'
-depends           'postgresql'
