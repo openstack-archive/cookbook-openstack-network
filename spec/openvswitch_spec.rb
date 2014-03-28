@@ -2,201 +2,177 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::openvswitch' do
-  before do
-    neutron_stubs
-    @kmod_command = '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod'
-    @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
-      n.automatic_attrs['kernel']['release'] = '1.2.3'
-      n.set['openstack']['endpoints']['network-openvswitch']['bind_interface'] = 'eth0'
-      n.set['openstack']['compute']['network']['service_type'] = 'neutron'
-      n.set['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
-    end
-    @chef_run.converge 'openstack-network::openvswitch'
-  end
+  describe 'ubuntu' do
+    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:node) { runner.node }
+    let(:kmod_command) { '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod' }
+    let(:chef_run) do
+      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.set['openstack']['endpoints']['network-openvswitch']['bind_interface'] = 'eth0'
+      node.set['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
+      node.automatic_attrs['kernel']['release'] = '1.2.3'
 
-  it 'does not install openvswitch switch when nova networking' do
-    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'nova'
-    chef_run.converge 'openstack-network::openvswitch'
-    expect(chef_run).to_not install_package 'openvswitch-switch'
-  end
-
-  it 'installs openvswitch switch' do
-    expect(@chef_run).to install_package 'openvswitch-switch'
-  end
-
-  it 'installs openvswitch datapath dkms' do
-    expect(@chef_run).to install_package 'openvswitch-datapath-dkms'
-  end
-
-  it 'installs linux bridge utils' do
-    expect(@chef_run).to install_package 'bridge-utils'
-  end
-
-  it 'installs linux linux headers' do
-    expect(@chef_run).to install_package 'linux-headers-1.2.3'
-  end
-
-  it 'sets the openvswitch service to start on boot' do
-    expect(@chef_run).to enable_service 'openvswitch-switch'
-  end
-
-  it 'start the openvswitch service' do
-    expect(@chef_run).to start_service 'openvswitch-switch'
-  end
-
-  it 'subscribes the openvswitch agent service to neutron.conf' do
-    expect(@chef_run.service('neutron-plugin-openvswitch-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
-  end
-
-  it 'installs openvswitch agent' do
-    expect(@chef_run).to install_package 'neutron-plugin-openvswitch-agent'
-  end
-
-  it 'sets the openvswitch service to start on boot' do
-    expect(@chef_run).to enable_service 'neutron-plugin-openvswitch-agent'
-  end
-
-  it 'allows overriding the service names' do
-    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-    node.set['openstack']['network']['platform']['neutron_openvswitch_service'] = 'my-ovs-server'
-    node.set['openstack']['network']['platform']['neutron_openvswitch_agent_service'] = 'my-ovs-agent'
-    chef_run.converge 'openstack-network::openvswitch'
-
-    %w{my-ovs-server my-ovs-agent}.each do |service|
-      expect(chef_run).to enable_service service
-    end
-  end
-
-  it 'allows overriding package options' do
-    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-    node.set['openstack']['network']['platform']['package_overrides'] = '--my-override1 --my-override2'
-    chef_run.converge 'openstack-network::openvswitch'
-
-    %w{openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent}.each do |pkg|
-      expect(chef_run).to install_package(pkg).with(options: '--my-override1 --my-override2')
-    end
-  end
-
-  it 'allows overriding package names' do
-    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-    node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
-    node.set['openstack']['network']['platform']['neutron_openvswitch_agent_packages'] = ['my-openvswitch-agent', 'my-other-openvswitch-agent']
-    chef_run.converge 'openstack-network::openvswitch'
-
-    %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
-      expect(chef_run).to install_package(pkg)
-    end
-  end
-
-  it 'creates execute resource when openvswitch-datasource-dkms package is being installed' do
-    resource = @chef_run.find_resource('execute', @kmod_command).to_hash
-
-    expect(resource).to include(
-      action: [:nothing],
-      command: @kmod_command
-    )
-  end
-
-  it 'does not create execute resource when openvswitch-datasource-dkms package is not being installed' do
-    chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-    node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
-    chef_run.converge 'openstack-network::openvswitch'
-
-    resource = chef_run.find_resource('execute', @kmod_command)
-    expect(resource).to eq(nil)
-
-  end
-
-  it 'notifies :run to the force-reload-kmod execute resource when openvswitch-datapath-dkms is installed' do
-    expect(@chef_run.package('openvswitch-datapath-dkms')).to notify("execute[#{@kmod_command}]").to(:run).immediately
-  end
-
-  describe 'ovs-dpctl-top' do
-    before do
-      @file = @chef_run.cookbook_file('ovs-dpctl-top')
+      runner.converge(described_recipe)
     end
 
-    it 'creates the ovs-dpctl-top file' do
-      expect(@chef_run).to create_cookbook_file('/usr/bin/ovs-dpctl-top')
+    include_context 'neutron-stubs'
+
+    it 'does not install openvswitch switch when nova networking' do
+      node.override['openstack']['compute']['network']['service_type'] = 'nova'
+
+      expect(chef_run).to_not install_package 'openvswitch-switch'
     end
 
-    it 'has the proper owner' do
-      expect(@file.owner).to eq('root')
-      expect(@file.group).to eq('root')
+    it 'installs openvswitch switch' do
+      expect(chef_run).to install_package 'openvswitch-switch'
     end
 
-    it 'has the proper mode' do
-      expect(sprintf('%o', @file.mode)).to eq '755'
+    it 'installs openvswitch datapath dkms' do
+      expect(chef_run).to install_package 'openvswitch-datapath-dkms'
     end
 
-    it 'has the proper interpreter line' do
-      expect(@chef_run).to render_file(@file.name).with_content(
-        %r{^#!\/usr\/bin\/env python}
+    it 'installs linux bridge utils' do
+      expect(chef_run).to install_package 'bridge-utils'
+    end
+
+    it 'installs linux linux headers' do
+      expect(chef_run).to install_package 'linux-headers-1.2.3'
+    end
+
+    it 'sets the openvswitch service to start on boot' do
+      expect(chef_run).to enable_service 'openvswitch-switch'
+    end
+
+    it 'start the openvswitch service' do
+      expect(chef_run).to start_service 'openvswitch-switch'
+    end
+
+    it 'subscribes the openvswitch agent service to neutron.conf' do
+      expect(chef_run.service('neutron-plugin-openvswitch-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
+    it 'installs openvswitch agent' do
+      expect(chef_run).to install_package 'neutron-plugin-openvswitch-agent'
+    end
+
+    it 'sets the openvswitch service to start on boot' do
+      expect(chef_run).to enable_service 'neutron-plugin-openvswitch-agent'
+    end
+
+    it 'allows overriding the service names' do
+      node.set['openstack']['network']['platform']['neutron_openvswitch_service'] = 'my-ovs-server'
+      node.set['openstack']['network']['platform']['neutron_openvswitch_agent_service'] = 'my-ovs-agent'
+
+      %w{my-ovs-server my-ovs-agent}.each do |service|
+        expect(chef_run).to enable_service service
+      end
+    end
+
+    it 'allows overriding package options' do
+      node.set['openstack']['network']['platform']['package_overrides'] = '--my-override1 --my-override2'
+
+      %w{openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent}.each do |pkg|
+        expect(chef_run).to install_package(pkg).with(options: '--my-override1 --my-override2')
+      end
+    end
+
+    it 'allows overriding package names' do
+      node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
+      node.set['openstack']['network']['platform']['neutron_openvswitch_agent_packages'] = ['my-openvswitch-agent', 'my-other-openvswitch-agent']
+
+      %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
+        expect(chef_run).to install_package(pkg)
+      end
+    end
+
+    it 'creates execute resource when openvswitch-datasource-dkms package is being installed' do
+      resource = chef_run.find_resource('execute', kmod_command).to_hash
+
+      expect(resource).to include(
+        action: [:nothing],
+        command: kmod_command
       )
     end
-  end
 
-  describe 'ovs_neutron_plugin.ini' do
-    before do
-      @file = @chef_run.template '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
+    it 'does not create execute resource when openvswitch-datasource-dkms package is not being installed' do
+      node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
+      chef_run.converge 'openstack-network::openvswitch'
+
+      resource = chef_run.find_resource('execute', kmod_command)
+      expect(resource).to eq(nil)
     end
 
-    it 'has proper owner' do
-      expect(@file.owner).to eq('neutron')
-      expect(@file.group).to eq('neutron')
+    it 'notifies :run to the force-reload-kmod execute resource when openvswitch-datapath-dkms is installed' do
+      expect(chef_run.package('openvswitch-datapath-dkms')).to notify("execute[#{kmod_command}]").to(:run).immediately
     end
 
-    it 'has proper modes' do
-      expect(sprintf('%o', @file.mode)).to eq '644'
+    describe 'ovs-dpctl-top' do
+      let(:file) { chef_run.cookbook_file('/usr/bin/ovs-dpctl-top') }
+
+      it 'creates /usr/bin/ovs-dpctl-top' do
+        expect(chef_run).to create_cookbook_file(file.name).with(
+          user: 'root',
+          group: 'root',
+          mode: 0755
+        )
+      end
+
+      it 'has the proper interpreter line' do
+        expect(chef_run).to render_file(file.name).with_content(
+          %r{^#!\/usr\/bin\/env python}
+        )
+      end
     end
 
-    it 'uses default network_vlan_range' do
-      expect(@chef_run).not_to render_file(@file.name).with_content(
-        /^network_vlan_ranges =/)
-    end
+    describe 'ovs_neutron_plugin.ini' do
+      let(:file) { chef_run.template('/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini') }
 
-    it 'uses default tunnel_id_ranges' do
-      expect(@chef_run).not_to render_file(@file.name).with_content(
-        /^tunnel_id_ranges =/)
-    end
+      it 'creates ovs_neutron_plugin.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
 
-    it 'uses default integration_bridge' do
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'integration_bridge = br-int')
-    end
+      it 'uses default network_vlan_range' do
+        expect(chef_run).not_to render_file(file.name).with_content(
+          /^network_vlan_ranges =/)
+      end
 
-    it 'uses default tunnel bridge' do
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'tunnel_bridge = br-tun')
-    end
+      it 'uses default tunnel_id_ranges' do
+        expect(chef_run).not_to render_file(file.name).with_content(
+          /^tunnel_id_ranges =/)
+      end
 
-    it 'uses default int_peer_patch_port' do
-      expect(@chef_run).not_to render_file(@file.name).with_content(
-        /^int_peer_patch_port =/)
-    end
+      it 'uses default integration_bridge' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'integration_bridge = br-int')
+      end
 
-    it 'uses default tun_peer_patch_port' do
-      expect(@chef_run).not_to render_file(@file.name).with_content(
-        /^tun_peer_patch_port =/)
-    end
+      it 'uses default tunnel bridge' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'tunnel_bridge = br-tun')
+      end
 
-    it 'it has firewall driver' do
-      expect(@chef_run).to render_file(@file.name).with_content(
-        'firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver')
-    end
+      it 'uses default int_peer_patch_port' do
+        expect(chef_run).not_to render_file(file.name).with_content(
+          /^int_peer_patch_port =/)
+      end
 
-    it 'it uses local_ip from eth0 when bind_interface is set' do
-      expect(@chef_run).to render_file(@file.name).with_content('local_ip = 10.0.0.3')
+      it 'uses default tun_peer_patch_port' do
+        expect(chef_run).not_to render_file(file.name).with_content(
+          /^tun_peer_patch_port =/)
+      end
+
+      it 'it has firewall driver' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver')
+      end
+
+      it 'it uses local_ip from eth0 when bind_interface is set' do
+        expect(chef_run).to render_file(file.name).with_content('local_ip = 10.0.0.3')
+      end
     end
   end
 end

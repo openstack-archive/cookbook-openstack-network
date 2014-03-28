@@ -160,5 +160,5 @@ cookbook_file 'ovs-dpctl-top' do
   source 'ovs-dpctl-top'
   owner 'root'
   group 'root'
-  mode '0755'
+  mode 0755
 end

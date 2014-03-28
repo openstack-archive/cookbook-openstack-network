@@ -2,122 +2,93 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::identity_registration' do
-  before do
-    neutron_stubs
-    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
-      n.set['openstack']['compute']['network']['service_type'] = 'neutron'
+  describe 'ubuntu' do
+    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:node) { runner.node }
+    let(:chef_run) do
+      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+
+      runner.converge(described_recipe)
     end
-    @chef_run.converge 'openstack-network::identity_registration'
-  end
 
-  it 'does not do network service registrations when nova networking' do
-    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    node = @chef_run.node
-    node.set['openstack']['compute']['network']['service_type'] = 'nova'
-    @chef_run.converge 'openstack-network::identity_registration'
+    include_context 'neutron-stubs'
 
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register Network API Service'
-    )
+    it 'does not do network service registrations when nova networking' do
+      node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-    expect(resource).to be_nil
-  end
+      expect(chef_run).not_to create_service_openstack_identity_register(
+        'Register Network API Service'
+      )
+    end
 
-  it 'registers network service' do
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register Network API Service'
-    ).to_hash
+    it 'registers network service' do
+      expect(chef_run).to create_service_openstack_identity_register(
+        'Register Network API Service'
+      ).with(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        service_type: 'network',
+        service_description: 'OpenStack Network Service'
+      )
+    end
 
-    expect(resource).to include(
-      auth_uri: 'http://127.0.0.1:35357/v2.0',
-      bootstrap_token: 'bootstrap-token',
-      service_type: 'network',
-      service_description: 'OpenStack Network Service',
-      action: [:create_service]
-    )
-  end
+    context 'registers network endpoint' do
+      it 'with default values' do
+        expect(chef_run).to create_endpoint_openstack_identity_register(
+          'Register Network Endpoint'
+        ).with(
+          auth_uri: 'http://127.0.0.1:35357/v2.0',
+          bootstrap_token: 'bootstrap-token',
+          service_type: 'network',
+          endpoint_region: 'RegionOne',
+          endpoint_adminurl: 'http://127.0.0.1:9696',
+          endpoint_internalurl: 'http://127.0.0.1:9696',
+          endpoint_publicurl: 'http://127.0.0.1:9696'
+        )
+      end
 
-  it 'registers network endpoint' do
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register Network Endpoint'
-    ).to_hash
+      it 'with custom region override' do
+        node.set['openstack']['network']['region'] = 'netRegion'
 
-    expect(resource).to include(
-      auth_uri: 'http://127.0.0.1:35357/v2.0',
-      bootstrap_token: 'bootstrap-token',
-      service_type: 'network',
-      endpoint_region: 'RegionOne',
-      endpoint_adminurl: 'http://127.0.0.1:9696',
-      endpoint_internalurl: 'http://127.0.0.1:9696',
-      endpoint_publicurl: 'http://127.0.0.1:9696',
-      action: [:create_endpoint]
-    )
-  end
+        expect(chef_run).to create_endpoint_openstack_identity_register(
+          'Register Network Endpoint'
+        ).with(endpoint_region: 'netRegion')
+      end
+    end
 
-  it 'overrides network endpoint region' do
-    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    @chef_run.node.set['openstack']['network']['region'] = 'netRegion'
-    @chef_run.node.set['openstack']['compute']['network']['service_type'] = 'quantum'
-    @chef_run.converge 'openstack-network::identity_registration'
+    it 'registers service tenant' do
+      expect(chef_run).to create_tenant_openstack_identity_register(
+        'Register Service Tenant'
+      ).with(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        tenant_name: 'service',
+        tenant_description: 'Service Tenant'
+      )
+    end
 
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register Network Endpoint'
-    ).to_hash
+    it 'registers service user' do
+      expect(chef_run).to create_user_openstack_identity_register(
+        'Register neutron User'
+      ).with(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        tenant_name: 'service',
+        user_name: 'neutron',
+        user_pass: 'neutron-pass'
+      )
+    end
 
-    expect(resource).to include(
-      endpoint_region: 'netRegion',
-      action: [:create_endpoint]
-    )
-  end
-
-  it 'registers service tenant' do
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register Service Tenant'
-    ).to_hash
-
-    expect(resource).to include(
-      auth_uri: 'http://127.0.0.1:35357/v2.0',
-      bootstrap_token: 'bootstrap-token',
-      tenant_name: 'service',
-      tenant_description: 'Service Tenant',
-      action: [:create_tenant]
-    )
-  end
-
-  it 'registers service user' do
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      'Register neutron User'
-    ).to_hash
-
-    expect(resource).to include(
-      auth_uri: 'http://127.0.0.1:35357/v2.0',
-      bootstrap_token: 'bootstrap-token',
-      tenant_name: 'service',
-      user_name: 'neutron',
-      user_pass: 'neutron-pass',
-      action: [:create_user]
-    )
-  end
-
-  it 'grants admin role to service user for service tenant' do
-    resource = @chef_run.find_resource(
-      'openstack-identity_register',
-      "Grant 'admin' Role to neutron User for service Tenant"
-    ).to_hash
-
-    expect(resource).to include(
-      auth_uri: 'http://127.0.0.1:35357/v2.0',
-      bootstrap_token: 'bootstrap-token',
-      tenant_name: 'service',
-      role_name: 'admin',
-      user_name: 'neutron',
-      action: [:grant_role]
-    )
+    it 'grants admin role to service user for service tenant' do
+      expect(chef_run).to grant_role_openstack_identity_register(
+        "Grant 'admin' Role to neutron User for service Tenant"
+      ).with(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        tenant_name: 'service',
+        role_name: 'admin',
+        user_name: 'neutron'
+      )
+    end
   end
 end

@@ -6,21 +6,21 @@ ChefSpec::Coverage.start! { add_filter 'openstack-network' }
 
 require 'chef/application'
 
-::LOG_LEVEL = :fatal
-::SUSE_OPTS = {
+LOG_LEVEL = :fatal
+SUSE_OPTS = {
   platform: 'suse',
   version: '11.03',
-  log_level: ::LOG_LEVEL
+  log_level: LOG_LEVEL
 }
-::REDHAT_OPTS = {
+REDHAT_OPTS = {
     platform: 'redhat',
     version: '6.3',
-    log_level: ::LOG_LEVEL
+    log_level: LOG_LEVEL
 }
-::UBUNTU_OPTS = {
+UBUNTU_OPTS = {
     platform: 'ubuntu',
     version: '12.04',
-    log_level: ::LOG_LEVEL
+    log_level: LOG_LEVEL
 }
 
 MOCK_NODE_NETWORK_DATA =
@@ -48,35 +48,37 @@ MOCK_NODE_NETWORK_DATA =
     }
   }
 
-def neutron_stubs # rubocop:disable MethodLength
-  ::Chef::Recipe.any_instance.stub(:rabbit_servers)
-    .and_return('1.1.1.1:5672,2.2.2.2:5672')
-  ::Chef::Recipe.any_instance.stub(:config_by_role)
-    .with('rabbitmq-server', 'queue').and_return(
-      host: 'rabbit-host',
-      port: 'rabbit-port'
-    )
-  ::Chef::Recipe.any_instance.stub(:config_by_role)
-    .with('glance-api', 'glance').and_return []
-  ::Chef::Recipe.any_instance.stub(:get_secret)
-    .with('openstack_identity_bootstrap_token')
-    .and_return('bootstrap-token')
-  ::Chef::Recipe.any_instance.stub(:get_secret)
-    .with('neutron_metadata_secret')
-    .and_return('metadata-secret')
-  ::Chef::Recipe.any_instance.stub(:get_password)
-    .with('db', anything)
-    .and_return('neutron')
-  ::Chef::Recipe.any_instance.stub(:get_password)
-    .with('service', 'openstack-network')
-    .and_return('neutron-pass')
-  ::Chef::Recipe.any_instance.stub(:get_password)
-    .with('user', 'guest')
-    .and_return('mq-pass')
-  ::Chef::Application.stub(:fatal!)
+shared_context 'neutron-stubs' do
+  before do
+    Chef::Recipe.any_instance.stub(:rabbit_servers)
+      .and_return('1.1.1.1:5672,2.2.2.2:5672')
+    Chef::Recipe.any_instance.stub(:config_by_role)
+      .with('rabbitmq-server', 'queue').and_return(
+        host: 'rabbit-host',
+        port: 'rabbit-port'
+      )
+    Chef::Recipe.any_instance.stub(:config_by_role)
+      .with('glance-api', 'glance').and_return []
+    Chef::Recipe.any_instance.stub(:secret)
+      .with('secrets', 'openstack_identity_bootstrap_token')
+      .and_return('bootstrap-token')
+    Chef::Recipe.any_instance.stub(:secret)
+      .with('secrets', 'neutron_metadata_secret')
+      .and_return('metadata-secret')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('db', anything)
+      .and_return('neutron')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('service', 'openstack-network')
+      .and_return('neutron-pass')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('user', 'guest')
+      .and_return('mq-pass')
+    Chef::Application.stub(:fatal!)
 
-  stub_command('dpkg -l | grep openvswitch-switch | grep 1.10.2-1').and_return(true)
-  stub_command('ovs-vsctl br-exists br-int').and_return(false)
-  stub_command('ovs-vsctl br-exists br-tun').and_return(false)
-  stub_command('ip link show eth1').and_return(false)
+    stub_command('dpkg -l | grep openvswitch-switch | grep 1.10.2-1').and_return(true)
+    stub_command('ovs-vsctl br-exists br-int').and_return(false)
+    stub_command('ovs-vsctl br-exists br-tun').and_return(false)
+    stub_command('ip link show eth1').and_return(false)
+  end
 end
