@@ -2,7 +2,7 @@ Description
 ===========
 
 This cookbook installs the **OpenStack Network** service (formerly project-named Quantum, current name is Neutron)
-as part of a Chef reference deployment of OpenStack.
+as part of a Chef reference deployment of OpenStack. This version is for deploying the 'Havana' release, the 'master' branch is currently working on the 'Icehouse' release.
 
 More information about the OpenStack Network service is available
 [here](http://docs.openstack.org/trunk/openstack-network/admin/content/index.html)
@@ -23,8 +23,8 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-* identity
 * openstack-common `>= 8.0.0`
+* openstack-identity `>= 8.0.0`
 
 Recipes
 =======
@@ -153,11 +153,13 @@ License and Author
 |                      |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 |                      |  Mark Vanderwiel(<vanderwl@us.ibm.com>)            |
 |                      |  Eric Zhou(<zyouzhou@cn.ibm.com>)                  |
+|                      |  Matt Ray(<matt@getchef.com>)                      |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013-2014, SUSE Linux GmbH          |
 |                      |  Copyright (c) 2012, Rackspace US, Inc.            |
 |                      |  Copyright (c) 2013-2014, IBM Corp.                |
+|                      |  Copyright (c) 2014, Chef Software, Inc.           |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
