@@ -121,14 +121,6 @@ sql_connection = db_uri('network', db_user, db_pass)
 api_endpoint = endpoint 'network-api'
 service_pass = get_password 'service', 'openstack-network'
 
-if node['openstack']['network']['api']['bind_interface'].nil?
-  bind_address = api_endpoint.host
-  bind_port = api_endpoint.port
-else
-  bind_address = address_for node['openstack']['network']['api']['bind_interface']
-  bind_port = node['openstack']['network']['api']['bind_port']
-end
-
 platform_options['neutron_client_packages'].each do |pkg|
   package pkg do
     action :upgrade
@@ -154,8 +146,8 @@ template '/etc/neutron/neutron.conf' do
   group node['openstack']['network']['platform']['group']
   mode   00644
   variables(
-    bind_address: bind_address,
-    bind_port: bind_port,
+    bind_address: api_endpoint.host,
+    bind_port: api_endpoint.port,
     rabbit_hosts: rabbit_hosts,
     mq_service_type: mq_service_type,
     mq_password: mq_password,
@@ -253,13 +245,8 @@ when 'hyperv'
 
 when 'linuxbridge'
 
+  linuxbridge_endpoint = endpoint 'network-linuxbridge'
   template_file = '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini'
-  # retrieve the local interface for tunnels
-  if node['openstack']['network']['linuxbridge']['local_ip_interface'].nil?
-    local_ip = node['openstack']['network']['linuxbridge']['local_ip']
-  else
-    local_ip = address_for node['openstack']['network']['linuxbridge']['local_ip_interface']
-  end
 
   template template_file do
     source 'plugins/linuxbridge/linuxbridge_conf.ini.erb'
@@ -267,7 +254,7 @@ when 'linuxbridge'
     group node['openstack']['network']['platform']['group']
     mode 00644
     variables(
-      local_ip: local_ip
+      local_ip: linuxbridge_endpoint.host
     )
 
     notifies :create, "link[#{plugin_file}]", :immediately
@@ -335,13 +322,8 @@ when 'nicira'
 
 when 'openvswitch'
 
+  openvswitch_endpoint = endpoint 'network-openvswitch'
   template_file = '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
-  # retrieve the local interface for tunnels
-  if node['openstack']['network']['openvswitch']['local_ip_interface'].nil?
-    local_ip = node['openstack']['network']['openvswitch']['local_ip']
-  else
-    local_ip = address_for node['openstack']['network']['openvswitch']['local_ip_interface']
-  end
 
   template template_file do
     source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
@@ -349,7 +331,7 @@ when 'openvswitch'
     group node['openstack']['network']['platform']['group']
     mode 00644
     variables(
-      local_ip: local_ip
+      local_ip: openvswitch_endpoint.host
     )
     notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed

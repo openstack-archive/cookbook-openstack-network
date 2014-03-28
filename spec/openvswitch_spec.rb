@@ -7,7 +7,7 @@ describe 'openstack-network::openvswitch' do
     @kmod_command = '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod'
     @chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
       n.automatic_attrs['kernel']['release'] = '1.2.3'
-      n.set['openstack']['network']['local_ip_interface'] = 'eth0'
+      n.set['openstack']['endpoints']['network-openvswitch']['bind_interface'] = 'eth0'
       n.set['openstack']['compute']['network']['service_type'] = 'neutron'
       n.set['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
     end
@@ -191,7 +191,7 @@ describe 'openstack-network::openvswitch' do
         'firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver')
     end
 
-    it 'it uses local_ip from eth0 when local_ip_interface is set' do
+    it 'it uses local_ip from eth0 when bind_interface is set' do
       expect(@chef_run).to render_file(@file.name).with_content('local_ip = 10.0.0.3')
     end
   end

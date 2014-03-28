@@ -63,12 +63,6 @@ default['openstack']['network']['api']['auth']['cache_dir'] = '/var/cache/neutro
 # The auth api version used to interact with identity service.
 default['openstack']['network']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
 
-# If bind_interface is set, the neutron API service will bind to the
-# address on this interface and use the port in bind_port. Otherwise,
-# it will bind to the API endpoint's host.
-default['openstack']['network']['api']['bind_interface'] = nil
-default['openstack']['network']['api']['bind_port'] = 9696
-
 # logging attribute
 default['openstack']['network']['log_dir'] = '/var/log/neutron'
 default['openstack']['network']['syslog']['use'] = false
@@ -378,14 +372,6 @@ default['openstack']['network']['openvswitch']['int_peer_patch_port'] = nil
 # Peer patch port in tunnel bridge for integration bridge (nil uses default)
 default['openstack']['network']['openvswitch']['tun_peer_patch_port'] = nil
 
-# Uncomment this line for the agent if tunnel_id_ranges (above) is not
-# empty for the server. Set local_ip to be the local IP address of
-# this hypervisor or set the local_ip_interface parameter to use the IP
-# address of the specified interface.  If local_ip_interface is set
-# it will take precedence.
-default['openstack']['network']['openvswitch']['local_ip'] = '127.0.0.1'
-default['openstack']['network']['openvswitch']['local_ip_interface'] = nil
-
 # Comma-separated list of <physical_network>:<bridge> tuples
 # mapping physical network names to the agent's node-specific OVS
 # bridge names to be used for flat and VLAN networks. The length of
@@ -469,15 +455,6 @@ default['openstack']['network']['linuxbridge']['tos'] = ''
 # (StrOpt) multicast group to use for broadcast emulation.
 # This group must be the same on all the agents.
 default['openstack']['network']['linuxbridge']['vxlan_group'] = '224.0.0.1'
-
-# (StrOpt) Local IP address to use for VXLAN endpoints (required)
-default['openstack']['network']['linuxbridge']['local_ip'] = '127.0.0.1'
-# Uncomment this line for the agent if tunnel_id_ranges (above) is not
-# empty for the server. Set local_ip to be the local IP address of
-# this hypervisor or set the local_ip_interface parameter to use the IP
-# address of the specified interface.  If local_ip_interface is set
-# it will take precedence.
-default['openstack']['network']['linuxbridge']['local_ip_interface'] = nil
 
 # (BoolOpt) Flag to enable l2population extension. This option should be used
 # in conjunction with ml2 plugin l2population mechanism driver (in that case,
