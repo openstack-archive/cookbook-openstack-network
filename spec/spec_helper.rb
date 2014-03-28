@@ -1,6 +1,9 @@
 # Encoding: utf-8
 require 'chefspec'
 require 'chefspec/berkshelf'
+
+ChefSpec::Coverage.start! { add_filter 'openstack-network' }
+
 require 'chef/application'
 
 ::LOG_LEVEL = :fatal
@@ -77,9 +80,3 @@ def neutron_stubs # rubocop:disable MethodLength
   stub_command('ovs-vsctl br-exists br-tun').and_return(false)
   stub_command('ip link show eth1').and_return(false)
 end
-
-# README(galstrom21): This will remove any coverage warnings from
-#   dependent cookbooks
-ChefSpec::Coverage.filters << '*/openstack-network'
-
-at_exit { ChefSpec::Coverage.report! }
