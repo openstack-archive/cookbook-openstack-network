@@ -6,12 +6,17 @@ describe 'openstack-network::server' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
+
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
 
       runner.converge(described_recipe)
     end
 
     include_context 'neutron-stubs'
+
+    it 'uses release db stamp' do
+      expect(chef_run).to run_bash('migrate network database').with_code(/stamp icehouse/)
+    end
 
     it 'does not install neutron-server when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
