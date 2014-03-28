@@ -14,6 +14,14 @@ describe 'openstack-network::l3_agent' do
       @chef_run.converge 'openstack-network::l3_agent'
     end
 
+    it 'starts the l3 agent on boot' do
+      expect(@chef_run).to enable_service 'neutron-l3-agent'
+    end
+
+    it 'subscribes the l3 agent service to neutron.conf' do
+      expect(@chef_run.service('neutron-l3-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
     it 'does not install neutron l3 package when nova networking' do
       chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = chef_run.node
@@ -58,6 +66,10 @@ describe 'openstack-network::l3_agent' do
       it 'it does not set a nil router_id' do
         expect(@chef_run).not_to render_file(@file.name).with_content(
           /^gateway_external_network_id =/)
+      end
+
+      it 'notifies the l3 agent service' do
+        expect(@file).to notify('service[neutron-l3-agent]').to(:restart).immediately
       end
     end
 

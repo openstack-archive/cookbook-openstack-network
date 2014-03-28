@@ -3,6 +3,8 @@
 This file is used to list changes made in each version of cookbook-openstack-network.
 ## 9.0.0
 * Upgrade to Icehouse
+* The balancer recipe now includes openstack-network::common
+* Neutron agents now subscribe to changes in neutron.conf
 
 ## 8.5.1
 ### Bug

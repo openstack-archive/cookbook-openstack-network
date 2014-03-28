@@ -40,6 +40,7 @@ service 'neutron-l3-agent' do
   supports status: true, restart: true
 
   action :enable
+  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
 end
 
 template '/etc/neutron/l3_agent.ini' do

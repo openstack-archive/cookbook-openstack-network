@@ -13,6 +13,10 @@ describe 'openstack-network::balancer' do
       @chef_run.converge 'openstack-network::balancer'
     end
 
+    it 'subscribes the agent service to its relevant config files' do
+      expect(@chef_run.service('neutron-lb-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
     it 'does not install neutron-lbaas-agent when nova networking.' do
       @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       node = @chef_run.node
@@ -29,10 +33,6 @@ describe 'openstack-network::balancer' do
 
     it 'enables agent service' do
       expect(@chef_run).to enable_service 'neutron-lb-agent'
-    end
-
-    it 'subscribes to config files' do
-      pending 'TODO: implement once we upgrade to ChefSpec 3.2.0'
     end
 
     describe 'lbaas_agent.ini' do
@@ -65,6 +65,9 @@ describe 'openstack-network::balancer' do
           /device_driver = SomeRandomDriver/)
       end
 
+      it 'notifies the lb agent service' do
+        expect(@file).to notify('service[neutron-lb-agent]').to(:restart).delayed
+      end
     end
 
   end

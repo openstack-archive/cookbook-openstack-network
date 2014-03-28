@@ -38,6 +38,7 @@ service 'neutron-dhcp-agent' do
   supports status: true, restart: true
 
   action :enable
+  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
 end
 
 # Some plugins have DHCP functionality, so we install the plugin

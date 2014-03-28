@@ -101,6 +101,7 @@ service 'neutron-plugin-openvswitch-agent' do
   service_name platform_options['neutron_openvswitch_agent_service']
   supports status: true, restart: true
   action :enable
+  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
 end
 
 unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)

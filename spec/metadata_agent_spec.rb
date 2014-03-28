@@ -25,6 +25,10 @@ describe 'openstack-network::metadata_agent' do
       expect(@chef_run).to install_package 'neutron-metadata-agent'
     end
 
+    it 'subscribes the metadata agent service to neutron.conf' do
+      expect(@chef_run.service('neutron-metadata-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
     describe 'metadata_agent.ini' do
 
       before do
@@ -72,6 +76,10 @@ describe 'openstack-network::metadata_agent' do
       it 'sets neutron secret correctly' do
         expect(@chef_run).to render_file(@file.name).with_content(
           'metadata_proxy_shared_secret = metadata-secret')
+      end
+
+      it 'notifies the metadata agent service' do
+        expect(@file).to notify('service[neutron-metadata-agent]').to(:restart).immediately
       end
     end
   end

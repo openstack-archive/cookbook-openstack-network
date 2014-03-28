@@ -21,6 +21,10 @@ describe 'openstack-network::dhcp_agent' do
       expect(@chef_run).to_not include_recipe  'openstack-network::common'
     end
 
+    it 'subscribes the agent service to neutron.conf' do
+      expect(@chef_run.service('neutron-dhcp-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
     # since our mocked version of ubuntu is precise, our compile
     # utilities should be installed to build dnsmasq
     it 'installs dnsmasq build dependencies' do
@@ -95,6 +99,9 @@ describe 'openstack-network::dhcp_agent' do
         @chef_run.converge 'openstack-network::dhcp_agent'
         expect(@chef_run).to render_file(@file.name).with_content(/^dnsmasq_lease_max = 16777215$/)
       end
+      it 'notifies the dhcp agent service' do
+        expect(@file).to notify('service[neutron-dhcp-agent]').to(:restart).immediately
+      end
     end
 
     describe '/etc/neutron/dnsmasq.conf' do
@@ -114,6 +121,9 @@ describe 'openstack-network::dhcp_agent' do
       it 'checks upstream resolvers' do
         expect(@chef_run).to render_file(@file.name).with_content(/^server=209.244.0.3$/)
         expect(@chef_run).to render_file(@file.name).with_content(/^server=8.8.8.8$/)
+      end
+      it 'notifies the dhcp agent service' do
+        expect(@file).to notify('service[neutron-dhcp-agent]').to(:restart).delayed
       end
     end
   end

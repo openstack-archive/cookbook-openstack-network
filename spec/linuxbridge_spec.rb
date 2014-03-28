@@ -30,6 +30,10 @@ describe 'openstack-network::linuxbridge' do
       expect(@chef_run).to enable_service 'neutron-plugin-linuxbridge-agent'
     end
 
+    it 'subscribes the linuxbridge agent service to neutron.conf' do
+      expect(@chef_run.service('neutron-plugin-linuxbridge-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+    end
+
     describe '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
       before do
         @file = @chef_run.template(

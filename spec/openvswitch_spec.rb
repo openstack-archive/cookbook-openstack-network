@@ -46,6 +46,10 @@ describe 'openstack-network::openvswitch' do
     expect(@chef_run).to start_service 'openvswitch-switch'
   end
 
+  it 'subscribes the openvswitch agent service to neutron.conf' do
+    expect(@chef_run.service('neutron-plugin-openvswitch-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+  end
+
   it 'installs openvswitch agent' do
     expect(@chef_run).to install_package 'neutron-plugin-openvswitch-agent'
   end

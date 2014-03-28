@@ -23,6 +23,8 @@
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
+include_recipe 'openstack-network::common'
+
 platform_options = node['openstack']['network']['platform']
 
 platform_options['neutron_lb_packages'].each do |pkg|
@@ -36,6 +38,7 @@ template '/etc/neutron/lbaas_agent.ini' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode 00640
+  notifies :restart, 'service[neutron-lb-agent]', :delayed
 end
 
 service 'neutron-lb-agent' do
@@ -43,5 +46,4 @@ service 'neutron-lb-agent' do
   supports status: true, restart: true
   action :enable
   subscribes :restart, 'template[/etc/neutron/neutron.conf]', :delayed
-  subscribes :restart, 'template[/etc/neutron/lbaas_agent.ini]', :delayed
 end

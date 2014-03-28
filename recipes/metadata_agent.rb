@@ -53,4 +53,5 @@ service 'neutron-metadata-agent' do
   service_name platform_options['neutron_metadata_agent_service']
   supports status: true, restart: true
   action :enable
+  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
 end
