@@ -109,7 +109,7 @@ describe 'openstack-network::server' do
 
     it 'it sets agent_down_time correctly' do
       expect(@chef_run).to render_file(@file.name).with_content(
-        'agent_down_time = 15')
+        'agent_down_time = 75')
     end
 
     it 'it sets auth_strategy correctly' do
@@ -134,7 +134,7 @@ describe 'openstack-network::server' do
 
     it 'it sets agent report interval correctly' do
       expect(@chef_run).to render_file(@file.name).with_content(
-        'report_interval = 4')
+        'report_interval = 30')
     end
 
     it 'sets rpc_backend correctly' do

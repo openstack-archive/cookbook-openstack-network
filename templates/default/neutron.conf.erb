@@ -222,9 +222,9 @@ notification_topics = <%= node["openstack"]["mq"]["network"]["notification_topic
 # max_fixed_ips_per_port = 5
 
 # =========== items for agent management extension =============
-# Seconds to regard the agent as down.
+# Seconds to regard the agent as down; should be at least twice
+# report_interval, to be sure the agent is down for good
 agent_down_time = <%= node["openstack"]["network"]["api"]["agent"]["agent_down_time"] %>
-
 # ===========  end of items for agent management extension =====
 
 # =========== items for agent scheduler extension =============
@@ -314,7 +314,7 @@ root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"
 
 # =========== items for agent management extension =============
 # seconds between nodes reporting state to server, should be less than
-# agent_down_time
+# agent_down_time, best if it is half or less than agent_down_time
 report_interval = <%= node["openstack"]["network"]["api"]["agent"]["agent_report_interval"] %>
 
 [keystone_authtoken]
