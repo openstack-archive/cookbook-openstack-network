@@ -107,6 +107,11 @@ describe 'openstack-network::server' do
           'rpc_response_timeout = 60')
       end
 
+      it 'it sets control_exchange correctly' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'control_exchange = neutron')
+      end
+
       it 'it sets agent_down_time correctly' do
         expect(chef_run).to render_file(file.name).with_content(
           'agent_down_time = 75')
