@@ -30,7 +30,7 @@ end
 
 identity_admin_endpoint = endpoint 'identity-admin'
 
-bootstrap_token = secret 'secrets', 'openstack_identity_bootstrap_token'
+bootstrap_token = get_secret 'openstack_identity_bootstrap_token'
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 api_endpoint = endpoint 'network-api'
