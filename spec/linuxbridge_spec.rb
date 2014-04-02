@@ -49,7 +49,7 @@ describe 'openstack-network::linuxbridge' do
         expect(sprintf('%o', @file.mode)).to eq '644'
       end
 
-      it 'sets local_ip when local_ip_interface is not set' do
+      it 'sets local_ip when bind_interface is not set' do
         expect(@chef_run).to render_file(@file.name).with_content(
           'local_ip = 127.0.0.1')
       end
@@ -76,11 +76,11 @@ describe 'openstack-network::linuxbridge' do
           'firewall_driver = neutron.agent.firewall.NoopFirewallDriver')
       end
 
-      it 'it uses local_ip from eth0 when local_ip_interface is set' do
+      it 'it uses local_ip from eth0 when bind_interface is set' do
         chef_run = ::ChefSpec::Runner.new(::UBUNTU_OPTS) do |n|
           n.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.BridgeInterfaceDriver'
           n.set['openstack']['compute']['network']['service_type'] = 'neutron'
-          n.set['openstack']['network']['linuxbridge']['local_ip_interface'] = 'eth0'
+          n.set['openstack']['endpoints']['network-linuxbridge']['bind_interface'] = 'eth0'
         end
         filename = '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini'
         chef_run.converge 'openstack-network::linuxbridge'
