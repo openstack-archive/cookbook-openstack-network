@@ -54,7 +54,6 @@ describe 'openstack-network::server' do
         expect(chef_run).not_to install_package 'neutron-plugin-openvswitch-agent'
         expect(chef_run).not_to enable_service 'neutron-plugin-openvswitch-agent'
       end
-
     end
 
     describe 'api-paste.ini' do
@@ -86,6 +85,21 @@ describe 'openstack-network::server' do
           group: 'neutron',
           mode: 0644
         )
+      end
+
+      it 'it sets rpc_thread_pool_size correctly' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'rpc_thread_pool_size = 64')
+      end
+
+      it 'it sets rpc_conn_pool_size correctly' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'rpc_conn_pool_size = 30')
+      end
+
+      it 'it sets rpc_response_timeout correctly' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'rpc_response_timeout = 60')
       end
 
       it 'it sets agent_down_time correctly' do

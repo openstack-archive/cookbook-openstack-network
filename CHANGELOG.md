@@ -5,6 +5,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Upgrade to Icehouse
 * The balancer recipe now includes openstack-network::common
 * Neutron agents now subscribe to changes in neutron.conf
+* Add rpc attributes
 
 ## 8.5.1
 ### Bug
