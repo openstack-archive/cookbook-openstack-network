@@ -43,3 +43,7 @@ physical_network_vswitch_mappings = <%= node["openstack"]["network"]["hyperv"]["
 # Default: local_network_vswitch = private
 # Example: local_network_vswitch = custom_vswitch
 local_network_vswitch = <%= node["openstack"]["network"]["hyperv"]["local_network_vswitch"] %>
+
+[SECURITYGROUP]
+# Firewall driver for realizing neutron security group function
+firewall_driver = <%= node["openstack"]["network"]["hyperv"]["firewall_driver"] %>

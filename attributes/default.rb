@@ -628,6 +628,9 @@ default['openstack']['network']['hyperv']['physical_network_vswitch_mappings'] =
 # Example: local_network_vswitch = custom_vswitch
 default['openstack']['network']['hyperv']['local_network_vswitch'] = 'private'
 
+# Firewall driver for realizing neutron security group function
+default['openstack']['network']['hyperv']['firewall_driver'] = 'neutron.plugins.hyperv.agent.security_groups_driver.HyperVSecurityGroupsDriver'
+
 # ============================= Metaplugin Plugin Configuration ============
 
 ## This is list of flavor:neutron_plugins
