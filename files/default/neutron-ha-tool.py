@@ -45,26 +45,26 @@ def parse_args():
     ap = argparse.ArgumentParser(description=DESCRIPTION)
     ap.add_argument('-d', '--debug', action='store_true',
                     default=False, help='Show debugging output')
-    ap.add_argument('-q', '--quiet', action='store_true',
-                    default=False, help='Only show error and warning messages')
-    ap.add_argument('-n', '--noop', action='store_true',
-                    default=False, help='Do not do any modifying operations (dry-run)')
-    ap.add_argument('--l3-agent-check', action='store_true',
-                    default=False, help='Show routers associated with offline l3 agents')
-    ap.add_argument('--l3-agent-migrate', action='store_true',
-                    default=False, help='Migrate routers away from offline l3 agents')
-    ap.add_argument('--l3-agent-rebalance', action='store_true',
-                    default=False, help='Rebalance router count on all l3 agents')
-    ap.add_argument('--replicate-dhcp', action='store_true',
-                    default=False, help='Replicate DHCP configuration to all agents')
-    ap.add_argument('--now', action='store_true',
-                    default=False, help='Migrate Routers immediately without a delay.')
-    ap.add_argument('--insecure', action='store_true',
-                     default=False, help='Explicitly allow neutron-ha-tool to perform '
-                                         '"insecure" SSL (https) requests. The server\'s '
-                                         'certificate will not be verified against any '
-                                         'certificate authorities. This option should be used '
-                                         'with caution.')
+    ap.add_argument('-q', '--quiet', action='store_true', default=False,
+                    help='Only show error and warning messages')
+    ap.add_argument('-n', '--noop', action='store_true', default=False,
+                    help='Do not do any modifying operations (dry-run)')
+    ap.add_argument('--l3-agent-check', action='store_true', default=False,
+                    help='Show routers associated with offline l3 agents')
+    ap.add_argument('--l3-agent-migrate', action='store_true', default=False,
+                    help='Migrate routers away from offline l3 agents')
+    ap.add_argument('--l3-agent-rebalance', action='store_true', default=False,
+                    help='Rebalance router count on all l3 agents')
+    ap.add_argument('--replicate-dhcp', action='store_true', default=False,
+                    help='Replicate DHCP configuration to all agents')
+    ap.add_argument('--now', action='store_true', default=False,
+                    help='Migrate Routers immediately without a delay.')
+    ap.add_argument('--insecure', action='store_true', default=False,
+                    help='Explicitly allow neutron-ha-tool to perform '
+                         '"insecure" SSL (https) requests. The server\'s '
+                         'certificate will not be verified against any '
+                         'certificate authorities. This option should be used '
+                         'with caution.')
     return ap.parse_args()
 
 
@@ -126,10 +126,29 @@ def l3_agent_rebalance(qclient, noop=False):
     :param noop: Optional noop flag
     """
 
-    # {u'binary': u'neutron-l3-agent', u'description': None, u'admin_state_up': True, u'heartbeat_timestamp': u'2013-07-02 22:20:23', u'alive': True, u'topic':
-    # u'l3_agent', u'host': u'o3r3.int.san3.attcompute.com', u'agent_type': u'L3 agent', u'created_at': u'2013-07-02 14:50:58', u'started_at': u'2013-07-02 18:00:55',
-    # u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff', u'configurations': {u'router_id': u'', u'gateway_external_network_id': u'', u'handle_internal_only_routers': True,
-    # u'use_namespaces': True, u'routers': 5, u'interfaces': 3, u'floating_ips': 9, u'interface_driver': u'neutron.agent.linux.interface.OVSInterfaceDriver', u'ex_gw_ports': 3}},
+    # {u'binary': u'neutron-l3-agent',
+    #  u'description': None,
+    #  u'admin_state_up': True,
+    #  u'heartbeat_timestamp': u'2013-07-02 22:20:23',
+    #  u'alive': True,
+    #  u'topic': u'l3_agent',
+    #  u'host': u'o3r3.int.san3.attcompute.com',
+    #  u'agent_type': u'L3 agent',
+    #  u'created_at': u'2013-07-02 14:50:58',
+    #  u'started_at': u'2013-07-02 18:00:55',
+    #  u'id': u'6efe494a-616c-41ea-9c8f-2c592f4d46ff',
+    #  u'configurations': {
+    #      u'router_id': u'',
+    #      u'gateway_external_network_id': u'',
+    #      u'handle_internal_only_routers': True,
+    #      u'use_namespaces': True,
+    #      u'routers': 5,
+    #      u'interfaces': 3,
+    #      u'floating_ips': 9,
+    #      u'interface_driver':
+    #           u'neutron.agent.linux.interface.OVSInterfaceDriver',
+    #      u'ex_gw_ports': 3}
+    #  }
 
     l3_agent_dict = {}
     agents = list_agents(qclient, agent_type='L3 agent')
@@ -139,9 +158,11 @@ def l3_agent_rebalance(qclient, noop=False):
         return
 
     for l3_agent in agents:
-        l3_agent_dict[l3_agent['id']] = list_routers_on_l3_agent(qclient, l3_agent['id'])
+        l3_agent_dict[l3_agent['id']] = \
+            list_routers_on_l3_agent(qclient, l3_agent['id'])
 
-    ordered_l3_agent_dict = OrderedDict(sorted(l3_agent_dict.items(), key=lambda t: len(t[0])))
+    ordered_l3_agent_dict = OrderedDict(sorted(l3_agent_dict.items(),
+                                               key=lambda t: len(t[0])))
     ordered_l3_agent_list = list(ordered_l3_agent_dict)
     num_agents = len(ordered_l3_agent_list)
     LOG.info("Agent list: %s", ordered_l3_agent_list[0:(num_agents-1/2)+1])
@@ -154,21 +175,25 @@ def l3_agent_rebalance(qclient, noop=False):
         if low_agent_id == hgh_agent_id:
             continue
 
-        LOG.info("Examining low_agent=%s, high_agent=%s", low_agent_id, hgh_agent_id)
+        LOG.info("Examining low_agent=%s, high_agent=%s",
+                 low_agent_id, hgh_agent_id)
 
         low_agent_router_count = len(l3_agent_dict[low_agent_id])
         hgh_agent_router_count = len(l3_agent_dict[hgh_agent_id])
 
-        LOG.info("Low Count=%s, High Count=%s", low_agent_router_count, hgh_agent_router_count)
+        LOG.info("Low Count=%s, High Count=%s",
+                 low_agent_router_count, hgh_agent_router_count)
 
         for router_id in l3_agent_dict[hgh_agent_id]:
             if low_agent_router_count >= hgh_agent_router_count:
                 break
             else:
-                LOG.info("Migrating router=%s from agent=%s to agent=%s", router_id, hgh_agent_id, low_agent_id)
+                LOG.info("Migrating router=%s from agent=%s to agent=%s",
+                         router_id, hgh_agent_id, low_agent_id)
                 try:
                     if not noop:
-                        migrate_router(qclient, router_id, hgh_agent_id, low_agent_id)
+                        migrate_router(qclient, router_id, hgh_agent_id,
+                                       low_agent_id)
                     low_agent_router_count += 1
                     hgh_agent_router_count -= 1
                 except:
@@ -218,15 +243,15 @@ def l3_agent_check(qclient):
 
 def l3_agent_migrate(qclient, noop=False, now=False):
     """
-    Walk the l3 agents searching for agents that are offline.  For those that are
-    offline, we will retrieve a list of routers on them and migrate them to a
-    random l3 agent that is online.
+    Walk the l3 agents searching for agents that are offline.  For those that
+    are offline, we will retrieve a list of routers on them and migrate them to
+    a random l3 agent that is online.
 
     :param qclient: A neutronclient
     :param noop: Optional noop flag
-    :param now: Optional. If false (the default), we'll wait for a random amount
-                of time (between 30 and 60 seconds) before migration. If true,
-                routers are migrated immediately.
+    :param now: Optional. If false (the default), we'll wait for a random
+                amount of time (between 30 and 60 seconds) before migration. If
+                true, routers are migrated immediately.
 
     """
 
@@ -234,18 +259,21 @@ def l3_agent_migrate(qclient, noop=False, now=False):
     agent_list = list_agents(qclient)
     agent_dead_list = agent_dead_id_list(agent_list, 'L3 agent')
     agent_alive_list = agent_alive_id_list(agent_list, 'L3 agent')
-    LOG.info("There are %s offline L3 agents and %s online L3 agents", len(agent_dead_list), len(agent_alive_list))
+    LOG.info("There are %s offline L3 agents and %s online L3 agents",
+             len(agent_dead_list), len(agent_alive_list))
 
     if len(agent_dead_list) > 0:
         if len(agent_alive_list) < 1:
-            LOG.exception("There are no l3 agents alive to migrate routers onto")
+            LOG.exception("There are no l3 agents alive to migrate "
+                          "routers onto")
 
         timeout = 0
         if not now:
             while timeout < TAKEOVER_DELAY:
 
                 agent_list_new = list_agents(qclient)
-                agent_dead_list_new = agent_dead_id_list(agent_list_new, 'L3 agent')
+                agent_dead_list_new = agent_dead_id_list(agent_list_new,
+                                                         'L3 agent')
                 if len(agent_dead_list_new) < len(agent_dead_list):
                     LOG.info("Skipping router failover since an agent came "
                              "online while ensuring agents offline for %s "
@@ -253,7 +281,8 @@ def l3_agent_migrate(qclient, noop=False, now=False):
                     sys.exit(0)
 
                 LOG.info("Agent found offline for seconds=%s but waiting "
-                         "seconds=%s before migration", timeout, TAKEOVER_DELAY)
+                         "seconds=%s before migration",
+                         timeout, TAKEOVER_DELAY)
                 timeout += 1
                 time.sleep(1)
 
@@ -264,7 +293,8 @@ def l3_agent_migrate(qclient, noop=False, now=False):
             for router_id in router_id_list:
 
                 target_id = random.choice(agent_alive_list)
-                LOG.info("Migrating router=%s to agent=%s", router_id, target_id)
+                LOG.info("Migrating router=%s to agent=%s",
+                         router_id, target_id)
 
                 try:
                     if not noop:
@@ -274,7 +304,8 @@ def l3_agent_migrate(qclient, noop=False, now=False):
                     LOG.exception("There was an error migrating a router")
                     continue
 
-        LOG.info("%s routers required migration from offline L3 agents", migration_count)
+        LOG.info("%s routers required migration from offline L3 agents",
+                 migration_count)
 
 
 def replicate_dhcp(qclient, noop=False):
@@ -291,20 +322,25 @@ def replicate_dhcp(qclient, noop=False):
     networks = list_networks(qclient)
     network_id_list = [n['id'] for n in networks]
     agents = list_agents(qclient, agent_type='DHCP agent')
-    LOG.info("Replicating %s networks to %s DHCP agents", len(networks), len(agents))
+    LOG.info("Replicating %s networks to %s DHCP agents", len(networks),
+             len(agents))
     for dhcp_agent_id in [a['id'] for a in agents]:
-        networks_on_agent = qclient.list_networks_on_dhcp_agent(dhcp_agent_id)['networks']
+        networks_on_agent = \
+            qclient.list_networks_on_dhcp_agent(dhcp_agent_id)['networks']
         network_id_on_agent = [n['id'] for n in networks_on_agent]
         for network_id in network_id_list:
             if network_id not in network_id_on_agent:
                 try:
                     dhcp_body = {'network_id': network_id}
                     if not noop:
-                        qclient.add_network_to_dhcp_agent(dhcp_agent_id, dhcp_body)
-                    LOG.info("Added missing network=%s to dhcp agent=%s", network_id, dhcp_agent_id)
+                        qclient.add_network_to_dhcp_agent(dhcp_agent_id,
+                                                          dhcp_body)
+                    LOG.info("Added missing network=%s to dhcp agent=%s",
+                             network_id, dhcp_agent_id)
                     added += 1
                 except:
-                    LOG.exception("Failed to add network_id=%s to dhcp_agent=%s", network_id, dhcp_agent_id)
+                    LOG.exception("Failed to add network_id=%s to"
+                                  "dhcp_agent=%s", network_id, dhcp_agent_id)
                     continue
 
     LOG.info("Added %s networks to DHCP agents", added)
@@ -320,16 +356,17 @@ def migrate_router(qclient, router_id, agent_id, target_id):
     :param target_id: The id of the l3 agent to migrate to
     """
 
-    # N.B. The neutron API will return "success" even when there is a subsequent
-    # failure during the add or remove process so we must check to ensure the
-    # router has been added or removed
+    # N.B. The neutron API will return "success" even when there is a
+    # subsequent failure during the add or remove process so we must check to
+    # ensure the router has been added or removed
 
     # remove the router from the dead agent
     qclient.remove_router_from_l3_agent(agent_id, router_id)
 
     # ensure it is removed or log an error
     if router_id in list_routers_on_l3_agent(qclient, agent_id):
-        LOG.exception("Failed to remove router_id=%s from agent_id=%s", router_id, agent_id)
+        LOG.exception("Failed to remove router_id=%s from agent_id=%s",
+                      router_id, agent_id)
 
     # add the router id to a live agent
     router_body = {'router_id': router_id}
@@ -337,7 +374,8 @@ def migrate_router(qclient, router_id, agent_id, target_id):
 
     # ensure it is removed or log an error
     if router_id not in list_routers_on_l3_agent(qclient, target_id):
-        LOG.exception("Failed to add router_id=%s from agent_id=%s", router_id, agent_id)
+        LOG.exception("Failed to add router_id=%s from agent_id=%s",
+                      router_id, agent_id)
 
 
 def list_networks(qclient):
@@ -371,8 +409,16 @@ def list_routers(qclient):
 
     :param qclient: A neutronclient
 
-    # {'routers': [{u'status': u'ACTIVE', u'external_gateway_info': {u'network_id': u'b970297c-d80e-4527-86d7-e49d2da9fdef'}, u'name': u'router1',
-    # u'admin_state_up': True, u'tenant_id': u'5603b97ee7f047ea999e25492c7fcb23', u'routes': [], u'id': u'0a122e5c-1623-412e-8c53-a1e21d1daff8'},
+    # {'routers': [
+    #    {u'status': u'ACTIVE',
+    #     u'external_gateway_info':
+    #        {u'network_id': u'b970297c-d80e-4527-86d7-e49d2da9fdef'},
+    #     u'name': u'router1',
+    #     u'admin_state_up': True,
+    #     u'tenant_id': u'5603b97ee7f047ea999e25492c7fcb23',
+    #     u'routes': [],
+    #     u'id': u'0a122e5c-1623-412e-8c53-a1e21d1daff8'}
+    # ]}
 
     """
 
