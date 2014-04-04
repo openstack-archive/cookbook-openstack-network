@@ -59,6 +59,12 @@ def parse_args():
                     default=False, help='Replicate DHCP configuration to all agents')
     ap.add_argument('--now', action='store_true',
                     default=False, help='Migrate Routers immediately without a delay.')
+    ap.add_argument('--insecure', action='store_true',
+                     default=False, help='Explicitly allow neutron-ha-tool to perform '
+                                         '"insecure" SSL (https) requests. The server\'s '
+                                         'certificate will not be verified against any '
+                                         'certificate authorities. This option should be used '
+                                         'with caution.')
     return ap.parse_args()
 
 
@@ -76,12 +82,19 @@ def setup_logging(args):
 
 
 def run(args):
+    try:
+        ca = os.environ['OS_CACERT']
+    except KeyError:
+        ca = None
+
     # instantiate client
     qclient = client.Client('2.0', auth_url=os.environ['OS_AUTH_URL'],
                             username=os.environ['OS_USERNAME'],
                             tenant_name=os.environ['OS_TENANT_NAME'],
                             password=os.environ['OS_PASSWORD'],
-                            endpoint_type='internalURL')
+                            endpoint_type='internalURL',
+                            insecure=args.insecure,
+                            ca_cert=ca)
 
     # set json return type
     qclient.format = 'json'
