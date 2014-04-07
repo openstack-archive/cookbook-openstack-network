@@ -870,8 +870,8 @@ default['openstack']['network']['ml2']['vni_ranges'] = ''
 default['openstack']['network']['ml2']['vxlan_group'] = ''
 
 # platform-specific settings
-case platform
-when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
+case platform_family
+when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['network']['platform'] = {
     'user' => 'neutron',
     'group' => 'neutron',
@@ -932,7 +932,7 @@ when 'suse'
     'neutron_server_service' => 'openstack-neutron',
     'package_overrides' => ''
   }
-when 'ubuntu'
+when 'debian'
   default['openstack']['network']['platform'] = {
     'user' => 'neutron',
     'group' => 'neutron',

@@ -95,7 +95,7 @@ end
 # the default SUSE initfile uses this sysconfig file to determine the
 # neutron plugin to use
 template '/etc/sysconfig/neutron' do
-  only_if { platform? 'suse' }
+  only_if { platform_family? 'suse' }
   source 'neutron.sysconfig.erb'
   owner 'root'
   group 'root'
