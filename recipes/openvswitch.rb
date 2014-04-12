@@ -33,7 +33,7 @@ platform_options = node['openstack']['network']['platform']
 driver_name = node['openstack']['network']['interface_driver'].split('.').last.downcase
 main_plugin = node['openstack']['network']['interface_driver_map'][driver_name]
 
-if platform?('ubuntu', 'debian')
+if platform_family?('debian')
 
   # obtain kernel version for kernel header
   # installation on ubuntu and debian
@@ -58,7 +58,7 @@ else
   end
 end
 
-if platform?('ubuntu', 'debian')
+if platform_family?('debian')
 
   # NOTE:(mancdaz):sometimes the openvswitch module does not get reloaded
   # properly when openvswitch-datapath-dkms recompiles it.  This ensures

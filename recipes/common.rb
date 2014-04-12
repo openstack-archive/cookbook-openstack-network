@@ -375,7 +375,7 @@ link plugin_file do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   action :nothing
-  only_if { platform? %w{fedora redhat centos} }
+  only_if { platform_family? %w{fedora rhel} }
 end
 
 node.set['openstack']['network']['plugin_config_file'] = template_file
@@ -390,6 +390,6 @@ template '/etc/default/neutron-server' do
   )
   only_if do
     node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::server')
-    platform?(%w{ubuntu debian})
+    platform_family?(%w{debian})
   end
 end
