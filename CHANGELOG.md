@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.2
+* Fix to allow data network openvswitch bridge to be created
+
 ## 9.0.1
 * Fix package action to allow updates
 

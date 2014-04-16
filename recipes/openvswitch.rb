@@ -126,6 +126,20 @@ unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
   end
 end
 
+unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
+  unless node['openstack']['network']['openvswitch']['bridge_mapping_interface'].to_s.empty?
+    ext_bridge_mapping = node['openstack']['network']['openvswitch']['bridge_mapping_interface']
+    ext_bridge, ext_bridge_iface = ext_bridge_mapping.split(':')
+    execute 'create data network bridge' do
+      command "ovs-vsctl add-br #{ext_bridge} -- add-port #{ext_bridge} #{ext_bridge_iface}"
+      action :run
+      not_if "ovs-vsctl br-exists #{ext_bridge}"
+      only_if "ip link show #{ext_bridge_iface}"
+      notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
+    end
+  end
+end
+
 if node['openstack']['network']['disable_offload']
 
   package 'ethtool' do

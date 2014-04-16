@@ -165,5 +165,44 @@ describe 'openstack-network::openvswitch' do
         end
       end
     end
+
+    describe 'create ovs data network bridge' do
+      let(:cmd) { 'ovs-vsctl add-br br-eth1 -- add-port br-eth1 eth1' }
+
+      it 'does not add data network bridge if it already exists' do
+        node.set['openstack']['network']['openvswitch']['bridge_mapping_interface'] = 'br-eth1:eth1'
+        stub_command(/ovs-vsctl br-exists br-eth1/).and_return(true)
+        stub_command(/ip link show eth1/).and_return(true)
+        expect(chef_run).not_to run_execute(cmd)
+      end
+
+      it 'does not add data network bridge if the physical interface does not exist' do
+        node.set['openstack']['network']['openvswitch']['bridge_mapping_interface'] = 'br-eth1:eth1'
+        stub_command(/ovs-vsctl br-exists br-eth1/).and_return(false)
+        stub_command(/ip link show eth1/).and_return(false)
+        expect(chef_run).not_to run_execute(cmd)
+      end
+
+      it 'adds data network bridge if it does not yet exist and physical interface exists' do
+        node.set['openstack']['network']['openvswitch']['bridge_mapping_interface'] = 'br-eth1:eth1'
+        stub_command(/ovs-vsctl br-exists br-eth1/).and_return(false)
+        stub_command(/ip link show eth1/).and_return(true)
+        expect(chef_run).to run_execute(cmd)
+      end
+
+      it 'does not add data network bridge if nil specified for bridge mapping' do
+        node.set['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
+        stub_command(/ovs-vsctl br-exists br-eth1/).and_return(false)
+        stub_command(/ip link show eth1/).and_return(true)
+        expect(chef_run).not_to run_execute(cmd)
+      end
+
+      it 'does not add data network bridge if emtpy string specified for bridge mapping' do
+        node.set['openstack']['network']['openvswitch']['bridge_mapping_interface'] = ''
+        stub_command(/ovs-vsctl br-exists br-eth1/).and_return(false)
+        stub_command(/ip link show eth1/).and_return(true)
+        expect(chef_run).not_to run_execute(cmd)
+      end
+    end
   end
 end

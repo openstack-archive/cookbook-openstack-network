@@ -430,6 +430,14 @@ default['openstack']['network']['openvswitch']['tun_peer_patch_port'] = nil
 # Example: bridge_mappings = physnet1:br-eth1
 default['openstack']['network']['openvswitch']['bridge_mappings'] = nil
 
+# Create OVS data network bridge for the physical network and configure it
+# with the specified port.  If nil or empty string is specified, the data
+# network bridge will not be created.
+# Format:  <data network bridge name>:<external interface>
+#
+# Example: bridge_mapping_interface = br-eth1:eth1
+default['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
+
 # Agent's polling interval in seconds
 default['openstack']['network']['openvswitch']['polling_interval'] = 2
 
