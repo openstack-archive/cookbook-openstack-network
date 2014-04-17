@@ -47,12 +47,13 @@ end
 
 bash 'migrate network database' do
   plugin_config_file = node['openstack']['network']['plugin_config_file']
+  db_stamp = node['openstack']['network']['db_stamp']
   migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
 current_version_line=`#{migrate_command} current 2>&1 | tail -n 1`
 # determine if the $current_version_line ends with ": None"
 if [[ $current_version_line == *:\\ None ]]; then
-  #{migrate_command} stamp icehouse
+  #{migrate_command} stamp #{db_stamp}
 else
   #{migrate_command} upgrade head
 fi
