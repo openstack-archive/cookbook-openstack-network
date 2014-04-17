@@ -6,6 +6,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * The balancer recipe now includes openstack-network::common
 * Neutron agents now subscribe to changes in neutron.conf
 * Add rpc attributes
+* Remove policy file
 
 ## 8.5.1
 ### Bug
