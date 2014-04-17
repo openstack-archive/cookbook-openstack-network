@@ -179,8 +179,9 @@ default['openstack']['network']['use_rootwrap'] = true
 # DHCP lease duration
 default['openstack']['network']['dhcp_lease_duration'] = 86400
 
-# Driver or drivers to handle sending notifications
+# Driver or drivers to handle sending notifications and control exchange
 default['openstack']['network']['notification_driver'] = 'neutron.openstack.common.notifier.rpc_notifier'
+default['openstack']['network']['control_exchange'] =  node['openstack']['mq']['network']['control_exchange']
 
 # Common rpc definitions
 default['openstack']['network']['rpc_thread_pool_size'] = 64

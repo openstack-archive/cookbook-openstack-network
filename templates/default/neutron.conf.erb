@@ -112,7 +112,7 @@ rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] 
 # upon receiving exception data from an rpc call.
 # allowed_rpc_exception_modules = neutron.openstack.common.exception, nova.exception
 # AMQP exchange to connect to if using RabbitMQ or QPID
-control_exchange = neutron
+control_exchange = <%= node["openstack"]["network"]["control_exchange"] -%>
 
 # Configuration options if sending notifications via kombu rpc (these are
 # the defaults)
