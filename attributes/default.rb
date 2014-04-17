@@ -179,6 +179,11 @@ default['openstack']['network']['dhcp_lease_duration'] = 86400
 # Driver or drivers to handle sending notifications
 default['openstack']['network']['notification_driver'] = 'neutron.openstack.common.notifier.rpc_notifier'
 
+# Common rpc definitions
+default['openstack']['network']['rpc_thread_pool_size'] = 64
+default['openstack']['network']['rpc_conn_pool_size'] = 30
+default['openstack']['network']['rpc_response_timeout'] = 60
+
 # ============================= DHCP Agent Configuration ===================
 
 # The scheduler class to use for scheduling to DHCP agents

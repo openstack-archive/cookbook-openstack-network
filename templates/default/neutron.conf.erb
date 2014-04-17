@@ -101,11 +101,11 @@ dhcp_lease_duration = <%= node["openstack"]["network"]["dhcp_lease_duration"] %>
 # The messaging module to use, defaults to kombu.
 # rpc_backend = neutron.openstack.common.rpc.impl_kombu
 # Size of RPC thread pool
-# rpc_thread_pool_size = 64,
+rpc_thread_pool_size = <%= node['openstack']['network']['rpc_thread_pool_size'] -%>
 # Size of RPC connection pool
-# rpc_conn_pool_size = 30
+rpc_conn_pool_size = <%= node['openstack']['network']['rpc_conn_pool_size'] -%>
 # Seconds to wait for a response from call or multicall
-# rpc_response_timeout = 60
+rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] -%>
 # Seconds to wait before a cast expires (TTL). Only supported by impl_zmq.
 # rpc_cast_timeout = 30
 # Modules of exceptions that are permitted to be recreated
