@@ -90,15 +90,6 @@ template '/etc/neutron/rootwrap.conf' do
   mode 00644
 end
 
-template '/etc/neutron/policy.json' do
-  source 'policy.json.erb'
-  owner node['openstack']['network']['platform']['user']
-  group node['openstack']['network']['platform']['group']
-  mode 00644
-
-  notifies :restart, 'service[neutron-server]', :delayed
-end
-
 mq_service_type = node['openstack']['mq']['network']['service_type']
 
 if mq_service_type == 'rabbitmq'
