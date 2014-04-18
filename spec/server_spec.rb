@@ -94,22 +94,22 @@ describe 'openstack-network::server' do
 
       it 'it sets rpc_thread_pool_size correctly' do
         expect(chef_run).to render_file(file.name).with_content(
-          'rpc_thread_pool_size = 64')
+          /^rpc_thread_pool_size = 64$/)
       end
 
       it 'it sets rpc_conn_pool_size correctly' do
         expect(chef_run).to render_file(file.name).with_content(
-          'rpc_conn_pool_size = 30')
+          /^rpc_conn_pool_size = 30$/)
       end
 
       it 'it sets rpc_response_timeout correctly' do
         expect(chef_run).to render_file(file.name).with_content(
-          'rpc_response_timeout = 60')
+          /^rpc_response_timeout = 60$/)
       end
 
       it 'it sets control_exchange correctly' do
         expect(chef_run).to render_file(file.name).with_content(
-          'control_exchange = neutron')
+          /^control_exchange = neutron$/)
       end
 
       it 'it sets agent_down_time correctly' do
@@ -151,7 +151,7 @@ describe 'openstack-network::server' do
 
       it 'it does not allow overlapping ips by default' do
         expect(chef_run).to render_file(file.name).with_content(
-          'allow_overlapping_ips = False')
+          /^allow_overlapping_ips = False$/)
       end
 
       it 'it has correct default scheduler classes' do

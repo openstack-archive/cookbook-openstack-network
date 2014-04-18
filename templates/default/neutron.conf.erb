@@ -101,18 +101,18 @@ dhcp_lease_duration = <%= node["openstack"]["network"]["dhcp_lease_duration"] %>
 # The messaging module to use, defaults to kombu.
 # rpc_backend = neutron.openstack.common.rpc.impl_kombu
 # Size of RPC thread pool
-rpc_thread_pool_size = <%= node['openstack']['network']['rpc_thread_pool_size'] -%>
+rpc_thread_pool_size = <%= node['openstack']['network']['rpc_thread_pool_size'] %>
 # Size of RPC connection pool
-rpc_conn_pool_size = <%= node['openstack']['network']['rpc_conn_pool_size'] -%>
+rpc_conn_pool_size = <%= node['openstack']['network']['rpc_conn_pool_size'] %>
 # Seconds to wait for a response from call or multicall
-rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] -%>
+rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] %>
 # Seconds to wait before a cast expires (TTL). Only supported by impl_zmq.
 # rpc_cast_timeout = 30
 # Modules of exceptions that are permitted to be recreated
 # upon receiving exception data from an rpc call.
 # allowed_rpc_exception_modules = neutron.openstack.common.exception, nova.exception
 # AMQP exchange to connect to if using RabbitMQ or QPID
-control_exchange = <%= node["openstack"]["network"]["control_exchange"] -%>
+control_exchange = <%= node["openstack"]["network"]["control_exchange"] %>
 
 # Configuration options if sending notifications via kombu rpc (these are
 # the defaults)
@@ -126,7 +126,7 @@ control_exchange = <%= node["openstack"]["network"]["control_exchange"] -%>
 # kombu_ssl_ca_certs =
 
 # allow_overlapping_ips = False
-allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] -%>
+allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] %>
 
 <% if @mq_service_type == "rabbitmq"  %>
 ##### RABBITMQ #####
@@ -134,15 +134,15 @@ rpc_backend=neutron.openstack.common.rpc.impl_kombu
 rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
 rabbit_password=<%= @mq_password %>
 rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
-<% if node["openstack"]["mq"]["network"]["rabbit"]["ha"] -%>
+<% if node["openstack"]["mq"]["network"]["rabbit"]["ha"] %>
 # Use HA queues in RabbitMQ (x-ha-policy: all).You need to
 # wipe RabbitMQ database when changing this option. (boolean value)
 rabbit_hosts=<%= @rabbit_hosts %>
 rabbit_ha_queues=True
-<% else -%>
+<% else %>
 rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
 rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
-<% end -%>
+<% end %>
 # Maximum retries with trying to connect to RabbitMQ
 # (the default of 0 implies an infinite retry count)
 # rabbit_max_retries = 0
@@ -310,7 +310,7 @@ quota_driver = <%= node["openstack"]["network"]["quota"]["driver"] %>
 # root_helper = sudo
 <% if node["openstack"]["network"]["use_rootwrap"] %>
 root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"
-<% end -%>
+<% end %>
 
 # =========== items for agent management extension =============
 # seconds between nodes reporting state to server, should be less than
