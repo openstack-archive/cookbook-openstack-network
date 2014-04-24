@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 8.5.2
+* Allow different endpoint and local bind IPs for the api service
+
 ## 8.5.1
 ### Bug
 * Fix the DB2 ODBC driver issue
