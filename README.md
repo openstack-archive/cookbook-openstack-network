@@ -116,6 +116,15 @@ Modular Layer 2 Plugin Configuration
 * `openstack['openstack']['network']['ml2']['vni_ranges']` - (ListOpt) Comma-separated list of <vni_min>:<vni_max> tuples enumerating ranges of VXLAN VNI IDs that are available for tenant network allocation.
 * `openstack['openstack']['network']['ml2']['vxlan_group']` - (StrOpt) Multicast group for the VXLAN interface.
 
+The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
+
+* `openstack['endpoints']['network-api-bind']['host']` - The IP address to bind the api service to
+* `openstack['endpoints']['network-api-bind']['port']` - The port to bind the api service to
+* `openstack['endpoints']['network-api-bind']['bind_interface']` - The interface name to bind the api service to
+
+If the value of the 'bind_interface' attribute is non-nil, then the network service will be bound to the first IP address on that interface.  If the value of the 'bind_interface' attribute is nil, then the network service will be bound to the IP address specified in the host attribute.
+
+
 Templates
 =========
 * `api-paste.ini.erb` - Paste config for OpenStack Network server

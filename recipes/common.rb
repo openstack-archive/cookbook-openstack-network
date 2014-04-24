@@ -113,7 +113,7 @@ db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
 
-api_endpoint = endpoint 'network-api'
+network_api_bind = endpoint 'network-api-bind'
 service_pass = get_password 'service', 'openstack-network'
 
 platform_options['neutron_client_packages'].each do |pkg|
@@ -174,8 +174,8 @@ template '/etc/neutron/neutron.conf' do
   group node['openstack']['network']['platform']['group']
   mode   00644
   variables(
-    bind_address: api_endpoint.host,
-    bind_port: api_endpoint.port,
+    bind_address: network_api_bind.host,
+    bind_port: network_api_bind.port,
     rabbit_hosts: rabbit_hosts,
     mq_service_type: mq_service_type,
     mq_password: mq_password,

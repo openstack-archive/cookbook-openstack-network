@@ -48,6 +48,16 @@ describe 'openstack-network::common' do
           /^core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin/)
       end
 
+      it 'has bind_host set' do
+        node.set['openstack']['endpoints']['network-api-bind']['host'] = '1.1.1.1'
+        expect(chef_run).to render_file(file.name).with_content('bind_host = 1.1.1.1')
+      end
+
+      it 'has bind_port set' do
+        node.set['openstack']['endpoints']['network-api-bind']['port'] = '9999'
+        expect(chef_run).to render_file(file.name).with_content('bind_port = 9999')
+      end
+
       # TODO: flush out rest of template attributes
     end
   end
