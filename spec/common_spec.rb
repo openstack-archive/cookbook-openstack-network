@@ -60,5 +60,20 @@ describe 'openstack-network::common' do
 
       # TODO: flush out rest of template attributes
     end
+    describe 'policy file' do
+      it 'does not manage policy file unless specified' do
+        expect(chef_run).not_to create_remote_file('/etc/neutron/policy.json')
+      end
+      describe 'policy file specified' do
+        before { node.set['openstack']['network']['policyfile_url'] = 'http://server/mypolicy.json' }
+        let(:remote_policy) { chef_run.remote_file('/etc/neutron/policy.json') }
+        it 'manages policy file when remote file is specified' do
+          expect(chef_run).to create_remote_file('/etc/neutron/policy.json').with(
+            user: 'neutron',
+            group: 'neutron',
+            mode: 00644)
+        end
+      end
+    end
   end
 end

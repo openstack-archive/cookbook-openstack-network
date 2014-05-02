@@ -33,6 +33,9 @@ default['openstack']['network']['auth_strategy'] = 'keystone'
 default['openstack']['network']['state_path'] = '/var/lib/neutron'
 default['openstack']['network']['lock_path'] = '$state_path/lock'
 
+# Specify policy.json remote file to import
+default['openstack']['network']['policyfile_url'] = nil
+
 # DB Stamp comes late in dev cycle, allow override for development and test
 default['openstack']['network']['db_stamp'] = node['openstack']['release']
 

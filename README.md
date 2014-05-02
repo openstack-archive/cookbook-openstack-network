@@ -129,7 +129,6 @@ Templates
 =========
 * `api-paste.ini.erb` - Paste config for OpenStack Network server
 * `neutron.conf.erb` - Config file for OpenStack Network server
-* `policy.json.erb` - Configuration of ACLs for glance API server
 * `ml2_conf.ini.erb` - Configuration of Network ML2 Plugins
 
 Testing

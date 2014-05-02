@@ -94,6 +94,16 @@ template '/etc/neutron/rootwrap.conf' do
   mode 00644
 end
 
+if node['openstack']['network']['policyfile_url']
+  remote_file '/etc/neutron/policy.json' do
+    source node['openstack']['network']['policyfile_url']
+    owner node['openstack']['network']['platform']['user']
+    group node['openstack']['network']['platform']['group']
+    mode 00644
+    notifies :restart, 'service[neutron-server]'
+  end
+end
+
 mq_service_type = node['openstack']['mq']['network']['service_type']
 
 if mq_service_type == 'rabbitmq'
