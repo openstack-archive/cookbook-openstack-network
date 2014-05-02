@@ -16,16 +16,16 @@ describe 'openstack-network::dhcp_agent' do
     it 'does not install openstack-neutron-dhcp-agent when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package('openstack-neutron-dhcp-agent')
+      expect(chef_run).to_not upgrade_package('openstack-neutron-dhcp-agent')
     end
 
-    it 'installs quamtum dhcp package' do
-      expect(chef_run).to install_package('openstack-neutron-dhcp-agent')
+    it 'upgrades neutron dhcp package' do
+      expect(chef_run).to upgrade_package('openstack-neutron-dhcp-agent')
     end
 
-    it 'installs plugin packages' do
-      expect(chef_run).not_to install_package(/openvswitch/)
-      expect(chef_run).not_to install_package(/plugin/)
+    it 'upgrades plugin packages' do
+      expect(chef_run).not_to upgrade_package(/openvswitch/)
+      expect(chef_run).not_to upgrade_package(/plugin/)
     end
 
     it 'starts the dhcp agent on boot' do

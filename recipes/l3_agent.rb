@@ -29,7 +29,7 @@ main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split(
 platform_options['neutron_l3_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
     # The providers below do not use the generic L3 agent...
     not_if { ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin) }
   end

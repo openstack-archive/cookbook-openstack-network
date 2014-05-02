@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.1
+* Fix package action to allow updates
+
 ## 9.0.0
 * Upgrade to Icehouse
 * The balancer recipe now includes openstack-network::common

@@ -9,7 +9,7 @@ describe 'openstack-network::client' do
       runner.converge(described_recipe)
     end
 
-    it 'installs packages' do
+    it 'upgrades python neutron client package' do
       expect(chef_run).to upgrade_package('python-neutronclient')
       expect(chef_run).to upgrade_package('python-pyparsing')
     end

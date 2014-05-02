@@ -12,14 +12,14 @@ describe 'openstack-network::metadata_agent' do
 
     include_context 'neutron-stubs'
 
-    it 'does not install quamtum metadata agent when nova networking' do
+    it 'does not install neutron metadata agent when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package 'neutron-metadata-agent'
+      expect(chef_run).to_not upgrade_package 'neutron-metadata-agent'
     end
 
-    it 'installs quamtum metadata agent' do
-      expect(chef_run).to install_package 'neutron-metadata-agent'
+    it 'upgrades neutron metadata agent' do
+      expect(chef_run).to upgrade_package 'neutron-metadata-agent'
     end
 
     it 'subscribes the metadata agent service to neutron.conf' do

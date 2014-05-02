@@ -29,7 +29,7 @@ main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split(
 platform_options['neutron_dhcp_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 end
 
@@ -45,7 +45,7 @@ end
 # Python package and include the plugin-specific recipe here...
 package platform_options['neutron_plugin_package'].gsub('%plugin%', main_plugin) do
   options platform_options['package_overrides']
-  action :install
+  action :upgrade
   # plugins are installed by the main openstack-neutron package on SUSE
   not_if { platform_family? 'suse' }
 end
@@ -80,7 +80,7 @@ end
 if node['lsb'] && node['lsb']['codename'] == 'precise' && node['openstack']['network']['dhcp']['dnsmasq_compile'] == true
   platform_options['neutron_dhcp_build_packages'].each do |pkg|
     package pkg do
-      action :install
+      action :upgrade
     end
   end
 

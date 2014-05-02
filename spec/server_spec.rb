@@ -20,12 +20,12 @@ describe 'openstack-network::server' do
 
     it 'does not install neutron-server when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
-      expect(chef_run).to_not install_package 'neutron-server'
+      expect(chef_run).to_not upgrade_package 'neutron-server'
     end
 
     describe 'package and services' do
-      it 'installs neutron-server packages' do
-        expect(chef_run).to install_package 'neutron-server'
+      it 'upgrades neutron-server packages' do
+        expect(chef_run).to upgrade_package 'neutron-server'
       end
 
       it 'allows overriding package names' do
@@ -33,7 +33,7 @@ describe 'openstack-network::server' do
         node.set['openstack']['network']['platform']['neutron_server_packages'] = cust_pkgs
 
         cust_pkgs.each do |pkg|
-          expect(chef_run).to install_package(pkg)
+          expect(chef_run).to upgrade_package(pkg)
         end
       end
 
@@ -51,12 +51,12 @@ describe 'openstack-network::server' do
         cust_opts = "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' --force-yes"
         node.set['openstack']['network']['platform']['package_overrides'] = cust_opts
 
-        expect(chef_run).to install_package('neutron-server').with(options: cust_opts)
+        expect(chef_run).to upgrade_package('neutron-server').with(options: cust_opts)
       end
 
-      it 'does not install openvswitch package or the agent' do
-        expect(chef_run).not_to install_package 'openvswitch'
-        expect(chef_run).not_to install_package 'neutron-plugin-openvswitch-agent'
+      it 'does not upgrade openvswitch package or the agent' do
+        expect(chef_run).not_to upgrade_package 'openvswitch'
+        expect(chef_run).not_to upgrade_package 'neutron-plugin-openvswitch-agent'
         expect(chef_run).not_to enable_service 'neutron-plugin-openvswitch-agent'
       end
     end
@@ -434,7 +434,7 @@ describe 'openstack-network::server' do
         end
       end
 
-      it 'does not install sysconfig template' do
+      it 'does not create sysconfig template' do
         stub_command(/python/).and_return(true)
         expect(chef_run).not_to create_file('/etc/sysconfig/neutron')
       end

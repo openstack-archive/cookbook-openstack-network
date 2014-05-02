@@ -13,22 +13,22 @@ describe 'openstack-network::common' do
 
     include_context 'neutron-stubs'
 
-    it 'does not install python-neutronclient when nova networking' do
+    it 'does not upgrade python-neutronclient when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package('python-neutronclient')
+      expect(chef_run).to_not upgrade_package('python-neutronclient')
     end
 
-    it 'upgrades python neutronclient' do
+    it 'upgrades python neutronclient package' do
       expect(chef_run).to upgrade_package('python-neutronclient')
     end
 
-    it 'upgrades python pyparsing' do
+    it 'upgrades python pyparsing package' do
       expect(chef_run).to upgrade_package('python-pyparsing')
     end
 
-    it 'installs mysql python packages by default' do
-      expect(chef_run).to install_package('python-mysqldb')
+    it 'upgrades mysql python package' do
+      expect(chef_run).to upgrade_package('python-mysqldb')
     end
 
     describe 'neutron.conf' do

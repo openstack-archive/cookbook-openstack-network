@@ -18,11 +18,11 @@ describe 'openstack-network::linuxbridge' do
     it 'does not install linuxbridge agent package when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package('openstack-neutron-linuxbridge-agent')
+      expect(chef_run).to_not upgrade_package('openstack-neutron-linuxbridge-agent')
     end
 
-    it 'installs linuxbridge agent' do
-      expect(chef_run).to install_package('openstack-neutron-linuxbridge-agent')
+    it 'upgrades linuxbridge agent' do
+      expect(chef_run).to upgrade_package('openstack-neutron-linuxbridge-agent')
     end
 
     it 'sets the linuxbridge service to start on boot' do

@@ -14,8 +14,8 @@ describe 'openstack-network::balancer' do
     include_context 'neutron-stubs'
 
     ['openstack-neutron-lbaas-agent'].each do |pack|
-      it "installs #{pack} package" do
-        expect(chef_run).to install_package(pack)
+      it "upgrades #{pack} package" do
+        expect(chef_run).to upgrade_package(pack)
       end
     end
 

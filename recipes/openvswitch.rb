@@ -40,7 +40,7 @@ if platform_family?('debian')
   kernel_ver = node['kernel']['release']
   package "linux-headers-#{kernel_ver}" do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 
 end
@@ -53,7 +53,7 @@ else
   platform_options['neutron_openvswitch_packages'].each do |pkg|
     package pkg do
       options platform_options['package_overrides']
-      action :install
+      action :upgrade
     end
   end
 end
@@ -92,7 +92,7 @@ end
 
 platform_options['neutron_openvswitch_agent_packages'].each do |pkg|
   package pkg do
-    action :install
+    action :upgrade
     options platform_options['package_overrides']
   end
 end
@@ -129,7 +129,7 @@ end
 if node['openstack']['network']['disable_offload']
 
   package 'ethtool' do
-    action :install
+    action :upgrade
     options platform_options['package_overrides']
   end
 

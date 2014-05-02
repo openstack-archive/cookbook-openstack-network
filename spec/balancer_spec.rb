@@ -17,15 +17,15 @@ describe 'openstack-network::balancer' do
       expect(chef_run.service('neutron-lb-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
     end
 
-    it 'does not install neutron-lbaas-agent when nova networking.' do
+    it 'does not upgrade neutron-lbaas-agent when nova networking.' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package('neutron-lbaas-agent')
+      expect(chef_run).to_not upgrade_package('neutron-lbaas-agent')
     end
 
     ['haproxy', 'neutron-lbaas-agent'].each do |pack|
-      it "installs #{pack} package" do
-        expect(chef_run).to install_package(pack)
+      it "upgrades #{pack} package" do
+        expect(chef_run).to upgrade_package(pack)
       end
     end
 

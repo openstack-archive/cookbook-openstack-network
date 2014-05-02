@@ -13,15 +13,15 @@ describe 'openstack-network::common' do
 
     include_context 'neutron-stubs'
 
-    it 'installs mysql python packages by default' do
-      expect(chef_run).to install_package('MySQL-python')
+    it 'upgrades mysql python package' do
+      expect(chef_run).to upgrade_package('MySQL-python')
     end
 
-    it 'installs db2 python packages if explicitly told' do
+    it 'upgrades db2 python packages if explicitly told' do
       node.set['openstack']['db']['network']['service_type'] = 'db2'
 
       ['python-ibm-db', 'python-ibm-db-sa'].each do |pkg|
-        expect(chef_run).to install_package(pkg)
+        expect(chef_run).to upgrade_package(pkg)
       end
     end
   end

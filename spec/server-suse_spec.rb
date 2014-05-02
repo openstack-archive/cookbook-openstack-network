@@ -15,19 +15,19 @@ describe 'openstack-network::server' do
     it 'does not install openstack-neutron when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package 'openstack-neutron'
+      expect(chef_run).to_not upgrade_package 'openstack-neutron'
     end
 
-    it 'installs openstack-neutron packages' do
-      expect(chef_run).to install_package 'openstack-neutron'
+    it 'upgrades openstack-neutron packages' do
+      expect(chef_run).to upgrade_package 'openstack-neutron'
     end
 
     it 'enables openstack-neutron service' do
       expect(chef_run).to enable_service 'openstack-neutron'
     end
 
-    it 'does not install openvswitch package' do
-      expect(chef_run).not_to install_package 'openstack-neutron-openvswitch'
+    it 'does not upgrade openvswitch package' do
+      expect(chef_run).not_to upgrade_package 'openstack-neutron-openvswitch'
     end
 
     describe '/etc/sysconfig/neutron' do

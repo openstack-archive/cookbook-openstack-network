@@ -34,7 +34,7 @@ core_plugin = node['openstack']['network']['core_plugin']
 platform_options['neutron_server_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 end
 

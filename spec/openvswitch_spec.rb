@@ -21,23 +21,23 @@ describe 'openstack-network::openvswitch' do
     it 'does not install openvswitch switch when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package 'openvswitch-switch'
+      expect(chef_run).to_not upgrade_package 'openvswitch-switch'
     end
 
-    it 'installs openvswitch switch' do
-      expect(chef_run).to install_package 'openvswitch-switch'
+    it 'upgrades openvswitch switch' do
+      expect(chef_run).to upgrade_package 'openvswitch-switch'
     end
 
-    it 'installs openvswitch datapath dkms' do
-      expect(chef_run).to install_package 'openvswitch-datapath-dkms'
+    it 'upgrades openvswitch datapath dkms' do
+      expect(chef_run).to upgrade_package 'openvswitch-datapath-dkms'
     end
 
-    it 'installs linux bridge utils' do
-      expect(chef_run).to install_package 'bridge-utils'
+    it 'upgrades linux bridge utils' do
+      expect(chef_run).to upgrade_package 'bridge-utils'
     end
 
-    it 'installs linux linux headers' do
-      expect(chef_run).to install_package 'linux-headers-1.2.3'
+    it 'upgrades linux linux headers' do
+      expect(chef_run).to upgrade_package 'linux-headers-1.2.3'
     end
 
     it 'sets the openvswitch service to start on boot' do
@@ -52,8 +52,8 @@ describe 'openstack-network::openvswitch' do
       expect(chef_run.service('neutron-plugin-openvswitch-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
     end
 
-    it 'installs openvswitch agent' do
-      expect(chef_run).to install_package 'neutron-plugin-openvswitch-agent'
+    it 'upgrades openvswitch agent' do
+      expect(chef_run).to upgrade_package 'neutron-plugin-openvswitch-agent'
     end
 
     it 'sets the openvswitch service to start on boot' do
@@ -73,7 +73,7 @@ describe 'openstack-network::openvswitch' do
       node.set['openstack']['network']['platform']['package_overrides'] = '--my-override1 --my-override2'
 
       %w{openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent}.each do |pkg|
-        expect(chef_run).to install_package(pkg).with(options: '--my-override1 --my-override2')
+        expect(chef_run).to upgrade_package(pkg).with(options: '--my-override1 --my-override2')
       end
     end
 
@@ -82,7 +82,7 @@ describe 'openstack-network::openvswitch' do
       node.set['openstack']['network']['platform']['neutron_openvswitch_agent_packages'] = ['my-openvswitch-agent', 'my-other-openvswitch-agent']
 
       %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
-        expect(chef_run).to install_package(pkg)
+        expect(chef_run).to upgrade_package(pkg)
       end
     end
 

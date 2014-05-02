@@ -26,11 +26,11 @@ describe 'openstack-network::l3_agent' do
     it 'does not install neutron l3 package when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package('neutron-l3-agent')
+      expect(chef_run).to_not upgrade_package('neutron-l3-agent')
     end
 
-    it 'installs quamtum l3 package' do
-      expect(chef_run).to install_package('neutron-l3-agent')
+    it 'upgrades neutron l3 package' do
+      expect(chef_run).to upgrade_package('neutron-l3-agent')
     end
 
     describe 'l3_agent.ini' do

@@ -16,15 +16,15 @@ describe 'openstack-network::openvswitch' do
     it 'does not install openvswitch package when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not install_package 'openvswitch-switch'
+      expect(chef_run).to_not upgrade_package 'openvswitch-switch'
     end
 
-    it 'installs the openvswitch package' do
-      expect(chef_run).to install_package 'openvswitch-switch'
+    it 'upgrades the openvswitch package' do
+      expect(chef_run).to upgrade_package 'openvswitch-switch'
     end
 
-    it 'installs the openvswitch-agent package' do
-      expect(chef_run).to install_package 'openstack-neutron-openvswitch-agent'
+    it 'upgrades the openvswitch-agent package' do
+      expect(chef_run).to upgrade_package 'openstack-neutron-openvswitch-agent'
     end
 
     it 'starts the openvswitch-switch service' do

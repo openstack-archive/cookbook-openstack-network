@@ -44,7 +44,7 @@ end
 
 platform_options['neutron_metadata_agent_packages'].each do |pkg|
   package pkg do
-    action :install
+    action :upgrade
     options platform_options['package_overrides']
   end
 end

@@ -52,7 +52,7 @@ end
 platform_options['neutron_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 end
 
@@ -60,7 +60,7 @@ db_type = node['openstack']['db']['network']['service_type']
 platform_options["#{db_type}_python_packages"].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 end
 

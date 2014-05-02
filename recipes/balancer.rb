@@ -29,7 +29,8 @@ platform_options = node['openstack']['network']['platform']
 
 platform_options['neutron_lb_packages'].each do |pkg|
   package pkg do
-    action :install
+    options platform_options['package_overrides']
+    action :upgrade
   end
 end
 

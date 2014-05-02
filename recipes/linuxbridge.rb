@@ -27,7 +27,7 @@ platform_options = node['openstack']['network']['platform']
 platform_options['neutron_linuxbridge_agent_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-    action :install
+    action :upgrade
   end
 end
 
