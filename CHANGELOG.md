@@ -1,4 +1,6 @@
 # CHANGELOG for cookbook-openstack-network
+## 9.0.3
+* Fix openvswitch and linuxbridge agent
 
 This file is used to list changes made in each version of cookbook-openstack-network.
 ## 9.0.2

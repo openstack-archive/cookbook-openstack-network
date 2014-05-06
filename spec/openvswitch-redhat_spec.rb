@@ -19,5 +19,20 @@ describe 'openstack-network::openvswitch' do
       expect(file).to notify('link[/etc/neutron/plugin.ini]').to(:create).immediately
     end
 
+    it 'creates the /etc/neutron/plugins/openvswitch agent directory' do
+      expect(chef_run).to create_directory('/etc/neutron/plugins/openvswitch').with(
+        owner: 'neutron',
+        group: 'neutron',
+        mode: 0700
+      )
+    end
+
+    it 'creates ovs_neutron_plugin.ini' do
+      expect(chef_run).to create_template(file.name).with(
+        user: 'neutron',
+        group: 'neutron',
+        mode: 0644
+      )
+    end
   end
 end

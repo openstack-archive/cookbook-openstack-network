@@ -25,6 +25,14 @@ describe 'openstack-network::linuxbridge' do
       expect(chef_run).to upgrade_package('neutron-plugin-linuxbridge-agent')
     end
 
+    it 'creates the /etc/neutron/plugins/linuxbridge agent directory' do
+      expect(chef_run).to create_directory('/etc/neutron/plugins/linuxbridge').with(
+        owner: 'neutron',
+        group: 'neutron',
+        mode: 0700
+      )
+    end
+
     it 'sets the linuxbridge service to start on boot' do
       expect(chef_run).to enable_service('neutron-plugin-linuxbridge-agent')
     end

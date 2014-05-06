@@ -26,12 +26,28 @@ describe 'openstack-network::linuxbridge' do
       expect(chef_run).to upgrade_package('openstack-neutron-linuxbridge')
     end
 
+    it 'creates the /etc/neutron/plugins/linuxbridge agent directory' do
+      expect(chef_run).to create_directory('/etc/neutron/plugins/linuxbridge').with(
+        owner: 'neutron',
+        group: 'neutron',
+        mode: 0700
+      )
+    end
+
     it 'sets the linuxbridge service to start on boot' do
       expect(chef_run).to enable_service('neutron-linuxbridge-agent')
     end
 
     describe '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
       let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
+
+      it 'creates ovs_neutron_plugin.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
 
       it 'notifies to create symbolic link' do
         expect(file).to notify('link[/etc/neutron/plugin.ini]').to(:create).immediately

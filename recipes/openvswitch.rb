@@ -97,11 +97,34 @@ platform_options['neutron_openvswitch_agent_packages'].each do |pkg|
   end
 end
 
+directory '/etc/neutron/plugins/openvswitch' do
+  recursive true
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00700
+  only_if { platform_family?('rhel') }
+end
+
+openvswitch_endpoint = endpoint 'network-openvswitch'
+template '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini' do
+  source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00644
+  variables(
+    local_ip: openvswitch_endpoint.host
+  )
+  only_if { platform_family?('rhel') }
+end
+
 service 'neutron-plugin-openvswitch-agent' do
   service_name platform_options['neutron_openvswitch_agent_service']
   supports status: true, restart: true
   action :enable
   subscribes :restart, 'template[/etc/neutron/neutron.conf]'
+  if platform_family?('rhel')
+    subscribes :restart, 'template[/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini]'
+  end
 end
 
 unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)

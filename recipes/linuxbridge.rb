@@ -31,9 +31,28 @@ platform_options['neutron_linuxbridge_agent_packages'].each do |pkg|
   end
 end
 
+directory '/etc/neutron/plugins/linuxbridge' do
+  recursive true
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00700
+end
+
+linuxbridge_endpoint = endpoint 'network-linuxbridge'
+template '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
+  source 'plugins/linuxbridge/linuxbridge_conf.ini.erb'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00644
+  variables(
+    local_ip: linuxbridge_endpoint.host
+  )
+end
+
 service 'neutron-plugin-linuxbridge-agent' do
   service_name platform_options['neutron_linuxbridge_agent_service']
   supports status: true, restart: true
   action :enable
   subscribes :restart, 'template[/etc/neutron/neutron.conf]'
+  subscribes :restart, 'template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]'
 end
