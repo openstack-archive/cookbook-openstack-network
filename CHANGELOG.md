@@ -1,8 +1,11 @@
 # CHANGELOG for cookbook-openstack-network
+This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.4
+* Fix to allow build openvswitch spec to work on windows
+
 ## 9.0.3
 * Fix openvswitch and linuxbridge agent
 
-This file is used to list changes made in each version of cookbook-openstack-network.
 ## 9.0.2
 * Fix to allow data network openvswitch bridge to be created
 
