@@ -1,5 +1,7 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.6
+* Fix ovs_use_veth default value
 
 ## 9.0.5
 * Switch to using auth_url instead of auth_host et al

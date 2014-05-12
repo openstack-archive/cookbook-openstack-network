@@ -232,7 +232,7 @@ default['openstack']['network']['dhcp']['resync_interval'] = 5
 
 # OVS based plugins(Ryu, NEC, NVP, BigSwitch/Floodlight) that use OVS
 # as OpenFlow switch and check port status
-default['openstack']['network']['dhcp']['ovs_use_veth'] = 'True'
+default['openstack']['network']['dhcp']['ovs_use_veth'] = 'False'
 
 # The DHCP server can assist with providing metadata support on isolated
 # networks. Setting this value to True will cause the DHCP server to append

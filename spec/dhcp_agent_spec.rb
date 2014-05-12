@@ -82,6 +82,10 @@ describe 'openstack-network::dhcp_agent' do
         expect(chef_run).to render_file(file.name).with_content('use_namespaces = True')
       end
 
+      it 'disables ovs_use_veth' do
+        expect(chef_run).to render_file(file.name).with_content('ovs_use_veth = False')
+      end
+
       it 'checks dhcp domain' do
         expect(chef_run).to render_file(file.name).with_content(/^dhcp_domain = openstacklocal$/)
       end
