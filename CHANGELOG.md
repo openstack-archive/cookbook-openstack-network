@@ -1,5 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+
+## 9.0.5
+* Switch to using auth_url instead of auth_host et al
+
 ## 9.0.4
 * Fix to allow build openvswitch spec to work on windows
 

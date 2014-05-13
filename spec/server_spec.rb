@@ -293,24 +293,9 @@ describe 'openstack-network::server' do
           'admin_password = neutron-pass')
       end
 
-      it 'has auth_uri' do
+      it 'has auth_url' do
         expect(chef_run).to render_file(file.name).with_content(
-          'auth_uri = http://127.0.0.1:5000/v2.0')
-      end
-
-      it 'has auth_host' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'auth_host = 127.0.0.1')
-      end
-
-      it 'has auth_port' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'auth_port = 35357')
-      end
-
-      it 'has auth_protocol' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'auth_protocol = http')
+          'auth_url = http://127.0.0.1:5000/v2.0')
       end
 
       it 'has signing_dir' do
