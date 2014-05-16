@@ -1,5 +1,8 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.9
+* Fix to plugin.ini symlink not updated properly when main plugin changes
+
 ## 9.0.8
 * Add support for miscellaneous options (like in Compute)
 

@@ -41,7 +41,7 @@ describe 'openstack-network::linuxbridge' do
     describe '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
       let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
 
-      it 'creates ovs_neutron_plugin.ini' do
+      it 'creates linuxbridge_conf.ini' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
@@ -49,8 +49,12 @@ describe 'openstack-network::linuxbridge' do
         )
       end
 
-      it 'notifies to create symbolic link' do
-        expect(file).to notify('link[/etc/neutron/plugin.ini]').to(:create).immediately
+      it 'create plugin.ini symlink' do
+        expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
+            to: file.name,
+            owner: 'neutron',
+            group: 'neutron'
+          )
       end
     end
   end

@@ -24,5 +24,25 @@ describe 'openstack-network::common' do
         expect(chef_run).to upgrade_package(pkg)
       end
     end
+
+    describe 'ml2_conf.ini' do
+      let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
+
+      it 'creates ml2_conf.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
+
+      it 'create plugin.ini symlink' do
+        expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
+            to: file.name,
+            owner: 'neutron',
+            group: 'neutron'
+          )
+      end
+    end
   end
 end

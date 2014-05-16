@@ -224,7 +224,6 @@ end
 # the plugin configuration is a "common" file
 
 template_file = nil
-plugin_file = '/etc/neutron/plugin.ini'
 
 case main_plugin
 when 'bigswitch'
@@ -237,7 +236,6 @@ when 'bigswitch'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -251,7 +249,6 @@ when 'brocade'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -265,7 +262,6 @@ when 'cisco'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -279,7 +275,6 @@ when 'hyperv'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -297,7 +292,6 @@ when 'linuxbridge'
       local_ip: linuxbridge_endpoint.host
     )
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::linuxbridge')
       notifies :restart, 'service[neutron-plugin-linuxbridge-agent]', :delayed
@@ -314,7 +308,6 @@ when 'midonet'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -328,7 +321,6 @@ when 'ml2'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -342,7 +334,6 @@ when 'nec'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -356,7 +347,6 @@ when 'nicira'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -373,7 +363,6 @@ when 'openvswitch'
     variables(
       local_ip: openvswitch_endpoint.host
     )
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::openvswitch')
       notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
@@ -390,7 +379,6 @@ when 'plumgrid'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -404,7 +392,6 @@ when 'ryu'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :create, "link[#{plugin_file}]", :immediately
     notifies :restart, 'service[neutron-server]', :delayed
   end
 
@@ -412,11 +399,11 @@ else
   Chef::Log.fatal("Main plugin #{main_plugin}is not supported")
 end
 
-link plugin_file do
+link '/etc/neutron/plugin.ini' do
   to template_file
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  action :nothing
+  action :create
   only_if { platform_family? %w{fedora rhel} }
 end
 

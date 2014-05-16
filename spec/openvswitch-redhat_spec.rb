@@ -11,13 +11,8 @@ describe 'openstack-network::openvswitch' do
 
       runner.converge(described_recipe)
     end
-    let(:file) { chef_run.template('/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini') }
 
     include_context 'neutron-stubs'
-
-    it 'notifies to create symbolic link' do
-      expect(file).to notify('link[/etc/neutron/plugin.ini]').to(:create).immediately
-    end
 
     it 'creates the /etc/neutron/plugins/openvswitch agent directory' do
       expect(chef_run).to create_directory('/etc/neutron/plugins/openvswitch').with(
@@ -27,12 +22,24 @@ describe 'openstack-network::openvswitch' do
       )
     end
 
-    it 'creates ovs_neutron_plugin.ini' do
-      expect(chef_run).to create_template(file.name).with(
-        user: 'neutron',
-        group: 'neutron',
-        mode: 0644
-      )
+    describe 'ovs_neutron_plugin.ini' do
+      let(:file) { chef_run.template('/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini') }
+
+      it 'creates ovs_neutron_plugin.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
+
+      it 'create plugin.ini symlink' do
+        expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
+            to: file.name,
+            owner: 'neutron',
+            group: 'neutron'
+          )
+      end
     end
   end
 end

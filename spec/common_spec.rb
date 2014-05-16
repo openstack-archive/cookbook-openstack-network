@@ -13,6 +13,18 @@ describe 'openstack-network::common' do
 
     include_context 'neutron-stubs'
 
+    describe 'ml2_conf.ini' do
+      let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
+
+      it 'creates ml2_conf.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
+    end
+
     it 'does not upgrade python-neutronclient when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
