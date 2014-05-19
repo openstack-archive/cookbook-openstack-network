@@ -57,8 +57,9 @@ Identity-registration
 Attributes
 ==========
 
-* `openstack['openstack']['network']['service_provider']` - Array of service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
+* `openstack['network']['service_provider']` - Array of service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
 * `openstack['network']['api']['auth']['version']` - Select v2.0 or v3.0. Default v2.0. The auth API version used to interact with identity service.
+* `openstack['network']["misc_neutron"]` - Array of strings to be added to neutron.conf
 
 TODO: Add DB2 support on other platforms
 * `openstack["network"]["platform"]["db2_python_packages"]` - Array of DB2 python packages, only available on redhat platform

@@ -1,5 +1,8 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.0.8
+* Add support for miscellaneous options (like in Compute)
+
 ## 9.0.7
 * Revert Switch to using auth_url instead of auth_host et al
 

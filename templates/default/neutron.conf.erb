@@ -301,6 +301,13 @@ send_events_interval = <%= node["openstack"]["network"]["nova"]["send_events_int
 
 # ======== end of neutron nova interactions ==========
 
+# Misc options
+<% if node["openstack"]["network"]["misc_neutron"] %>
+<% node["openstack"]["network"]["misc_neutron"].each do |m| %>
+<%= m %>
+<% end %>
+<% end %>
+
 [QUOTAS]
 # resource name(s) that are supported in quota features
 quota_items = <%= node["openstack"]["network"]["quota"]["items"] %>

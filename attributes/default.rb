@@ -942,6 +942,11 @@ default['openstack']['network']['ml2']['vxlan_group'] = ''
 # It should be false when you use nova security group.
 default['openstack']['network']['ml2']['enable_security_group'] = 'True'
 
+# Misc option support
+# Allow additional strings to be added to neutron.conf
+# For example:  ['# Comment', 'key=value']
+default['openstack']['network']['misc_neutron'] = []
+
 # platform-specific settings
 case platform_family
 when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this

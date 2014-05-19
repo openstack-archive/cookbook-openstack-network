@@ -58,6 +58,14 @@ describe 'openstack-network::common' do
         expect(chef_run).to render_file(file.name).with_content('bind_port = 9999')
       end
 
+      it 'templates misc_neutron array correctly' do
+        node.set['openstack']['network']['misc_neutron'] = ['MISC1=OPTION1', 'MISC2=OPTION2']
+        expect(chef_run).to render_file(file.name).with_content(
+          /^MISC1=OPTION1$/)
+        expect(chef_run).to render_file(file.name).with_content(
+          /^MISC2=OPTION2$/)
+      end
+
       # TODO: flush out rest of template attributes
     end
     describe 'policy file' do
