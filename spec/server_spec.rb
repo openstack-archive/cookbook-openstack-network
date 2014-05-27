@@ -112,6 +112,13 @@ describe 'openstack-network::server' do
           /^control_exchange = neutron$/)
       end
 
+      it 'has default amqp_* queue options set' do
+        [/^amqp_durable_queues=false$/,
+         /^amqp_auto_delete=false$/].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
+        end
+      end
+
       it 'it sets agent_down_time correctly' do
         expect(chef_run).to render_file(file.name).with_content(
           'agent_down_time = 75')
@@ -404,6 +411,11 @@ describe 'openstack-network::server' do
         it 'has qpid_tcp_nodelay' do
           expect(chef_run).to render_file(file.name).with_content(
             'qpid_tcp_nodelay=true')
+        end
+
+        it 'has qpid_topology_version set' do
+          expect(chef_run).to render_file(file.name).with_content(
+            /^qpid_topology_version=1$/)
         end
       end
 

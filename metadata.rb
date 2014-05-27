@@ -17,4 +17,4 @@ recipe            'openstack-network::identity_registration', 'Registers OpenSta
 end
 
 depends           'openstack-identity', '~> 9.0'
-depends           'openstack-common', '~> 9.0'
+depends           'openstack-common', '~> 9.4'

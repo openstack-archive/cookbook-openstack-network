@@ -113,6 +113,9 @@ rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] 
 # allowed_rpc_exception_modules = neutron.openstack.common.exception, nova.exception
 # AMQP exchange to connect to if using RabbitMQ or QPID
 control_exchange = <%= node["openstack"]["network"]["control_exchange"] %>
+# AMQP queue config options
+amqp_durable_queues=<%= node['openstack']['mq']['network']['durable_queues'] %>
+amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
 
 # Configuration options if sending notifications via kombu rpc (these are
 # the defaults)
@@ -155,7 +158,6 @@ rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
 rpc_backend=neutron.openstack.common.rpc.impl_qpid
 qpid_hostname=<%= node["openstack"]["mq"]["network"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["mq"]["network"]["qpid"]["port"] %>
-
 qpid_password=<%= @mq_password %>
 qpid_username=<%= node["openstack"]["mq"]["network"]["qpid"]["username"] %>
 qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["network"]["qpid"]["sasl_mechanisms"] %>
@@ -169,7 +171,7 @@ qpid_heartbeat=<%= node["openstack"]["mq"]["network"]["qpid"]["heartbeat"] %>
 # qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
 qpid_protocol=<%= node["openstack"]["mq"]["network"]["qpid"]["protocol"] %>
 qpid_tcp_nodelay=<%= node["openstack"]["mq"]["network"]["qpid"]["tcp_nodelay"] %>
-
+qpid_topology_version=<%= node['openstack']['mq']['network']['qpid']['topology_version'] %>
 <% end %>
 
 # ZMQ
