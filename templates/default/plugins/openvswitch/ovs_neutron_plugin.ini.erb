@@ -103,6 +103,12 @@ bridge_mappings = <%= node["openstack"]["network"]["openvswitch"]["bridge_mappin
 # Agent's polling interval in seconds
 polling_interval = <%= node['openstack']['network']['openvswitch']['polling_interval'] %>
 
+# (IntOpt) This is the MTU size of veth interfaces.
+# Do not change unless you have a good reason to.
+# The default MTU size of veth interfaces is 1500.
+# Example: veth_mtu = 1504
+veth_mtu = <%= node["openstack"]["network"]["openvswitch"]["veth_mtu"] %>
+
 [SECURITYGROUP]
 # Firewall driver for realizing neutron security group function
 # Default: firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver

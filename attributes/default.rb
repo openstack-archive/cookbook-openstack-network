@@ -447,6 +447,12 @@ default['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
 # Agent's polling interval in seconds
 default['openstack']['network']['openvswitch']['polling_interval'] = 2
 
+# Agent's MTU size of veth interfaces
+# With openvswitch vlan, default of veth_mtu = 1500 is 4 bytes short and you end up
+# with either no traffic or abysmal network performance.  Need the 4 extra bytes for
+# the vlan id.  In that case set the value to 1504.
+default['openstack']['network']['openvswitch']['veth_mtu'] = 1500
+
 # Firewall driver for realizing neutron security group function
 default['openstack']['network']['openvswitch']['fw_driver'] = 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 

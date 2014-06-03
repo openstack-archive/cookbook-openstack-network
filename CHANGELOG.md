@@ -3,6 +3,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 
 ## 9.1.1
 * Allow dhcp_delete_namespaces and router_dhcp_namespaces to be overridden.
+* Add support for openvswitch agent MTU size of veth interfaces
 
 ## 9.1.0
 * python_packages database client attributes have been migrated to

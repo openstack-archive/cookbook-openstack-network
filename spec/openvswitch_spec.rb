@@ -165,6 +165,7 @@ describe 'openstack-network::openvswitch' do
         /^integration_bridge = br-int$/,
         /^tunnel_bridge = br-tun$/,
         /^polling_interval = 2$/,
+        /^veth_mtu = 1500$/,
         /^firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver$/,
         /^enable_security_group = True$/
       ].each do |content|
