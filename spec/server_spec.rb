@@ -37,8 +37,12 @@ describe 'openstack-network::server' do
         end
       end
 
-      it 'starts neutron-server service' do
+      it 'sets the neutron server service to start on boot' do
         expect(chef_run).to enable_service 'neutron-server'
+      end
+
+      it 'starts the neutron server service' do
+        expect(chef_run).to start_service 'neutron-server'
       end
 
       it 'allows overriding service names' do

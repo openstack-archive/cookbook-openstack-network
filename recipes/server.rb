@@ -61,7 +61,7 @@ end
 service 'neutron-server' do
   service_name platform_options['neutron_server_service']
   supports status: true, restart: true
-  action :enable
+  action [:enable, :start]
 end
 
 cookbook_file 'neutron-ha-tool' do
