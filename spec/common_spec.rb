@@ -13,6 +13,10 @@ describe 'openstack-network::common' do
 
     include_context 'neutron-stubs'
 
+    it 'includes openstack-identity::client' do
+      expect(chef_run).to include_recipe('openstack-identity::client')
+    end
+
     describe 'ml2_conf.ini' do
       let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
 

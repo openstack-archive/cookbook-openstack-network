@@ -22,6 +22,9 @@
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
+# this is needed for querying the tenant_uuid of admin below
+include_recipe 'openstack-identity::client'
+
 require 'uri'
 
 # Make Openstack object available in Chef::Recipe
