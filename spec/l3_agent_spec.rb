@@ -33,6 +33,24 @@ describe 'openstack-network::l3_agent' do
       expect(chef_run).to upgrade_package('neutron-l3-agent')
     end
 
+    describe 'gateway_external_network_id' do
+      before do
+        node.set['openstack']['network']['l3']['gateway_external_network_name'] = 'public'
+      end
+
+      it 'looks up and sets the id attribute if needed' do
+        node.set['openstack']['network']['l3']['gateway_external_network_id'] = nil
+        chef_run.ruby_block('query gateway external network uuid').old_run_action(:create)
+        expect(chef_run.node['openstack']['network']['l3']['gateway_external_network_id']).to eq '000-NET-UUID-FROM-CLI'
+      end
+
+      it 'uses the id attribute if it is already set' do
+        node.set['openstack']['network']['l3']['gateway_external_network_id'] = '000-NET-UUID-ALREADY-SET'
+        chef_run.ruby_block('query gateway external network uuid').old_run_action(:create)
+        expect(chef_run.node['openstack']['network']['l3']['gateway_external_network_id']).to eq '000-NET-UUID-ALREADY-SET'
+      end
+    end
+
     describe 'l3_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/l3_agent.ini') }
 

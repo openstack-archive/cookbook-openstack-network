@@ -352,6 +352,8 @@ default['openstack']['network']['l3']['router_id'] = nil
 # the agent will enforce that only a single external networks exists and
 # use that external network id
 default['openstack']['network']['l3']['gateway_external_network_id'] = nil
+# If this name is specified and the ID above is nil, it will be looked up.
+default['openstack']['network']['l3']['gateway_external_network_name'] = nil
 
 # Indicates that this L3 agent should also handle routers that do not have
 # an external network gateway configured.  This option should be True only
