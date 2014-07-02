@@ -4,7 +4,7 @@
 # Recipe:: common
 #
 # Copyright 2013, AT&T
-# Copyright 2013, SUSE Linux GmbH
+# Copyright 2013-2014, SUSE Linux GmbH
 # Copyright 2013-2014, IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ platform_options['neutron_packages'].each do |pkg|
 end
 
 db_type = node['openstack']['db']['network']['service_type']
-platform_options["#{db_type}_python_packages"].each do |pkg|
+node['openstack']['db']['python_packages'][db_type].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
     action :upgrade

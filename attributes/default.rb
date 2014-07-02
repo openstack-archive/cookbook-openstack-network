@@ -953,9 +953,6 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['network']['platform'] = {
     'user' => 'neutron',
     'group' => 'neutron',
-    'mysql_python_packages' => ['MySQL-python'],
-    'db2_python_packages' => ['python-ibm-db', 'python-ibm-db-sa'],
-    'postgresql_python_packages' => ['python-psycopg2'],
     'nova_network_packages' => ['openstack-nova-network'],
     'neutron_packages' => ['openstack-neutron', 'openstack-neutron-ml2'],
     'neutron_client_packages' => ['python-neutronclient'],
@@ -983,8 +980,6 @@ when 'suse'
   default['openstack']['network']['platform'] = {
     'user' => 'openstack-neutron',
     'group' => 'openstack-neutron',
-    'mysql_python_packages' => ['python-mysql'],
-    'postgresql_python_packages' => ['python-psycopg2'],
     'nova_network_packages' => ['openstack-nova-network'],
     'neutron_packages' => ['openstack-neutron'],
     'neutron_client_packages' => ['python-neutronclient'],
@@ -1014,8 +1009,6 @@ when 'debian'
   default['openstack']['network']['platform'] = {
     'user' => 'neutron',
     'group' => 'neutron',
-    'mysql_python_packages' => ['python-mysqldb'],
-    'postgresql_python_packages' => ['python-psycopg2'],
     'nova_network_packages' => ['nova-network'],
     'neutron_packages' => ['neutron-common', 'python-pyparsing', 'python-cliff'],
     'neutron_client_packages' => ['python-neutronclient', 'python-pyparsing'],

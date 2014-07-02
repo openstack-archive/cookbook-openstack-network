@@ -1,5 +1,10 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+
+## 9.1.0
+* python_packages database client attributes have been migrated to
+the -common cookbook
+
 ## 9.0.10
 * Start the neutron server service after installed
 

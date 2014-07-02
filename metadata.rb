@@ -5,7 +5,7 @@ maintainer        'Jay Pipes <jaypipes@gmail.com>'
 license           'Apache 2.0'
 description       'Installs and configures the OpenStack Network API Service and various agents and plugins'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           '9.0.10'
+version           '9.1.0'
 recipe            'openstack-network::client', 'Install packages required for network client'
 recipe            'openstack-network::server', 'Installs packages required for a OpenStack Network server'
 recipe            'openstack-network::openvswitch', 'Installs packages required for OVS'
@@ -17,4 +17,4 @@ recipe            'openstack-network::identity_registration', 'Registers OpenSta
 end
 
 depends           'openstack-identity', '~> 9.0'
-depends           'openstack-common', '~> 9.4'
+depends           'openstack-common', '~> 9.5'
