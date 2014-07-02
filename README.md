@@ -114,6 +114,14 @@ Modular Layer 2 Plugin Configuration
 * `openstack['openstack']['network']['ml2']['vni_ranges']` - (ListOpt) Comma-separated list of <vni_min>:<vni_max> tuples enumerating ranges of VXLAN VNI IDs that are available for tenant network allocation.
 * `openstack['openstack']['network']['ml2']['vxlan_group']` - (StrOpt) Multicast group for the VXLAN interface.
 
+DHCP Agent Configuration
+------------------------
+* `openstack['openstack']['network']['dhcp']['dhcp_delete_namespaces']` - (StrOpt) If True, namespaces will be deleted when a dhcp server is disabled.
+
+L3 Agent Configuration
+----------------------
+* `openstack['openstack']['network']['l3']['router_delete_namespaces'] - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
+
 The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
 
 * `openstack['endpoints']['network-api-bind']['host']` - The IP address to bind the api service to

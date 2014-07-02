@@ -94,6 +94,10 @@ describe 'openstack-network::dhcp_agent' do
         expect(chef_run).to render_file(file.name).with_content(/^dnsmasq_lease_max = 16777216$/)
       end
 
+      it 'has default dhcp_delete_namespaces setting' do
+        expect(chef_run).to render_file(file.name).with_content(/^dhcp_delete_namespaces = False$/)
+      end
+
       it 'has configurable dnsmasq_lease_max setting' do
         node.set['openstack']['network']['dhcp']['dnsmasq_lease_max'] = 16777215
 

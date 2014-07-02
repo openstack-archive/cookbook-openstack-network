@@ -56,3 +56,11 @@ periodic_interval = <%= node["openstack"]["network"]["l3"]["periodic_interval"] 
 # seconds to start to sync routers' data after
 # starting agent
 periodic_fuzzy_delay = <%= node["openstack"]["network"]["l3"]["periodic_fuzzy_delay"] %>
+
+# router_delete_namespaces, which is false by default, can be set to True if
+# namespaces can be deleted cleanly on the host running the L3 agent.
+# Do not enable this until you understand the problem with the Linux iproute
+# utility mentioned in https://bugs.launchpad.net/neutron/+bug/1052535 and
+# you are sure that your version of iproute does not suffer from the problem.
+# If True, namespaces will be deleted when a router is destroyed.
+router_delete_namespaces = <%= node['openstack']['network']['l3']['router_delete_namespaces'] %>
