@@ -246,6 +246,11 @@ describe 'openstack-network::server' do
           'rabbit_virtual_host=/')
       end
 
+      it 'has rabbit_use_ssl' do
+        expect(chef_run).to render_file(file.name).with_content(
+          'rabbit_use_ssl=false')
+      end
+
       it 'has default dhcp_lease_duration setting' do
         expect(chef_run).to render_file(file.name).with_content(
           'dhcp_lease_duration = 86400')

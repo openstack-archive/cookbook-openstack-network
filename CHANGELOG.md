@@ -5,6 +5,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * python_packages database client attributes have been migrated to
 the -common cookbook
 * bump berkshelf to 2.0.18 to allow Supermarket support
+* Add rabbit_use_ssl configuration item.
 
 ## 9.0.10
 * Start the neutron server service after installed

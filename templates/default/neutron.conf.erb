@@ -145,6 +145,7 @@ rabbit_ha_queues=True
 <% else %>
 rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
 rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
+rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
 <% end %>
 # Maximum retries with trying to connect to RabbitMQ
 # (the default of 0 implies an infinite retry count)
