@@ -293,6 +293,9 @@ default['openstack']['network']['dhcp']['upstream_dns_servers'] = ['8.8.8.8', '2
 # Set the default domain in dnsmasq
 default['openstack']['network']['dhcp']['default_domain'] = 'openstacklocal'
 
+# If True, namespaces will be deleted when a dhcp server is disabled.
+default['openstack']['network']['dhcp']['dhcp_delete_namespaces'] = 'False'
+
 # ============================= L3 Agent Configuration =====================
 
 # The scheduler class to use for scheduling routers to L3 agents
@@ -334,6 +337,9 @@ default['openstack']['network']['l3']['periodic_interval'] = 40
 # seconds to start to sync routers' data after
 # starting agent
 default['openstack']['network']['l3']['periodic_fuzzy_delay'] = 5
+
+# If True, namespaces will be deleted when a router is destroyed
+default['openstack']['network']['l3']['router_delete_namespaces'] = 'False'
 
 # ============================= Metadata Agent Configuration ===============
 

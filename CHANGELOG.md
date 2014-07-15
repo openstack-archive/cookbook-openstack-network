@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 9.1.1
+* Allow dhcp_delete_namespaces and router_dhcp_namespaces to be overridden.
+
 ## 9.1.0
 * python_packages database client attributes have been migrated to
 the -common cookbook

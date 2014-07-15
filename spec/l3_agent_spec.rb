@@ -66,6 +66,10 @@ describe 'openstack-network::l3_agent' do
       it 'notifies the l3 agent service' do
         expect(file).to notify('service[neutron-l3-agent]').to(:restart).immediately
       end
+
+      it 'has default router_delete_namespaces setting' do
+        expect(chef_run).to render_file(file.name).with_content(/^router_delete_namespaces = False$/)
+      end
     end
 
     describe 'create ovs bridges' do
