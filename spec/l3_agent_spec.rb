@@ -44,31 +44,38 @@ describe 'openstack-network::l3_agent' do
         )
       end
 
-      it 'it has ovs driver' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver')
-      end
+      context 'template contents' do
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
 
-      it 'sets fuzzy delay to default' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'periodic_fuzzy_delay = 5')
-      end
+        it_behaves_like 'common network attributes displayer' do
+          let(:file_name) { file.name }
+        end
 
-      it 'it does not set a nil router_id' do
-        expect(chef_run).not_to render_file(file.name).with_content(/^router_id =/)
-      end
+        %w[handle_internal_only_routers external_network_bridge metadata_port send_arp_for_ha
+           periodic_interval periodic_fuzzy_delay router_delete_namespaces].each do |attr|
+          it "displays the #{attr} l3 attribute" do
+            node.set['openstack']['network']['l3'][attr] = "network_l3_#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{attr} = network_l3_#{attr}_value$/)
+          end
+        end
 
-      it 'it does not set a nil router_id' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^gateway_external_network_id =/)
+        %w[router_id gateway_external_network_id].each do |conditional_attr|
+          it "displays the #{conditional_attr} attribute when present" do
+            node.set['openstack']['network']['l3'][conditional_attr] = "network_l3_#{conditional_attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{conditional_attr} = network_l3_#{conditional_attr}_value$/)
+          end
+
+          it "does not display the #{conditional_attr} attribute if not set" do
+            node.set['openstack']['network']['l3'][conditional_attr] = nil
+            expect(chef_run).not_to render_file(file.name).with_content(/^#{conditional_attr} = /)
+          end
+        end
       end
 
       it 'notifies the l3 agent service' do
         expect(file).to notify('service[neutron-l3-agent]').to(:restart).immediately
-      end
-
-      it 'has default router_delete_namespaces setting' do
-        expect(chef_run).to render_file(file.name).with_content(/^router_delete_namespaces = False$/)
       end
     end
 

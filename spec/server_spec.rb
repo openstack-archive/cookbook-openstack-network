@@ -75,6 +75,10 @@ describe 'openstack-network::server' do
           mode: 0640
         )
       end
+
+      it_behaves_like 'custom template banner displayer' do
+        let(:file_name) { file.name }
+      end
     end
 
     describe 'neutron-ha-tool.py' do

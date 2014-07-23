@@ -42,6 +42,10 @@ describe 'openstack-network::dhcp_agent' do
           mode: 0644
         )
       end
+
+      it_behaves_like 'dhcp agent template configurator' do
+        let(:file_name) { file.name }
+      end
     end
 
     describe '/etc/neutron/dnsmasq.conf' do
@@ -53,6 +57,10 @@ describe 'openstack-network::dhcp_agent' do
           group: 'openstack-neutron',
           mode: 0644
         )
+      end
+
+      it_behaves_like 'dnsmasq template configurator' do
+        let(:file_name) { file.name }
       end
     end
   end

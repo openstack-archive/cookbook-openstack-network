@@ -91,3 +91,59 @@ shared_context 'neutron-stubs' do
     stub_command('ip link show eth1').and_return(false)
   end
 end
+
+shared_examples 'custom template banner displayer' do
+  it 'shows the custom banner' do
+    node.set['openstack']['network']['custom_template_banner'] = 'custom_template_banner_value'
+    expect(chef_run).to render_file(file_name).with_content(/^custom_template_banner_value$/)
+  end
+end
+
+shared_examples 'common network attributes displayer' do
+  %w[debug interface_driver use_namespaces].each do |attr|
+    it "displays the #{attr} common attribute" do
+      node.set['openstack']['network'][attr] = "network_#{attr}_value"
+      expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_#{attr}_value$/)
+    end
+  end
+end
+
+shared_examples 'dhcp agent template configurator' do
+  it_behaves_like 'custom template banner displayer'
+
+  it_behaves_like 'common network attributes displayer'
+
+  it 'displays the dhcp driver attribute' do
+    node.set['openstack']['network']['dhcp_driver'] = 'network_dhcp_driver_value'
+    expect(chef_run).to render_file(file_name).with_content(/^dhcp_driver = network_dhcp_driver_value$/)
+  end
+
+  %w[resync_interval ovs_use_veth enable_isolated_metadata
+     enable_metadata_network dnsmasq_lease_max dhcp_delete_namespaces].each do |attr|
+    it "displays the #{attr} dhcp attribute" do
+      node.set['openstack']['network']['dhcp'][attr] = "network_dhcp_#{attr}_value"
+      expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_dhcp_#{attr}_value$/)
+    end
+  end
+
+  it 'displays the dhcp_domain attribute' do
+    node.set['openstack']['network']['dhcp']['default_domain'] = 'network_dhcp_domain_value'
+    expect(chef_run).to render_file(file_name).with_content(/^dhcp_domain = network_dhcp_domain_value$/)
+  end
+end
+
+shared_examples 'dnsmasq template configurator' do
+  it_behaves_like 'custom template banner displayer'
+
+  it 'displays the dhcp-option attribute' do
+    node.set['openstack']['network']['dhcp']['dhcp-option'] = 'dhcp-option_value'
+    expect(chef_run).to render_file(file_name).with_content(/^dhcp-option=dhcp-option_value$/)
+  end
+
+  it 'displays the upstream dns servers setting' do
+    node.set['openstack']['network']['dhcp']['upstream_dns_servers'] = %w[server0 server1]
+    node['openstack']['network']['dhcp']['upstream_dns_servers'].each do |dns_server|
+      expect(chef_run).to render_file(file_name).with_content(/^server=#{dns_server}$/)
+    end
+  end
+end

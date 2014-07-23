@@ -73,35 +73,8 @@ describe 'openstack-network::dhcp_agent' do
         )
       end
 
-      it 'uses ovs driver' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver')
-      end
-
-      it 'uses namespaces' do
-        expect(chef_run).to render_file(file.name).with_content('use_namespaces = True')
-      end
-
-      it 'disables ovs_use_veth' do
-        expect(chef_run).to render_file(file.name).with_content('ovs_use_veth = False')
-      end
-
-      it 'checks dhcp domain' do
-        expect(chef_run).to render_file(file.name).with_content(/^dhcp_domain = openstacklocal$/)
-      end
-
-      it 'has default dnsmasq_lease_max setting' do
-        expect(chef_run).to render_file(file.name).with_content(/^dnsmasq_lease_max = 16777216$/)
-      end
-
-      it 'has default dhcp_delete_namespaces setting' do
-        expect(chef_run).to render_file(file.name).with_content(/^dhcp_delete_namespaces = False$/)
-      end
-
-      it 'has configurable dnsmasq_lease_max setting' do
-        node.set['openstack']['network']['dhcp']['dnsmasq_lease_max'] = 16777215
-
-        expect(chef_run).to render_file(file.name).with_content(/^dnsmasq_lease_max = 16777215$/)
+      it_behaves_like 'dhcp agent template configurator' do
+        let(:file_name) { file.name }
       end
 
       it 'notifies the dhcp agent service' do
@@ -120,13 +93,8 @@ describe 'openstack-network::dhcp_agent' do
         )
       end
 
-      it 'overrides dhcp options' do
-        expect(chef_run).to render_file(file.name).with_content('dhcp-option=26,1454')
-      end
-
-      it 'checks upstream resolvers' do
-        expect(chef_run).to render_file(file.name).with_content(/^server=209.244.0.3$/)
-        expect(chef_run).to render_file(file.name).with_content(/^server=8.8.8.8$/)
+      it_behaves_like 'dnsmasq template configurator' do
+        let(:file_name) { file.name }
       end
 
       it 'notifies the dhcp agent service' do
