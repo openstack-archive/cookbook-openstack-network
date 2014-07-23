@@ -178,6 +178,12 @@ default['openstack']['network']['allow_overlapping_ips'] = 'False'
 
 # use neutron root wrap
 default['openstack']['network']['use_rootwrap'] = true
+# rootwrap.conf
+default['openstack']['network']['rootwrap']['filters_path'] = '/etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap'
+default['openstack']['network']['rootwrap']['exec_dirs'] = '/sbin,/usr/sbin,/bin,/usr/bin'
+default['openstack']['network']['rootwrap']['use_syslog'] = false
+default['openstack']['network']['rootwrap']['syslog_log_facility'] = 'syslog'
+default['openstack']['network']['rootwrap']['syslog_log_level'] = 'ERROR'
 
 # DHCP lease duration
 default['openstack']['network']['dhcp_lease_duration'] = 86400

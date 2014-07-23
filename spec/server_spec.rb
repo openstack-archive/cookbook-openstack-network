@@ -660,5 +660,37 @@ describe 'openstack-network::server' do
         end
       end
     end
+
+    describe 'rootwrap.conf' do
+      let(:file) { chef_run.template('/etc/neutron/rootwrap.conf') }
+
+      it 'creates the /etc/neutron/rootwrap.conf file' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0644
+        )
+      end
+
+      context 'template contents' do
+        it 'shows the custom banner' do
+          node.set['openstack']['network']['custom_template_banner'] = 'banner'
+
+          expect(chef_run).to render_file(file.name).with_content(/^banner$/)
+        end
+
+        it 'sets the default attributes' do
+          [
+            %r(^filters_path=/etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap$),
+            %r(^exec_dirs=/sbin,/usr/sbin,/bin,/usr/bin$),
+            /^use_syslog=false$/,
+            /^syslog_log_facility=syslog$/,
+            /^syslog_log_level=ERROR$/
+          ].each do |line|
+            expect(chef_run).to render_file(file.name).with_content(line)
+          end
+        end
+      end
+    end
   end
 end
