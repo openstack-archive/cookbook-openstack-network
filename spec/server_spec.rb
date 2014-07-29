@@ -15,7 +15,7 @@ describe 'openstack-network::server' do
     include_context 'neutron-stubs'
 
     it 'uses release db stamp' do
-      expect(chef_run).to run_bash('migrate network database').with_code(/stamp icehouse/)
+      expect(chef_run).to run_bash('migrate network database').with_code(/stamp juno/)
     end
 
     it 'does not install neutron-server when nova networking' do

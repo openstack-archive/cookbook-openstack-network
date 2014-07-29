@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.0.0
+* Upgrading to Juno
+
 ## 9.1.1
 * Allow dhcp_delete_namespaces and router_dhcp_namespaces to be overridden.
 * Add support for openvswitch agent MTU size of veth interfaces
