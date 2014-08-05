@@ -19,6 +19,10 @@ paste.filter_factory = neutron.openstack.common.middleware.catch_errors:CatchErr
 [filter:keystonecontext]
 paste.filter_factory = neutron.auth:NeutronKeystoneContext.factory
 
+[filter:authtoken]
+paste.filter_factory = keystonemiddleware.auth_token:filter_factory
+delay_auth_decision = true
+
 [filter:extensions]
 paste.filter_factory = neutron.api.extensions:plugin_aware_extension_middleware_factory
 
@@ -27,7 +31,3 @@ paste.app_factory = neutron.api.versions:Versions.factory
 
 [app:neutronapiapp_v2_0]
 paste.app_factory = neutron.api.v2.router:APIRouter.factory
-
-[filter:authtoken]
-paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-delay_auth_decision = true

@@ -3,6 +3,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 
 ## 10.0.0
 * Upgrading to Juno
+* Sync conf files with Juno
 
 ## 9.1.1
 * Allow dhcp_delete_namespaces and router_dhcp_namespaces to be overridden.

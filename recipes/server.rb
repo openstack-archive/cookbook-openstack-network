@@ -39,7 +39,7 @@ platform_options['neutron_server_packages'].each do |pkg|
 end
 
 # Migrate network database
-# If the database has never migrated, make the current version of alembic_version to Icehouse,
+# If the database has never migrated, make the current version of alembic_version to match release,
 # else migrate the database to latest version.
 # The node['openstack']['network']['plugin_config_file'] attribute is set in the common.rb recipe
 

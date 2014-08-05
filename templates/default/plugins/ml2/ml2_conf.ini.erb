@@ -18,8 +18,11 @@ tenant_network_types = <%= node['openstack']['network']['ml2']['tenant_network_t
 # (ListOpt) Ordered list of networking mechanism driver entrypoints
 # to be loaded from the neutron.ml2.mechanism_drivers namespace.
 # mechanism_drivers =
+# Example: mechanism_drivers = openvswitch,mlnx
 # Example: mechanism_drivers = arista
 # Example: mechanism_drivers = cisco,logger
+# Example: mechanism_drivers = openvswitch,brocade
+# Example: mechanism_drivers = linuxbridge,brocade
 mechanism_drivers = <%= node['openstack']['network']['ml2']['mechanism_drivers'] %>
 
 [ml2_type_flat]
