@@ -453,6 +453,15 @@ default['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
 # Agent's polling interval in seconds
 default['openstack']['network']['openvswitch']['polling_interval'] = 2
 
+# The types of tenant network tunnels supported by the openvswitch agent.
+# Setting this will enable tunneling support in the agent. This can be set to
+# either 'gre' or 'vxlan'. If this is unset, it will default to [] and
+# disable tunneling in the agent. When running the agent with the OVS
+# plugin, this value must be the same as "tunnel_type" in the "[ovs]" section.
+# When running the agent with ML2, you can specify as many values here as
+# your compute hosts support.
+default['openstack']['network']['openvswitch']['tunnel_types'] = nil
+
 # Agent's MTU size of veth interfaces
 # With openvswitch vlan, default of veth_mtu = 1500 is 4 bytes short and you end up
 # with either no traffic or abysmal network performance.  Need the 4 extra bytes for

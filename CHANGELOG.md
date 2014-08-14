@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.0.1
+* Add tunnel_types item in ovs_neutron_plugin.ini.erb
+
 ## 10.0.0
 * Upgrading to Juno
 * Sync conf files with Juno

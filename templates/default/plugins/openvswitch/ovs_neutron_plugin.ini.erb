@@ -131,6 +131,9 @@ polling_interval = <%= node['openstack']['network']['openvswitch']['polling_inte
 # Example: tunnel_types = gre
 # Example: tunnel_types = vxlan
 # Example: tunnel_types = vxlan, gre
+<% if node["openstack"]["network"]["openvswitch"]["tunnel_types"] -%>
+tunnel_types = <%= node["openstack"]["network"]["openvswitch"]["tunnel_types"] %>
+<% end -%>
 
 # (IntOpt) The port number to utilize if tunnel_types includes 'vxlan'. By
 # default, this will make use of the Open vSwitch default value of '4789' if

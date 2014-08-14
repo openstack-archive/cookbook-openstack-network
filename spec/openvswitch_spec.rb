@@ -149,7 +149,8 @@ describe 'openstack-network::openvswitch' do
         /^tunnel_id_ranges =$/,
         /^int_peer_patch_port =$/,
         /^tun_peer_patch_port =$/,
-        /^bridge_mappings =$/
+        /^bridge_mappings =$/,
+        /^tunnel_types =$/
       ].each do |content|
         it "does not have a #{content.source[1...-1]} line" do
           expect(chef_run).not_to render_file(file.name).with_content(content)
