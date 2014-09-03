@@ -286,14 +286,14 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 # Number of separate worker processes to spawn.  The default, 0, runs the
 # worker thread in the current process.  Greater than 0 launches that number of
 # child processes as workers.  The parent process manages them.
-# api_workers = 0
+api_workers = <%= node["openstack"]["network"]["api_workers"] %>
 
 # Number of separate RPC worker processes to spawn.  The default, 0, runs the
 # worker thread in the current process.  Greater than 0 launches that number of
 # child processes as RPC workers.  The parent process manages them.
 # This feature is experimental until issues are addressed and testing has been
 # enabled for various plugins for compatibility.
-# rpc_workers = 0
+rpc_workers = <%= node["openstack"]["network"]["rpc_workers"] %>
 
 # Sets the value of TCP_KEEPIDLE in seconds to use for each server socket when
 # starting API server. Not supported on OS X.

@@ -68,7 +68,7 @@ describe 'openstack-network::common' do
         %w(debug verbose state_path lock_path log_dir auth_strategy
            dhcp_lease_duration rpc_thread_pool_size rpc_conn_pool_size
            rpc_response_timeout control_exchange allow_overlapping_ips
-           notification_driver).each do |attr|
+           notification_driver api_workers rpc_workers).each do |attr|
           it "sets the #{attr} common attribute" do
             node.set['openstack']['network'][attr] = "#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)

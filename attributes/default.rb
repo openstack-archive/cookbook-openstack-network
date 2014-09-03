@@ -51,6 +51,18 @@ default['openstack']['network']['service_tenant_name'] = 'service'
 default['openstack']['network']['service_user'] = 'neutron'
 default['openstack']['network']['service_role'] = 'admin'
 
+# Number of separate worker processes to spawn.  The default, 0, runs the
+# worker thread in the current process.  Greater than 0 launches that number of
+# child processes as workers.  The parent process manages them.
+default['openstack']['network']['api_workers'] = 0
+
+# Number of separate RPC worker processes to spawn.  The default, 0, runs the
+# worker thread in the current process.  Greater than 0 launches that number of
+# child processes as RPC workers.  The parent process manages them.
+# This feature is experimental until issues are addressed and testing has been
+# enabled for various plugins for compatibility.
+default['openstack']['network']['rpc_workers'] = 0
+
 # The maximum number of seconds we will wait for an agent to checkin
 default['openstack']['network']['api']['agent']['agent_down_time'] = 75
 

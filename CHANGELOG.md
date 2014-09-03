@@ -5,8 +5,8 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Add support for Neutron VPN Service
 * Remove Neutron DB stamp and upgrade to head.
 * Add attribute for ML2 enable_ipset
-
 * Bump Chef gem to 11.16
+* Add attributes for api_workers and rpc_workers
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
