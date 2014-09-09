@@ -124,6 +124,12 @@ default['openstack']['network']['quota']['security_group'] = 10
 # number of security group rules allowed per tenant, and minus means unlimited
 default['openstack']['network']['quota']['security_group_rule'] = 100
 
+# Number of routers allowed per tenant. A negative value means unlimited.
+default['openstack']['network']['quota']['router'] = 10
+
+# Number of floating IPs allowed per tenant. A negative value means unlimited.
+default['openstack']['network']['quota']['floatingip'] = 50
+
 # Whether or not we want to disable offloading
 # on all the NIC interfaces (currently only supports
 # ubuntu and debian).  This can help if openvswitch
