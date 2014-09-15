@@ -56,7 +56,7 @@ describe 'openstack-network::common' do
       end
 
       it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+        expect(sprintf('%o', file.mode)).to eq '640'
       end
 
       it 'has default core plugin' do

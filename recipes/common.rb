@@ -185,7 +185,7 @@ template '/etc/neutron/neutron.conf' do
   source 'neutron.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00644
+  mode   00640
   variables(
     bind_address: network_api_bind.host,
     bind_port: network_api_bind.port,
