@@ -176,6 +176,9 @@ default['openstack']['network']['dhcp_driver'] = 'neutron.agent.linux.dhcp.Dnsma
 default['openstack']['network']['use_namespaces'] = 'True'
 default['openstack']['network']['allow_overlapping_ips'] = 'False'
 
+# vpn agent configuration, default is false
+default['openstack']['network']['enable_vpn'] = false
+
 # use neutron root wrap
 default['openstack']['network']['use_rootwrap'] = true
 # rootwrap.conf
@@ -346,6 +349,11 @@ default['openstack']['network']['l3']['periodic_fuzzy_delay'] = 5
 
 # If True, namespaces will be deleted when a router is destroyed
 default['openstack']['network']['l3']['router_delete_namespaces'] = 'False'
+
+# ============================= VPN Agent Configuration ====================
+
+default['openstack']['network']['vpn']['vpn_device_driver'] = 'neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver'
+default['openstack']['network']['vpn']['ipsec_status_check_interval'] = 60
 
 # ============================= Metadata Agent Configuration ===============
 
@@ -986,6 +994,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_dhcp_packages' => ['openstack-neutron'],
     'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron'],
+    'neutron_vpn_packages' => ['openstack-neutron'],
     'neutron_lb_packages' => ['openstack-neutron', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch'],
@@ -995,6 +1004,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_server_packages' => [],
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
+    'neutron_vpn_agent_service' => 'neutron-vpn-agent',
     'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch',
@@ -1013,6 +1023,7 @@ when 'suse'
     'neutron_dhcp_packages' => ['openstack-neutron-dhcp-agent'],
     'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron-l3-agent'],
+    'neutron_vpn_packages' => ['openstack-neutron-vpn-agent'],
     'neutron_lb_packages' => ['openstack-neutron-lbaas-agent'],
     # plugins are installed by the main openstack-neutron package on SUSE
     'neutron_plugin_package' => '',
@@ -1024,6 +1035,7 @@ when 'suse'
     'neutron_server_packages' => [],
     'neutron_dhcp_agent_service' => 'openstack-neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'openstack-neutron-l3-agent',
+    'neutron_vpn_agent_service' => 'openstack-neutron-vpn-agent',
     'neutron_lb_agent_service' => 'openstack-neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'openstack-neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',
@@ -1042,6 +1054,7 @@ when 'debian'
     'neutron_dhcp_packages' => ['neutron-dhcp-agent'],
     'neutron_dhcp_build_packages' => %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext),
     'neutron_l3_packages' => ['neutron-l3-agent'],
+    'neutron_vpn_packages' => ['neutron-vpn-agent'],
     'neutron_lb_packages' => ['neutron-lbaas-agent', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch-switch', 'openvswitch-datapath-dkms', 'bridge-utils'],
     'neutron_openvswitch_build_packages' => %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf dkms python-all python-qt4 python-zopeinterface python-twisted-conch),
@@ -1052,6 +1065,7 @@ when 'debian'
     'neutron_server_packages' => ['neutron-server'],
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
+    'neutron_vpn_agent_service' => 'neutron-vpn-agent',
     'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',
