@@ -130,7 +130,8 @@ describe 'openstack-network::server' do
         /^tunnel_id_ranges = $/,
         /^vni_ranges = $/,
         /^vxlan_group = $/,
-        /^enable_security_group = True$/
+        /^enable_security_group = True$/,
+        /^enable_ipset = True$/
       ].each do |content|
         it "has a #{content.source[1...-1]} line" do
           expect(chef_run).to render_file(file.name).with_content(content)

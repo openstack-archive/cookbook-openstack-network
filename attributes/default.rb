@@ -992,6 +992,10 @@ default['openstack']['network']['ml2']['vxlan_group'] = ''
 # It should be false when you use nova security group.
 default['openstack']['network']['ml2']['enable_security_group'] = 'True'
 
+# Use ipset to speed-up the iptables security groups. Enabling ipset support
+# requires that ipset is installed on L2 agent node.
+default['openstack']['network']['ml2']['enable_ipset'] = 'True'
+
 # Misc option support
 # Allow additional strings to be added to neutron.conf
 # For example:  ['# Comment', 'key=value']
