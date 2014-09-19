@@ -4,6 +4,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
 * Update neutron.conf from mode 0644 to 0640
+* Add cafile, memcached_servers, memcache_security_strategy, memcache_secret_key, insecure and hash_algorithms so that they are configurable.
 
 ## 10.0.0
 * Upgrading to Juno

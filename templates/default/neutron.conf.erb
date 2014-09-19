@@ -486,6 +486,20 @@ admin_tenant_name = <%= node["openstack"]["network"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["network"]["service_user"] %>
 admin_password = <%= @service_pass %>
 signing_dir = <%= node["openstack"]["network"]["api"]["agent"]["signing_dir"] %>
+<% unless node['openstack']['network']['api']['auth']['cafile'].nil? %>
+cafile = <%= node['openstack']['network']['api']['auth']['cafile'] %>
+<% end %>
+<% unless node['openstack']['network']['api']['auth']['memcached_servers'].nil? %>
+memcached_servers = <%= node['openstack']['network']['api']['auth']['memcached_servers'] %>
+<% end %>
+<% unless node['openstack']['network']['api']['auth']['memcache_security_strategy'].nil? %>
+memcache_security_strategy = <%= node['openstack']['network']['api']['auth']['memcache_security_strategy'] %>
+<% end %>
+<% unless node['openstack']['network']['api']['auth']['memcache_secret_key'].nil? %>
+memcache_secret_key = <%= node['openstack']['network']['api']['auth']['memcache_secret_key'] %>
+<% end %>
+hash_algorithms = <%= node['openstack']['network']['api']['auth']['hash_algorithms'] %>
+insecure = <%= node['openstack']['network']['api']['auth']['insecure'] %>
 
 [database]
 # This line MUST be changed to actually run the plugin.

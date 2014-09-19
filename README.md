@@ -60,6 +60,12 @@ Attributes
 * `openstack['network']['service_provider']` - Array of service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
 * `openstack['network']['api']['auth']['version']` - Select v2.0 or v3.0. Default v2.0. The auth API version used to interact with identity service.
 * `openstack['network']["misc_neutron"]` - Array of strings to be added to neutron.conf
+* `openstack['network']['api']['auth']['memcached_servers']` - A list of memcached server(s) for caching
+* `openstack['network']['api']['auth']['memcache_security_strategy']` - Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT.
+* `openstack['network']['api']['auth']['memcache_secret_key']` - This string is used for key derivation.
+* `openstack['network']['api']['auth']['hash_algorithms']` - Hash algorithms to use for hashing PKI tokens.
+* `openstack['network']['api']['auth']['cafile']` - A PEM encoded Certificate Authority to use when verifying HTTPs connections.
+* `openstack['network']['api']['auth']['insecure']` - Whether to allow the client to perform insecure SSL (https) requests.
 
 TODO
 * `openstack["network"]["service_plugins"]` - Array of Python classes to be used as `service_plugins` in neutron.conf (default: []). Set it to ['neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin'] to include the load balancer plugin.

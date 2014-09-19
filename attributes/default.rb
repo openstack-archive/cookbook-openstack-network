@@ -69,6 +69,24 @@ default['openstack']['network']['api']['auth']['cache_dir'] = '/var/cache/neutro
 # The auth api version used to interact with identity service.
 default['openstack']['network']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
 
+# A list of memcached server(s) for caching
+default['openstack']['network']['api']['auth']['memcached_servers'] = nil
+
+# Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT
+default['openstack']['network']['api']['auth']['memcache_security_strategy'] = nil
+
+# This string is used for key derivation
+default['openstack']['network']['api']['auth']['memcache_secret_key'] = nil
+
+# Hash algorithms to use for hashing PKI tokens
+default['openstack']['network']['api']['auth']['hash_algorithms'] = 'md5'
+
+# A PEM encoded Certificate Authority to use when verifying HTTPs connections
+default['openstack']['network']['api']['auth']['cafile'] = nil
+
+# Whether to allow the client to perform insecure SSL (https) requests
+default['openstack']['network']['api']['auth']['insecure'] = false
+
 # logging attribute
 default['openstack']['network']['log_dir'] = '/var/log/neutron'
 default['openstack']['network']['syslog']['use'] = false
