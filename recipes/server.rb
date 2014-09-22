@@ -38,23 +38,14 @@ platform_options['neutron_server_packages'].each do |pkg|
   end
 end
 
-# Migrate network database
-# If the database has never migrated, make the current version of alembic_version to match release,
-# else migrate the database to latest version.
+# Migrate network database to latest version
 # The node['openstack']['network']['plugin_config_file'] attribute is set in the common.rb recipe
 
 bash 'migrate network database' do
   plugin_config_file = node['openstack']['network']['plugin_config_file']
-  db_stamp = node['openstack']['network']['db_stamp']
   migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
-current_version_line=`#{migrate_command} current 2>&1 | tail -n 1`
-# determine if the $current_version_line ends with ": None"
-if [[ $current_version_line == *:\\ None ]]; then
-  #{migrate_command} stamp #{db_stamp}
-else
   #{migrate_command} upgrade head
-fi
 EOF
 end
 

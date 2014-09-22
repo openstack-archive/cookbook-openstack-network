@@ -3,6 +3,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 
 ## 10.1.0
 * Add support for Neutron VPN Service
+* Remove Neutron DB stamp and upgrade to head.
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
