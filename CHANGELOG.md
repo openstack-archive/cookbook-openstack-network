@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.1.0
+* Add support for Neutron VPN Service
+
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
 * Update neutron.conf from mode 0644 to 0640

@@ -38,17 +38,23 @@ end
 service 'neutron-l3-agent' do
   service_name platform_options['neutron_l3_agent_service']
   supports status: true, restart: true
-
-  action :enable
-  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
+  # if the vpn agent is enabled, we should stop and disable the l3 agent
+  if node['openstack']['network']['enable_vpn']
+    action [:stop, :disable]
+  else
+    action :enable
+    subscribes :restart, 'template[/etc/neutron/neutron.conf]'
+  end
 end
 
 template '/etc/neutron/l3_agent.ini' do
   source 'l3_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00644
-  notifies :restart, 'service[neutron-l3-agent]', :immediately
+  mode   00640
+  unless node['openstack']['network']['enable_vpn']
+    notifies :restart, 'service[neutron-l3-agent]', :immediately
+  end
 end
 
 driver_name = node['openstack']['network']['interface_driver'].split('.').last

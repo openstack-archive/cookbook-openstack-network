@@ -49,6 +49,11 @@ l3\_agent
 
 - Installs the L3 agent and metadata agent
 
+vpn\_agent
+--------
+
+- Installs the VPN agent
+
 Identity-registration
 ---------------------
 
@@ -128,6 +133,12 @@ L3 Agent Configuration
 ----------------------
 * `openstack['openstack']['network']['l3']['router_delete_namespaces'] - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
 
+VPN Agent Configuration
+----------------------
+* `openstack['openstack']['network']['enable_vpn'] - (BoolOpt) Enable VPN agent. (default false)
+* `openstack['openstack']['network']['vpn']['vpn_device_driver'] - (StrOpt) VPN device drivers which VPN agent will use
+* `openstack['openstack']['network']['vpn']['ipsec_status_check_interval'] - (IntOpt) Status check interval for ipsec VPN
+
 The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
 
 * `openstack['endpoints']['network-api-bind']['host']` - The IP address to bind the api service to
@@ -142,6 +153,7 @@ Templates
 * `api-paste.ini.erb` - Paste config for OpenStack Network server
 * `neutron.conf.erb` - Config file for OpenStack Network server
 * `ml2_conf.ini.erb` - Configuration of Network ML2 Plugins
+* `vpn_agent.ini.erb` - Config file for Network VPN agent
 
 Testing
 =======

@@ -1,0 +1,19 @@
+<%= node["openstack"]["network"]["custom_template_banner"] %>
+
+[DEFAULT]
+# VPN-Agent configuration file
+# Note vpn-agent inherits l3-agent, so you can use configs on l3-agent also
+debug = <%= node["openstack"]["network"]["debug"] %>
+interface_driver = <%= node["openstack"]["network"]["interface_driver"] %>
+
+[vpnagent]
+# vpn device drivers which vpn agent will use
+# If we want to use multiple drivers,  we need to define this option multiple times.
+# vpn_device_driver=neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver
+# vpn_device_driver=neutron.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver
+# vpn_device_driver=another_driver
+vpn_device_driver = <%= node['openstack']['network']['vpn']['vpn_device_driver'] %>
+
+[ipsec]
+# Status check interval
+ipsec_status_check_interval = <%= node['openstack']['network']['vpn']['ipsec_status_check_interval'] %>
