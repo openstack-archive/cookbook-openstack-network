@@ -44,19 +44,35 @@ describe 'openstack-network::balancer' do
         )
       end
 
-      it 'has default settings' do
-        expect(chef_run).to render_file(file.name).with_content(/periodic_interval = 10/)
-        expect(chef_run).to render_file(file.name).with_content(
-          /interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver/)
-        expect(chef_run).to render_file(file.name).with_content(
-          /device_driver = neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver/)
-      end
+      context 'template contents' do
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
 
-      it 'has configurable device_driver setting' do
-        node.set['openstack']['network']['lbaas']['device_driver'] = 'SomeRandomDriver'
+        it 'displays the debug setting' do
+          node.set['openstack']['network']['debug'] = 'debug_value'
+          expect(chef_run).to render_file(file.name).with_content(/^debug = debug_value$/)
+        end
 
-        expect(chef_run).to render_file(file.name).with_content(
-          /device_driver = SomeRandomDriver/)
+        it 'displays the lbaas device_driver setting' do
+          node.set['openstack']['network']['lbaas']['device_driver'] = 'device_driver_value'
+          expect(chef_run).to render_file(file.name).with_content(/^device_driver = device_driver_value$/)
+        end
+
+        it 'displays the interface driver setting for ovs lbaas plugin' do
+          node.set['openstack']['network']['lbaas_plugin'] = 'ovs'
+          expect(chef_run).to render_file(file.name).with_content(/^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/)
+        end
+
+        it 'displays the interface driver setting for linuxbridge lbaas plugin' do
+          node.set['openstack']['network']['lbaas_plugin'] = 'linuxbridge'
+          expect(chef_run).to render_file(file.name).with_content(/^interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver$/)
+        end
+
+        it 'displays a null interface driver setting for other lbaas plugins' do
+          node.set['openstack']['network']['lbaas_plugin'] = 'another_lbaas-plugin'
+          expect(chef_run).to render_file(file.name).with_content(/^interface_driver =$/)
+        end
       end
 
       it 'notifies the lb agent service' do

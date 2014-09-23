@@ -48,6 +48,21 @@ MOCK_NODE_NETWORK_DATA =
     }
   }
 
+PLUGIN_MAP = {
+  'bigswitch' => 'bigswitch/restproxy.ini',
+  'brocade' => 'brocade/brocade.ini',
+  'cisco' => 'cisco/cisco_plugins.ini',
+  'hyperv' => 'hyperv/hyperv_neutron_plugin.ini.erb',
+  'linuxbridge' => 'linuxbridge/linuxbridge_conf.ini',
+  'midonet' => 'metaplugin/metaplugin.ini',
+  'ml2' => 'ml2/ml2_conf.ini',
+  'nec' => 'nec/nec.ini',
+  'nicira' => 'nicira/nvp.ini',
+  'openvswitch' => 'openvswitch/ovs_neutron_plugin.ini',
+  'plumgrid' => 'plumgrid/plumgrid.ini',
+  'ryu' => 'ryu/ryu.ini'
+}
+
 shared_context 'neutron-stubs' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:rabbit_servers)
@@ -89,6 +104,27 @@ shared_context 'neutron-stubs' do
     stub_command('ovs-vsctl br-exists br-int').and_return(false)
     stub_command('ovs-vsctl br-exists br-tun').and_return(false)
     stub_command('ip link show eth1').and_return(false)
+  end
+end
+
+shared_context 'endpoint-stubs' do
+  before do
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+      .with('network-api-bind')
+      .and_return(double(host: 'network_host', port: 'network_port'))
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+      .with('compute-api')
+      .and_return(double(host: 'compute_host', port: 'compute_port'))
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+      .with('identity-admin')
+      .and_return(double(
+        host: 'identity_host',
+        port: 'identity_port',
+        scheme: 'identity_scheme',
+        to_s: 'identity_uri'))
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+      .with('identity-api')
+      .and_return('identity_endpoint_value')
   end
 end
 
