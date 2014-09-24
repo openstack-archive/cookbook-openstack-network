@@ -41,20 +41,13 @@ describe 'openstack-network::server' do
         )
       end
 
-      it 'has the correct plugin config location - ml2 by default' do
-        expect(chef_run).to render_file(file.name).with_content(
-          '/etc/neutron/plugins/ml2/ml2_conf.ini')
-      end
-
-      it 'uses linuxbridge when configured to use it' do
-        chef_run = ::ChefSpec::Runner.new ::SUSE_OPTS do |n|
-          n.set['openstack']['network']['core_plugin'] = 'neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2'
-          n.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      PLUGIN_MAP.each do |plugin_name, plugin_cfg|
+        it "sets the path to the #{plugin_name} plugin config" do
+          node.set['openstack']['network']['core_plugin'] = plugin_name
+          node.set['openstack']['network']['plugin_conf_map'][plugin_name] = plugin_cfg
+          node.set['openstack']['network']['core_plugin_map'][plugin_name] = plugin_name
+          expect(chef_run).to render_file(file.name).with_content(%r(^NEUTRON_PLUGIN_CONF="/etc/neutron/plugins/#{plugin_cfg}"$))
         end
-        chef_run.converge 'openstack-network::server'
-
-        expect(chef_run).to render_file(file.name).with_content(
-          '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini')
       end
     end
   end

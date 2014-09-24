@@ -37,46 +37,60 @@ describe 'openstack-network::metadata_agent' do
         )
       end
 
-      it 'sets auth url correctly' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'auth_url = http://127.0.0.1:5000/v2.0')
-      end
+      context 'template contents' do
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
 
-      it 'sets auth region correctly' do
-        node.set['openstack']['network']['region'] = 'testRegion'
+        it 'sets the debug attribute' do
+          node.set['openstack']['network']['debug'] = 'debug_value'
+          expect(chef_run).to render_file(file.name).with_content(/^debug = debug_value$/)
+        end
 
-        expect(chef_run).to render_file(file.name).with_content(
-          'auth_region = testRegion')
-      end
+        context 'endpoint related attributes' do
+          include_context 'endpoint-stubs'
 
-      it 'sets admin tenant name' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'admin_tenant_name = service')
-      end
+          it 'sets the auth_url attribute' do
+            expect(chef_run).to render_file(file.name).with_content(/^auth_url = identity_endpoint_value$/)
+          end
+        end
 
-      it 'sets admin user' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'admin_user = neutron')
-      end
+        it 'sets the auth_region attribute' do
+          node.set['openstack']['network']['region'] = 'auth_region_value'
+          expect(chef_run).to render_file(file.name).with_content(/^auth_region = auth_region_value$/)
+        end
 
-      it 'sets admin password' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'admin_password = neutron-pass')
-      end
+        it 'sets the admin_tenant_name attribute' do
+          node.set['openstack']['network']['service_tenant_name'] = 'admin_tenant_name_value'
+          expect(chef_run).to render_file(file.name).with_content(/^admin_tenant_name = admin_tenant_name_value$/)
+        end
 
-      it 'sets nova metadata ip correctly' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'nova_metadata_ip = 127.0.0.1')
-      end
+        it 'sets the admin_password attribute' do
+          allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+            .with('service', 'openstack-network')
+            .and_return('admin_password_value')
+          expect(chef_run).to render_file(file.name).with_content(/^admin_password = admin_password_value$/)
+        end
 
-      it 'sets nova metadata ip correctly' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'nova_metadata_port = 8775')
-      end
+        %w[nova_metadata_ip nova_metadata_port].each do |conditional_attr|
+          it "displays the #{conditional_attr} attribute when present" do
+            node.set['openstack']['network']['metadata'][conditional_attr] = "network_metadata_#{conditional_attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{conditional_attr} = network_metadata_#{conditional_attr}_value$/)
+          end
 
-      it 'sets neutron secret correctly' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'metadata_proxy_shared_secret = metadata-secret')
+          it "does not display the #{conditional_attr} attribute if not set" do
+            node.set['openstack']['network']['metadata'][conditional_attr] = false
+            expect(chef_run).not_to render_file(file.name).with_content(/^#{conditional_attr} = /)
+          end
+        end
+
+        it 'sets the metadata_proxy_shared_secret attribute' do
+          node.set['openstack']['network']['metadata']['secret_name'] = 'network_metadata_secret'
+          allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
+            .with('network_metadata_secret')
+            .and_return('network_metadata_secret_value')
+          expect(chef_run).to render_file(file.name).with_content(/^metadata_proxy_shared_secret = network_metadata_secret_value$/)
+        end
       end
 
       it 'notifies the metadata agent service' do
