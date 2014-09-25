@@ -1,5 +1,7 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
+## 9.1.2
+* Updated Berksfile.lock for the UTF8 issue in common
 
 ## 9.1.1
 * Allow dhcp_delete_namespaces and router_dhcp_namespaces to be overridden.
