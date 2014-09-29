@@ -6,6 +6,8 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Remove Neutron DB stamp and upgrade to head.
 * Add attribute for ML2 enable_ipset
 
+* Bump Chef gem to 11.16
+
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
 * Update neutron.conf from mode 0644 to 0640
