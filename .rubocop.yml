@@ -13,6 +13,7 @@ Encoding:
   Exclude:
     - metadata.rb
     - Gemfile
+    - berks-cookbooks/**
 
 NumericLiterals:
   Enabled: false
