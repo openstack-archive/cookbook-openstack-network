@@ -256,7 +256,7 @@ describe 'openstack-network::common' do
           end
         end
 
-        %w(items network subnet port security_group security_group_rule driver).each do |attr|
+        %w(items network subnet port security_group security_group_rule driver router floatingip).each do |attr|
           it "sets the quota #{attr} attribute" do
             node.set['openstack']['network']['quota'][attr] = "quota_#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^quota_#{attr} = quota_#{attr}_value$/)

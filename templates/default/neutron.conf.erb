@@ -442,10 +442,10 @@ quota_driver = <%= node["openstack"]["network"]["quota"]["driver"] %>
 # quota_health_monitor = -1
 
 # Number of routers allowed per tenant. A negative value means unlimited.
-# quota_router = 10
+quota_router = <%= node["openstack"]["network"]["quota"]["router"] %>
 
 # Number of floating IPs allowed per tenant. A negative value means unlimited.
-# quota_floatingip = 50
+quota_floatingip = <%= node["openstack"]["network"]["quota"]["floatingip"] %>
 
 # Number of firewalls allowed per tenant. A negative value means unlimited.
 # quota_firewall = 1
