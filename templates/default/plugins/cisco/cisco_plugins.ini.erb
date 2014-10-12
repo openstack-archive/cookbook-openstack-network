@@ -4,7 +4,7 @@ nexus_plugin = <%= node["openstack"]["network"]["cisco"]["nexus_plugin"] %>
 vswitch_plugin = <%= node["openstack"]["network"]["cisco"]["vswitch_plugin"] %>
 
 [CISCO]
-vlan_start = <%= node["openstack"]["network"]["cisco"]["vlan_start"] %> 
+vlan_start = <%= node["openstack"]["network"]["cisco"]["vlan_start"] %>
 vlan_end = <%= node["openstack"]["network"]["cisco"]["vlan_end"] %>
 vlan_name_prefix = <%= node["openstack"]["network"]["cisco"]["vlan_name_prefix"] %>
 max_ports = <%= node["openstack"]["network"]["cisco"]["max_ports"] %>
@@ -15,12 +15,12 @@ manager_class = <%= node["openstack"]["network"]["cisco"]["manager_class"] %>
 nexus_driver = <%= node["openstack"]["network"]["cisco"]["nexus_driver"] %>
 
 <%- node["openstack"]["network"]["cisco"]["nexus_switch"].each_pair do | ip, info | -%>
-[NEXUS_SWITCH:<%= @ip %>]
-<%- @info["hosts"].each do | host_info | -%>
-<%= @host_info[0] %> = <%= @host_info[1] %>
+[NEXUS_SWITCH:<%= ip %>]
+<%- info["hosts"].each do | host_info | -%>
+<%= host_info[0] %> = <%= host_info[1] %>
 <%- end -%>
-ssh_port = <%= @info["ssh_port"] %>
-username = <%= @info["username"] %> 
-password = <%= @info["password"] %> 
+ssh_port = <%= info["ssh_port"] %>
+username = <%= info["username"] %>
+password = <%= info["password"] %>
 
 <%- end -%>

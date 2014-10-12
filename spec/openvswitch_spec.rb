@@ -133,49 +133,6 @@ describe 'openstack-network::openvswitch' do
       end
     end
 
-    describe 'ovs_neutron_plugin.ini' do
-      let(:file) { chef_run.template('/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini') }
-
-      it 'creates ovs_neutron_plugin.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0644
-        )
-      end
-
-      [
-        /^network_vlan_ranges =$/,
-        /^tunnel_id_ranges =$/,
-        /^int_peer_patch_port =$/,
-        /^tun_peer_patch_port =$/,
-        /^bridge_mappings =$/,
-        /^tunnel_types =$/
-      ].each do |content|
-        it "does not have a #{content.source[1...-1]} line" do
-          expect(chef_run).not_to render_file(file.name).with_content(content)
-        end
-      end
-
-      [
-        /^tenant_network_type = local$/,
-        /^enable_tunneling = False$/,
-        /^tunnel_type = $/,
-        /^integration_bridge = br-int$/,
-        /^local_ip = 10.0.0.2$/,
-        /^integration_bridge = br-int$/,
-        /^tunnel_bridge = br-tun$/,
-        /^polling_interval = 2$/,
-        /^veth_mtu = 1500$/,
-        /^firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver$/,
-        /^enable_security_group = True$/
-      ].each do |content|
-        it "has a #{content.source[1...-1]} line" do
-          expect(chef_run).to render_file(file.name).with_content(content)
-        end
-      end
-    end
-
     describe 'create ovs data network bridge' do
       let(:cmd) { 'ovs-vsctl add-br br-eth1 -- add-port br-eth1 eth1' }
 
