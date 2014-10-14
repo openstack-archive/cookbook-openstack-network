@@ -1,6 +1,37 @@
 # Encoding: utf-8
 require_relative 'spec_helper'
 
+shared_examples 'core plugin common configurator' do |plugin_name, file_name, attr_names|
+  describe "#{plugin_name} config file" do
+    let(:cfg_file) { chef_run.template("/etc/neutron/plugins/#{plugin_name}/#{file_name}") }
+
+    before do
+      node.set['openstack']['network']['core_plugin'] = plugin_name
+    end
+
+    it 'creates the file' do
+      expect(chef_run).to create_template(cfg_file.name).with(
+        user: 'neutron',
+        group: 'neutron',
+        mode: 0644
+      )
+    end
+
+    context 'template contents' do
+      it_behaves_like 'custom template banner displayer' do
+        let(:file_name) { cfg_file.name }
+      end
+
+      attr_names.each do |attr|
+        it "sets the #{attr} attribute" do
+          node.set['openstack']['network'][plugin_name][attr] = "#{attr}_value"
+          expect(chef_run).to render_file(cfg_file.name).with_content(/^#{attr} = #{attr}_value$/)
+        end
+      end
+    end
+  end
+end
+
 describe 'openstack-network::common' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
@@ -17,16 +48,214 @@ describe 'openstack-network::common' do
       expect(chef_run).to include_recipe('openstack-identity::client')
     end
 
-    describe 'ml2_conf.ini' do
-      let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
-
-      it 'creates ml2_conf.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0644
-        )
+    context 'plugins' do
+      before do
+        node.set['openstack']['network']['core_plugin_map'] = {
+          'bigswitch' => 'bigswitch',
+          'brocade' => 'brocade',
+          'cisco' => 'cisco',
+          'hyperv' => 'hyperv',
+          'linuxbridge' => 'linuxbridge',
+          'midonet' => 'midonet',
+          'ml2' => 'ml2',
+          'nec' => 'nec',
+          'nicira' => 'nicira',
+          'openvswitch' => 'openvswitch',
+          'plumgrid' => 'plumgrid',
+          'ryu' => 'ryu'
+        }
       end
+
+      it_behaves_like 'core plugin common configurator', 'bigswitch', 'restproxy.ini', %w(servers)
+
+      it_behaves_like 'core plugin common configurator',
+                      'brocade',
+                      'brocade.ini',
+                      %w(physical_interface_mappings)
+
+      it_behaves_like 'core plugin common configurator',
+                      'ml2',
+                      'ml2_conf.ini',
+                      %w(type_drivers tenant_network_types mechanism_drivers flat_networks
+                         network_vlan_ranges tunnel_id_ranges vni_ranges vxlan_group
+                         enable_security_group enable_ipset)
+
+      describe 'cisco' do
+        let(:nexus_switch_value) do {
+            'ip0' => { 'hosts' => ['host_info00', 'host_info01'],
+                       'ssh_port' => 'ssh_port0',
+                       'username' => 'username0',
+                       'password' => 'password0' },
+            'ip1' => { 'hosts' => ['host_info10', 'host_info11'],
+                       'ssh_port' => 'ssh_port1',
+                       'username' => 'username1',
+                       'password' => 'password1' }
+          }
+        end
+        let(:file) { chef_run.template('/etc/neutron/plugins/cisco/cisco_plugins.ini') }
+
+        before do
+          node.set['openstack']['network']['cisco']['nexus_switch'] = nexus_switch_value
+          node.set['openstack']['network']['core_plugin'] = 'cisco'
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'cisco',
+                        'cisco_plugins.ini',
+                        %w(nexus_plugin vswitch_plugin vlan_start vlan_end vlan_name_prefix max_ports
+                           max_port_profiles max_networks model_class manager_class nexus_driver)
+
+        context 'nexus_switch' do
+          it 'shows the ip' do
+            nexus_switch_value.each do |ip, info|
+              expect(chef_run).to render_file(file.name).with_content(/^\[NEXUS_SWITCH:#{ip}\]$/)
+            end
+          end
+
+          it 'shows the host_info' do
+            nexus_switch_value.each do |ip, info|
+              info['hosts'].each do |host_info|
+                expect(chef_run).to render_file(file.name).with_content(/^#{host_info[0]} = #{host_info[1]}$/)
+              end
+            end
+          end
+
+          %w(ssh_port username password).each do |attr|
+            it "shows the #{attr}" do
+              nexus_switch_value.each do |ip, info|
+                expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{info[attr]}$/)
+              end
+            end
+          end
+        end
+      end
+
+      it_behaves_like 'core plugin common configurator',
+                      'hyperv',
+                      'hyperv_neutron_plugin.ini.erb',
+                      %w(tenant_network_type network_vlan_ranges polling_interval
+                         physical_network_vswitch_mappings firewall_driver)
+
+      describe 'linuxbridge' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
+
+        include_context 'endpoint-stubs'
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'linuxbridge'
+          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+            .with('network-linuxbridge')
+            .and_return(double(host: 'linuxbridge_host'))
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'linuxbridge',
+                        'linuxbridge_conf.ini',
+                        %w(tenant_network_type network_vlan_ranges physical_interface_mappings enable_vxlan
+                           ttl tos vxlan_group l2_population polling_interval rpc_support_old_agents
+                           firewall_driver enable_security_group)
+
+        it 'sets the local_ip' do
+          expect(chef_run).to render_file(file.name).with_content(/^local_ip = linuxbridge_host$/)
+        end
+      end
+
+      describe 'nec' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/nec/nec.ini') }
+
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'nec'
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'nec',
+                        'nec.ini',
+                        %w(integration_bridge polling_interval firewall_driver)
+
+        context 'OpenFlow Controller settings' do
+          %w(host port driver enable_packet_filter).each do |attr|
+            it "sets the #{attr} ofc attribute" do
+              node.set['openstack']['network']['nec']["ofc_#{attr}"] = "ofc_#{attr}_value"
+              expect(chef_run).to render_file(file.name).with_content(/^#{attr} = ofc_#{attr}_value$/)
+            end
+          end
+        end
+      end
+
+      describe 'nicira' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/nicira/nvp.ini') }
+
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'nicira'
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'nicira',
+                        'nvp.ini',
+                        %w(nvp_user nvp_password req_timeout http_timeout retries redirects
+                           nvp_controllers default_tz_uuid nvp_cluster_uuid default_iface_name
+                           quota_network_gateway max_lp_per_bridged_ls max_lp_per_overlay_ls
+                           concurrent_connections metadata_mode)
+
+        %w(l3 l2).each do |attr|
+          it "sets the default #{attr} gateway attribute" do
+            node.set['openstack']['network']['nicira']["default_#{attr}_gateway_service_uuid"] = "#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^default_#{attr}_gw_service_uuid = #{attr}_value$/)
+          end
+        end
+      end
+
+      describe 'openvswitch' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini') }
+
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'openvswitch'
+        end
+
+        include_context 'endpoint-stubs'
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'openvswitch'
+          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+            .with('network-openvswitch')
+            .and_return(double(host: 'openvswitch_host'))
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'openvswitch',
+                        'ovs_neutron_plugin.ini',
+                        %w(tenant_network_type enable_tunneling polling_interval veth_mtu enable_security_group)
+
+        %w(network_vlan_ranges tunnel_id_ranges integration_bridge tunnel_bridge int_peer_patch_port tun_peer_patch_port bridge_mappings tunnel_types).each do |attr|
+          it "sets the #{attr} when present" do
+            node.set['openstack']['network']['openvswitch'][attr] = "#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
+          end
+
+          it "does not show the #{attr} when not present" do
+            node.set['openstack']['network']['openvswitch'][attr] = nil
+            expect(chef_run).not_to render_file(file.name).with_content(/^#{attr} = $/)
+          end
+        end
+
+        it 'sets the local_ip' do
+          expect(chef_run).to render_file(file.name).with_content(/^local_ip = openvswitch_host$/)
+        end
+
+        it 'sets the firewall_driver attribute' do
+          node.set['openstack']['network']['openvswitch']['fw_driver'] = 'fw_driver_value'
+          expect(chef_run).to render_file(file.name).with_content(/^firewall_driver = fw_driver_value$/)
+        end
+      end
+
+      it_behaves_like 'core plugin common configurator',
+                      'plumgrid',
+                      'plumgrid.ini',
+                      %w(nos_server nos_server_port username password servertimeout topologyname)
+
+      it_behaves_like 'core plugin common configurator',
+                      'ryu',
+                      'ryu.ini',
+                      %w(integration_bridge openflow_rest_api tunnel_key_min tunnel_key_max tunnel_ip
+                         tunnel_interface ovsdb_port ovsdb_ip ovsdb_interface firewall_driver polling_interval)
     end
 
     it 'does not upgrade python-neutronclient when nova networking' do
@@ -395,6 +624,92 @@ describe 'openstack-network::common' do
         it 'does not show the service_provider key if none present' do
           node.set['openstack']['network']['service_provider'] = []
           expect(chef_run).not_to render_file(file.name).with_content(/^service_provider = /)
+        end
+      end
+
+      describe 'query service tenant uuid' do
+        it 'has queried service tenant uuid for nova interactions' do
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
+        end
+
+        it 'has status changes for nova interactions disabled without id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
+        end
+
+        it 'has data changes for nova interactions disabled without id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
+        end
+
+        it 'has all changes for nova interactions disabled without id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq(nil)
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id =')
+        end
+
+        it 'has status changes for nova interactions disabled with id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
+          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
+          expect(chef_run).to render_file(file.name).with_content(
+          'nova_admin_tenant_id = 111-UUID-OVERRIDE')
+        end
+
+        it 'has data changes for nova interactions disabled with id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
+          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
+        end
+
+        it 'has all changes for nova interactions disabled with id override' do
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
+          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
+          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
+        end
+
+        it 'has overriden service tenant uuid for nova interactions' do
+          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
+          # run actual ruby_block resource
+          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
+          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
+          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
+          expect(chef_run).to render_file(file.name).with_content(
+            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
         end
       end
     end

@@ -40,42 +40,5 @@ describe 'openstack-network::linuxbridge' do
     it 'subscribes the linuxbridge agent service to neutron.conf' do
       expect(chef_run.service('neutron-plugin-linuxbridge-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
     end
-
-    describe '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
-      let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
-
-      it 'creates linuxbridge_conf.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0644
-        )
-      end
-
-      it 'sets local_ip when bind_interface is not set' do
-        expect(chef_run).to render_file(file.name).with_content(
-          'local_ip = 127.0.0.1')
-      end
-
-      [
-        /^tenant_network_type = local$/,
-        /^network_vlan_ranges = $/,
-        /^physical_interface_mappings = $/,
-        /^enable_vxlan = false$/,
-        /^ttl = $/,
-        /^tos = $/,
-        /^vxlan_group = 224.0.0.1$/,
-        /^local_ip = 127.0.0.1$/,
-        /^l2_population = false$/,
-        /^polling_interval = 2$/,
-        /^rpc_support_old_agents = false$/,
-        /^firewall_driver = neutron.agent.firewall.NoopFirewallDriver$/,
-        /^enable_security_group = True$/
-      ].each do |content|
-        it "has #{content.source[1...-1]} line" do
-          expect(chef_run).to render_file(file.name).with_content(content)
-        end
-      end
-    end
   end
 end
