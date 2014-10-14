@@ -27,4 +27,4 @@ The `rake` tasks will take care of installing the needed gem dependencies and co
 
 ## Chefspec
 
-[ChefSpec](http://code.sethvargo.com/chefspec/) is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers.
+[ChefSpec](https://github.com/sethvargo/chefspec/) is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers.

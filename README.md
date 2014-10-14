@@ -23,8 +23,8 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-* identity
-* openstack-common `>= 8.0.0`
+* openstack-identity
+* openstack-common
 
 Recipes
 =======

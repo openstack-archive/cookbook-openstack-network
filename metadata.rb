@@ -1,7 +1,7 @@
 # Encoding: utf-8
-
 name              'openstack-network'
-maintainer        'Jay Pipes <jaypipes@gmail.com>'
+maintainer       'openstack-chef'
+maintainer_email 'opscode-chef-openstack@googlegroups.com'
 license           'Apache 2.0'
 description       'Installs and configures the OpenStack Network API Service and various agents and plugins'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
