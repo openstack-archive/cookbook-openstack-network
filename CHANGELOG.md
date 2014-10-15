@@ -7,7 +7,6 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Add attribute for ML2 enable_ipset
 * Bump Chef gem to 11.16
 * Add attributes for api_workers and rpc_workers
-
 * Add attributes for quota_router and quota_floatingip
 
 ## 10.0.1
