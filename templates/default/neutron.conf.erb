@@ -351,10 +351,15 @@ nova_admin_password = <%= @nova_admin_pass %>
 nova_admin_auth_url = <%= @identity_admin_endpoint.to_s %>
 
 # CA file for novaclient to verify server certificates
+<% if node['openstack']['network']['nova']['nova_ca_certificates_file'] -%>
+nova_ca_certificates_file = <%= node['openstack']['network']['nova']['nova_ca_certificates_file'] %>
+<% else -%>
 # nova_ca_certificates_file =
+<% end -%>
 
 # Boolean to control ignoring SSL errors on the nova url
 # nova_api_insecure = False
+nova_api_insecure = <%= node['openstack']['network']['nova']['nova_api_insecure'] %>
 
 # Number of seconds between sending events to nova if there are any events to send
 send_events_interval = <%= node["openstack"]["network"]["nova"]["send_events_interval"] %>

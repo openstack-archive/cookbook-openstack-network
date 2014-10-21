@@ -464,7 +464,7 @@ describe 'openstack-network::common' do
           node.set['openstack']['network']['nova']['url_version'] = 'nova_version_value'
           allow_any_instance_of(Chef::Recipe).to receive(:uri_from_hash)
           allow_any_instance_of(Chef::Recipe).to receive(:uri_from_hash)
-            .with('host' => 'compute_host', 'port' => 'compute_port', 'path' => 'nova_version_value')
+            .with('scheme' => 'compute_scheme', 'host' => 'compute_host', 'port' => 'compute_port', 'path' => 'nova_version_value')
             .and_return('nova_url_value')
           expect(chef_run).to render_file(file.name).with_content(/^nova_url = nova_url_value$/)
         end
@@ -475,6 +475,24 @@ describe 'openstack-network::common' do
 
         it 'sets the nova_admin_auth_url attribute' do
           expect(chef_run).to render_file(file.name).with_content(/^nova_admin_auth_url = identity_uri$/)
+        end
+
+        it 'has default nova_api_insecure' do
+          expect(chef_run).to render_file(file.name).with_content(/^nova_api_insecure = false$/)
+        end
+
+        it 'sets nova_api_insecure' do
+          node.set['openstack']['network']['nova']['nova_api_insecure'] = true
+          expect(chef_run).to render_file(file.name).with_content(/^nova_api_insecure = true$/)
+        end
+
+        it 'has no nova_ca_certificates_file set by default' do
+          expect(chef_run).not_to render_file(file.name).with_content(/^nova_ca_certificates_file =/)
+        end
+
+        it 'sets nova_ca_certificates_file' do
+          node.set['openstack']['network']['nova']['nova_ca_certificates_file'] = 'dir/to/path'
+          expect(chef_run).to render_file(file.name).with_content(%r{^nova_ca_certificates_file = dir/to/path$})
         end
 
         it 'sets the misc_neutron values' do

@@ -117,7 +117,10 @@ shared_context 'endpoint-stubs' do
       .and_return(double(host: 'network_host', port: 'network_port'))
     allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('compute-api')
-      .and_return(double(host: 'compute_host', port: 'compute_port'))
+      .and_return(double(
+        scheme: 'compute_scheme',
+        host: 'compute_host',
+        port: 'compute_port'))
     allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('identity-admin')
       .and_return(double(

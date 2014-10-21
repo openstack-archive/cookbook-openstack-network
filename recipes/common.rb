@@ -154,10 +154,10 @@ nova_endpoint = endpoint 'compute-api'
 # Neutron will append the admin_tenant_id for these nova interaction calls,
 # remove the tenant_id so we don't end up with two of them on the url.
 # Need to also allow for getting at nova endpoint version.
-# https://github.com/openstack/neutron/blob/master/neutron/common/config.py#L89
-# https://github.com/openstack/neutron/blob/master/neutron/notifiers/nova.py#L43
+# https://github.com/openstack/neutron/blob/master/neutron/common/config.py#L94
+# https://github.com/openstack/neutron/blob/master/neutron/notifiers/nova.py#L44
 nova_version = node['openstack']['network']['nova']['url_version']
-nova_endpoint = uri_from_hash('host' => nova_endpoint.host.to_s, 'port' => nova_endpoint.port.to_s, 'path' => nova_version)
+nova_endpoint = uri_from_hash('scheme' => nova_endpoint.scheme.to_s, 'host' => nova_endpoint.host.to_s, 'port' => nova_endpoint.port.to_s, 'path' => nova_version)
 nova_admin_pass = get_password 'service', 'openstack-compute'
 ruby_block 'query service tenant uuid' do
   # query keystone for the service tenant uuid

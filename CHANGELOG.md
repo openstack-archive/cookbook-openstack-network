@@ -9,6 +9,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Add attributes for api_workers and rpc_workers
 * Add attributes for quota_router and quota_floatingip
 * Allow specifying the L3 agents' gateway_external_network by name.
+* Add nova_ca_certificates_file and nova_api_insecure; change nova_url to use the correct scheme
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb

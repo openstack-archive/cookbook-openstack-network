@@ -75,6 +75,11 @@ Attributes
 TODO
 * `openstack["network"]["service_plugins"]` - Array of Python classes to be used as `service_plugins` in neutron.conf (default: []). Set it to ['neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin'] to include the load balancer plugin.
 
+Neutron Nova interactions
+-------------------------
+* `openstack["network"]["nova"]["nova_ca_certificates_file"]` - CA file for novaclient to verify server certificates
+* `openstack["network"]["nova"]["nova_api_insecure"]` - Boolean to control ignoring SSL errors on the nova url
+
 MQ attributes
 -------------
 * `openstack["network"]["mq"]["service_type"]` - Select qpid or rabbitmq. default rabbitmq
