@@ -99,6 +99,9 @@ shared_context 'neutron-stubs' do
     allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:identity_uuid)
       .with('tenant', 'name', 'service', {})
       .and_return('000-UUID-FROM-CLI')
+    allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:network_uuid)
+      .with('net-external', 'name', 'public', {})
+      .and_return('000-NET-UUID-FROM-CLI')
 
     stub_command('dpkg -l | grep openvswitch-switch | grep 1.10.2-1').and_return(true)
     stub_command('ovs-vsctl br-exists br-int').and_return(false)

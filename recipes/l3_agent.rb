@@ -22,6 +22,28 @@
 
 include_recipe 'openstack-network::common'
 
+ruby_block 'query gateway external network uuid' do
+  block do
+    begin
+      external_name = node['openstack']['network']['l3']['gateway_external_network_name']
+      admin_user = node['openstack']['identity']['admin_user']
+      admin_tenant = node['openstack']['identity']['admin_tenant_name']
+      env = openstack_command_env admin_user, admin_tenant
+
+      external_id = network_uuid 'net-external', 'name', external_name, env
+      Chef::Log.error("gateway external network UUID for #{external_name} not found.") if external_id.nil?
+      node.set['openstack']['network']['l3']['gateway_external_network_id'] = external_id
+    rescue RuntimeError => e
+      Chef::Log.error("Could not query UUID for network #{external_name}. Error was #{e.message}") unless external_id
+    end
+  end
+  action :run
+  only_if do
+    node['openstack']['network']['l3']['gateway_external_network_id'].nil? &&
+    node['openstack']['network']['l3']['gateway_external_network_name']
+  end
+end
+
 platform_options = node['openstack']['network']['platform']
 core_plugin = node['openstack']['network']['core_plugin']
 main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
