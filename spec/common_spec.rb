@@ -1,7 +1,7 @@
 # Encoding: utf-8
 require_relative 'spec_helper'
 
-shared_examples 'core plugin common configurator' do |plugin_name, file_name, attr_names|
+shared_examples 'core plugin common configurator' do |plugin_name, file_name, attrs|
   describe "#{plugin_name} config file" do
     let(:cfg_file) { chef_run.template("/etc/neutron/plugins/#{plugin_name}/#{file_name}") }
 
@@ -22,7 +22,11 @@ shared_examples 'core plugin common configurator' do |plugin_name, file_name, at
         let(:file_name) { cfg_file.name }
       end
 
-      attr_names.each do |attr|
+      attrs.each do |attr, default_value|
+        it "sets the default #{attr} value" do
+          expect(chef_run).to render_file(cfg_file.name).with_content(/^#{attr} = #{default_value}$/)
+        end
+
         it "sets the #{attr} attribute" do
           node.set['openstack']['network'][plugin_name][attr] = "#{attr}_value"
           expect(chef_run).to render_file(cfg_file.name).with_content(/^#{attr} = #{attr}_value$/)
@@ -50,35 +54,34 @@ describe 'openstack-network::common' do
 
     context 'plugins' do
       before do
-        node.set['openstack']['network']['core_plugin_map'] = {
-          'bigswitch' => 'bigswitch',
-          'brocade' => 'brocade',
-          'cisco' => 'cisco',
-          'hyperv' => 'hyperv',
-          'linuxbridge' => 'linuxbridge',
-          'midonet' => 'midonet',
-          'ml2' => 'ml2',
-          'nec' => 'nec',
-          'nicira' => 'nicira',
-          'openvswitch' => 'openvswitch',
-          'plumgrid' => 'plumgrid',
-          'ryu' => 'ryu'
-        }
+        PLUGIN_MAP.each do |key, value|
+          node.set['openstack']['network']['core_plugin_map'][key] = key
+        end
       end
 
-      it_behaves_like 'core plugin common configurator', 'bigswitch', 'restproxy.ini', %w(servers)
+      it_behaves_like 'core plugin common configurator',
+                      'bigswitch',
+                      PLUGIN_MAP['bigswitch'],
+                      servers: 'localhost:8080'
 
       it_behaves_like 'core plugin common configurator',
                       'brocade',
-                      'brocade.ini',
-                      %w(physical_interface_mappings)
+                      PLUGIN_MAP['brocade'],
+                      physical_interface_mappings: ''
 
       it_behaves_like 'core plugin common configurator',
                       'ml2',
-                      'ml2_conf.ini',
-                      %w(type_drivers tenant_network_types mechanism_drivers flat_networks
-                         network_vlan_ranges tunnel_id_ranges vni_ranges vxlan_group
-                         enable_security_group enable_ipset)
+                      PLUGIN_MAP['ml2'],
+                      type_drivers: 'local,flat,vlan,gre,vxlan',
+                      tenant_network_types: 'local',
+                      mechanism_drivers: 'openvswitch',
+                      flat_networks: '',
+                      network_vlan_ranges: '',
+                      tunnel_id_ranges: '',
+                      vni_ranges: '',
+                      vxlan_group: '',
+                      enable_security_group: 'True',
+                      enable_ipset: 'True'
 
       describe 'cisco' do
         let(:nexus_switch_value) do {
@@ -101,9 +104,18 @@ describe 'openstack-network::common' do
 
         it_behaves_like 'core plugin common configurator',
                         'cisco',
-                        'cisco_plugins.ini',
-                        %w(nexus_plugin vswitch_plugin vlan_start vlan_end vlan_name_prefix max_ports
-                           max_port_profiles max_networks model_class manager_class nexus_driver)
+                        PLUGIN_MAP['cisco'],
+                        nexus_plugin: 'neutron.plugins.cisco.nexus.cisco_nexus_plugin_v2.NexusPlugin',
+                        vswitch_plugin: 'neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2',
+                        vlan_start: '100',
+                        vlan_end: '3000',
+                        vlan_name_prefix: 'q-',
+                        max_ports: '100',
+                        max_port_profiles: '65568',
+                        max_networks: '65568',
+                        model_class: 'neutron.plugins.cisco.models.virt_phy_sw_v2.VirtualPhysicalSwitchModelV2',
+                        manager_class: 'neutron.plugins.cisco.segmentation.l2network_vlan_mgr_v2.L2NetworkVLANMgr',
+                        nexus_driver: 'neutron.plugins.cisco.tests.unit.v2.nexus.fake_nexus_driver.CiscoNEXUSFakeDriver'
 
         context 'nexus_switch' do
           it 'shows the ip' do
@@ -132,9 +144,12 @@ describe 'openstack-network::common' do
 
       it_behaves_like 'core plugin common configurator',
                       'hyperv',
-                      'hyperv_neutron_plugin.ini.erb',
-                      %w(tenant_network_type network_vlan_ranges polling_interval
-                         physical_network_vswitch_mappings firewall_driver)
+                      PLUGIN_MAP['hyperv'],
+                      tenant_network_type: 'local',
+                      network_vlan_ranges: '',
+                      polling_interval: '2',
+                      physical_network_vswitch_mappings: '\*\:external',
+                      firewall_driver: 'neutron.plugins.hyperv.agent.security_groups_driver.HyperVSecurityGroupsDriver'
 
       describe 'linuxbridge' do
         let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
@@ -149,15 +164,42 @@ describe 'openstack-network::common' do
 
         it_behaves_like 'core plugin common configurator',
                         'linuxbridge',
-                        'linuxbridge_conf.ini',
-                        %w(tenant_network_type network_vlan_ranges physical_interface_mappings enable_vxlan
-                           ttl tos vxlan_group l2_population polling_interval rpc_support_old_agents
-                           firewall_driver enable_security_group)
+                        PLUGIN_MAP['linuxbridge'],
+                        tenant_network_type: 'local',
+                        network_vlan_ranges: '',
+                        physical_interface_mappings: '',
+                        enable_vxlan: 'false',
+                        ttl: '',
+                        tos: '',
+                        vxlan_group: '224.0.0.1',
+                        l2_population: 'false',
+                        polling_interval: '2',
+                        rpc_support_old_agents: 'false',
+                        firewall_driver: 'neutron.agent.firewall.NoopFirewallDriver',
+                        enable_security_group: 'True'
 
         it 'sets the local_ip' do
           expect(chef_run).to render_file(file.name).with_content(/^local_ip = linuxbridge_host$/)
         end
       end
+
+      it_behaves_like 'core plugin common configurator',
+                      'metaplugin',
+                      PLUGIN_MAP['metaplugin'],
+                      plugin_list: 'openvswitch:neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2,linuxbridge:neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2',
+                      l3_plugin_list: 'openvswitch:neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2,linuxbridge:neutron.plugins.linuxbridge.lb_neutron_plugin.LinuxBridgePluginV2',
+                      default_flavor: 'openvswitch',
+                      default_l3_flavor: 'openvswitch'
+
+      it_behaves_like 'core plugin common configurator',
+                      'midonet',
+                      PLUGIN_MAP['midonet'],
+                      midonet_uri: 'http://localhost:8080/midonet-api',
+                      username: 'admin',
+                      password: 'passw0rd',
+                      project_id: '77777777-7777-7777-7777-777777777777',
+                      provider_router_id: '00112233-0011-0011-0011-001122334455',
+                      metadata_router_id: 'ffeeddcc-ffee-ffee-ffee-ffeeddccbbaa'
 
       describe 'nec' do
         let(:file) { chef_run.template('/etc/neutron/plugins/nec/nec.ini') }
@@ -168,11 +210,17 @@ describe 'openstack-network::common' do
 
         it_behaves_like 'core plugin common configurator',
                         'nec',
-                        'nec.ini',
-                        %w(integration_bridge polling_interval firewall_driver)
+                        PLUGIN_MAP['nec'],
+                        integration_bridge: 'br-int',
+                        polling_interval: '2',
+                        firewall_driver: 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 
         context 'OpenFlow Controller settings' do
-          %w(host port driver enable_packet_filter).each do |attr|
+          { host: '127.0.0.1',  port: '8888', driver: 'trema', enable_packet_filter: 'true' }.each do |attr, value|
+            it "sets the default #{attr} ofc value" do
+              expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{value}$/)
+            end
+
             it "sets the #{attr} ofc attribute" do
               node.set['openstack']['network']['nec']["ofc_#{attr}"] = "ofc_#{attr}_value"
               expect(chef_run).to render_file(file.name).with_content(/^#{attr} = ofc_#{attr}_value$/)
@@ -190,14 +238,29 @@ describe 'openstack-network::common' do
 
         it_behaves_like 'core plugin common configurator',
                         'nicira',
-                        'nvp.ini',
-                        %w(nvp_user nvp_password req_timeout http_timeout retries redirects
-                           nvp_controllers default_tz_uuid nvp_cluster_uuid default_iface_name
-                           quota_network_gateway max_lp_per_bridged_ls max_lp_per_overlay_ls
-                           concurrent_connections metadata_mode)
+                        PLUGIN_MAP['nicira'],
+                        nvp_user: 'admin',
+                        nvp_password: 'admin',
+                        req_timeout: '30',
+                        http_timeout: '10',
+                        retries: '2',
+                        redirects: '2',
+                        nvp_controllers: 'xx.yy.zz.ww:443, aa.bb.cc.dd, ee.ff.gg.hh.ee:80',
+                        default_tz_uuid: '1e8e52cf-fa7f-46b0-a14a-f99835a9cb53',
+                        nvp_cluster_uuid: '615be8e4-82e9-4fd2-b4b3-fd141e51a5a7',
+                        default_iface_name: 'breth0',
+                        quota_network_gateway: '5',
+                        max_lp_per_bridged_ls: '64',
+                        max_lp_per_overlay_ls: '256',
+                        concurrent_connections: '3',
+                        metadata_mode: 'access_network'
 
         %w(l3 l2).each do |attr|
-          it "sets the default #{attr} gateway attribute" do
+          it "sets the default #{attr} default gateway attribute" do
+            expect(chef_run).to render_file(file.name).with_content(/^default_#{attr}_gw_service_uuid = $/)
+          end
+
+          it "sets the #{attr} default gateway attribute" do
             node.set['openstack']['network']['nicira']["default_#{attr}_gateway_service_uuid"] = "#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^default_#{attr}_gw_service_uuid = #{attr}_value$/)
           end
@@ -221,10 +284,29 @@ describe 'openstack-network::common' do
 
         it_behaves_like 'core plugin common configurator',
                         'openvswitch',
-                        'ovs_neutron_plugin.ini',
-                        %w(tenant_network_type enable_tunneling polling_interval veth_mtu enable_security_group)
+                        PLUGIN_MAP['openvswitch'],
+                        tenant_network_type: 'local',
+                        enable_tunneling: 'False',
+                        polling_interval: '2',
+                        veth_mtu: '1500',
+                        enable_security_group: 'True'
 
-        %w(network_vlan_ranges tunnel_id_ranges integration_bridge tunnel_bridge int_peer_patch_port tun_peer_patch_port bridge_mappings tunnel_types).each do |attr|
+        {
+          network_vlan_ranges: '',
+          tunnel_id_ranges: '',
+          integration_bridge: 'br-int',
+          tunnel_bridge: 'br-tun',
+          int_peer_patch_port: '',
+          tun_peer_patch_port: '',
+          bridge_mappings: '',
+          tunnel_types: ''
+        }.each do |attr, value|
+          it "sets the default #{attr} when present" do
+            if value.present?
+              expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{value}$/)
+            end
+          end
+
           it "sets the #{attr} when present" do
             node.set['openstack']['network']['openvswitch'][attr] = "#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
@@ -240,6 +322,10 @@ describe 'openstack-network::common' do
           expect(chef_run).to render_file(file.name).with_content(/^local_ip = openvswitch_host$/)
         end
 
+        it 'sets the default firewall_driver attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver$/)
+        end
+
         it 'sets the firewall_driver attribute' do
           node.set['openstack']['network']['openvswitch']['fw_driver'] = 'fw_driver_value'
           expect(chef_run).to render_file(file.name).with_content(/^firewall_driver = fw_driver_value$/)
@@ -248,14 +334,28 @@ describe 'openstack-network::common' do
 
       it_behaves_like 'core plugin common configurator',
                       'plumgrid',
-                      'plumgrid.ini',
-                      %w(nos_server nos_server_port username password servertimeout topologyname)
+                      PLUGIN_MAP['plumgrid'],
+                      nos_server: '127.0.0.1',
+                      nos_server_port: '<nos-port>',
+                      username: '<nos-admin-username>',
+                      password: '<nos-admin-password>',
+                      servertimeout: '5',
+                      topologyname: '<nos-topology-name>'
 
       it_behaves_like 'core plugin common configurator',
                       'ryu',
-                      'ryu.ini',
-                      %w(integration_bridge openflow_rest_api tunnel_key_min tunnel_key_max tunnel_ip
-                         tunnel_interface ovsdb_port ovsdb_ip ovsdb_interface firewall_driver polling_interval)
+                      PLUGIN_MAP['ryu'],
+                      integration_bridge: 'br-int',
+                      openflow_rest_api: '127.0.0.1:8080',
+                      tunnel_key_min: '1',
+                      tunnel_key_max: '0xffffff',
+                      tunnel_ip: '',
+                      tunnel_interface: 'eth0',
+                      ovsdb_port: '6634',
+                      ovsdb_ip: '',
+                      ovsdb_interface: 'eth0',
+                      firewall_driver: 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver',
+                      polling_interval: '2'
     end
 
     it 'does not upgrade python-neutronclient when nova networking' do
@@ -768,7 +868,7 @@ describe 'openstack-network::common' do
           it "sets the path to the #{plugin_name} plugin config" do
             node.set['openstack']['network']['core_plugin'] = plugin_name
             node.set['openstack']['network']['core_plugin_map'][plugin_name] = plugin_name
-            expect(chef_run).to render_file(file.name).with_content(%r(^NEUTRON_PLUGIN_CONFIG=/etc/neutron/plugins/#{plugin_cfg}$))
+            expect(chef_run).to render_file(file.name).with_content(%r(^NEUTRON_PLUGIN_CONFIG=/etc/neutron/plugins/#{plugin_name}/#{plugin_cfg}$))
           end
         end
       end

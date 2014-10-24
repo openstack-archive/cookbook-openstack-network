@@ -301,12 +301,25 @@ when 'linuxbridge'
     end
   end
 
-when 'midonet'
+when 'metaplugin'
 
   template_file = '/etc/neutron/plugins/metaplugin/metaplugin.ini'
 
   template template_file do
     source 'plugins/metaplugin/metaplugin.ini.erb'
+    owner node['openstack']['network']['platform']['user']
+    group node['openstack']['network']['platform']['group']
+    mode 00644
+
+    notifies :restart, 'service[neutron-server]', :delayed
+  end
+
+when 'midonet'
+
+  template_file = '/etc/neutron/plugins/midonet/midonet.ini'
+
+  template template_file do
+    source 'plugins/midonet/midonet.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644

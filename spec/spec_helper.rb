@@ -49,18 +49,19 @@ MOCK_NODE_NETWORK_DATA =
   }
 
 PLUGIN_MAP = {
-  'bigswitch' => 'bigswitch/restproxy.ini',
-  'brocade' => 'brocade/brocade.ini',
-  'cisco' => 'cisco/cisco_plugins.ini',
-  'hyperv' => 'hyperv/hyperv_neutron_plugin.ini.erb',
-  'linuxbridge' => 'linuxbridge/linuxbridge_conf.ini',
-  'midonet' => 'metaplugin/metaplugin.ini',
-  'ml2' => 'ml2/ml2_conf.ini',
-  'nec' => 'nec/nec.ini',
-  'nicira' => 'nicira/nvp.ini',
-  'openvswitch' => 'openvswitch/ovs_neutron_plugin.ini',
-  'plumgrid' => 'plumgrid/plumgrid.ini',
-  'ryu' => 'ryu/ryu.ini'
+  'bigswitch' => 'restproxy.ini',
+  'brocade' => 'brocade.ini',
+  'cisco' => 'cisco_plugins.ini',
+  'hyperv' => 'hyperv_neutron_plugin.ini.erb',
+  'linuxbridge' => 'linuxbridge_conf.ini',
+  'midonet' => 'midonet.ini',
+  'metaplugin' => 'metaplugin.ini',
+  'ml2' => 'ml2_conf.ini',
+  'nec' => 'nec.ini',
+  'nicira' => 'nvp.ini',
+  'openvswitch' => 'ovs_neutron_plugin.ini',
+  'plumgrid' => 'plumgrid.ini',
+  'ryu' => 'ryu.ini'
 }
 
 shared_context 'neutron-stubs' do
