@@ -484,9 +484,7 @@ auth_uri = <%= @auth_uri %>
 auth_host = <%= @identity_admin_endpoint.host %>
 auth_port = <%= @identity_admin_endpoint.port %>
 auth_protocol = <%= @identity_admin_endpoint.scheme %>
-<% if node['openstack']['network']['api']['auth']['version'] != 'v2.0' %>
 auth_version = <%= node['openstack']['network']['api']['auth']['version'] %>
-<% end %>
 admin_tenant_name = <%= node["openstack"]["network"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["network"]["service_user"] %>
 admin_password = <%= @service_pass %>

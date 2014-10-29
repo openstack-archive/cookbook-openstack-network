@@ -651,11 +651,6 @@ describe 'openstack-network::common' do
           expect(chef_run).to render_file(file.name).with_content(/^auth_version = auth_version_value$/)
         end
 
-        it 'does not set the auth_version attribute if equal to v2.0' do
-          node.set['openstack']['network']['api']['auth']['version'] = 'v2.0'
-          expect(chef_run).not_to render_file(file.name).with_content(/^auth_version = v2.0$/)
-        end
-
         %w(tenant_name user).each do |attr|
           it "sets the admin_#{attr} attribute" do
             node.set['openstack']['network']["service_#{attr}"] = "admin_#{attr}_value"
@@ -683,6 +678,7 @@ describe 'openstack-network::common' do
             /^cafile =/)
           expect(chef_run).to render_file(file.name).with_content(/^hash_algorithms = md5$/)
           expect(chef_run).to render_file(file.name).with_content(/^insecure = false$/)
+          expect(chef_run).to render_file(file.name).with_content(/^auth_version = v2.0$/)
         end
 
         it 'sets memcached server(s)' do
