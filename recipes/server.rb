@@ -55,6 +55,11 @@ service 'neutron-server' do
   action [:enable, :start]
 end
 
+directory File.dirname(node['openstack']['network']['neutron_ha_cmd']) do
+  recursive true
+  mode 00755
+end
+
 cookbook_file 'neutron-ha-tool' do
   source 'neutron-ha-tool.py'
   path node['openstack']['network']['neutron_ha_cmd']

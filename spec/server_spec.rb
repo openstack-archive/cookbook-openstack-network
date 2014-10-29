@@ -83,6 +83,11 @@ describe 'openstack-network::server' do
 
     describe 'neutron-ha-tool.py' do
       let(:file) { chef_run.cookbook_file('/usr/local/bin/neutron-ha-tool.py') }
+      let(:dir)  { chef_run.directory('/usr/local/bin') }
+
+      it 'should create neutron-ha-tool.py directory' do
+        expect(chef_run).to create_directory(dir.name)
+      end
 
       it 'should create neutron-ha-tool.py script' do
         expect(chef_run).to create_cookbook_file(file.name)
