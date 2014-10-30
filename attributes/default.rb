@@ -209,7 +209,8 @@ default['openstack']['network']['dhcp_driver'] = 'neutron.agent.linux.dhcp.Dnsma
 default['openstack']['network']['use_namespaces'] = 'True'
 default['openstack']['network']['allow_overlapping_ips'] = 'False'
 
-# vpn agent configuration, default is false
+# VPN agent configuration, default is false
+# Must enable namespaces to set enable_vpn true
 default['openstack']['network']['enable_vpn'] = false
 
 # use neutron root wrap
@@ -393,7 +394,11 @@ default['openstack']['network']['l3']['router_delete_namespaces'] = 'False'
 
 # ============================= VPN Agent Configuration ====================
 
-default['openstack']['network']['vpn']['vpn_device_driver'] = 'neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver'
+# VPN device drivers which vpn agent will use
+# vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
+default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver']
+
+# Status check interval for ipsec vpn
 default['openstack']['network']['vpn']['ipsec_status_check_interval'] = 60
 
 # ============================= Metadata Agent Configuration ===============
@@ -1040,6 +1045,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron'],
     'neutron_vpn_packages' => ['openstack-neutron'],
+    'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['openstack-neutron', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch'],
@@ -1069,6 +1075,7 @@ when 'suse'
     'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron-l3-agent'],
     'neutron_vpn_packages' => ['openstack-neutron-vpn-agent'],
+    'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['openstack-neutron-lbaas-agent'],
     # plugins are installed by the main openstack-neutron package on SUSE
     'neutron_plugin_package' => '',
@@ -1100,6 +1107,7 @@ when 'debian'
     'neutron_dhcp_build_packages' => %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext),
     'neutron_l3_packages' => ['neutron-l3-agent'],
     'neutron_vpn_packages' => ['neutron-vpn-agent'],
+    'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['neutron-lbaas-agent', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch-switch', 'openvswitch-datapath-dkms', 'bridge-utils'],
     'neutron_openvswitch_build_packages' => %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf dkms python-all python-qt4 python-zopeinterface python-twisted-conch),

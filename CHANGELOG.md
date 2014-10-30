@@ -14,6 +14,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Make auth_version to be v2.0 in configuration file
 * Added directory resource for neutron_ha_cmd
 * Add cacert,insecure arguments for get nova_admin_tenant_id call
+* Add multi driver support and package dependencies to vpn_agent recipe
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb

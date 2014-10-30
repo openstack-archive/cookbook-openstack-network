@@ -21,6 +21,11 @@
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 return unless node['openstack']['network']['enable_vpn']
 
+use_namespaces = node['openstack']['network']['use_namespaces']
+unless use_namespaces.downcase == 'true'
+  fail "use_namespaces is #{use_namespaces}, and it must be True when using vpn agent"
+end
+
 # VPN agent is based on L3 agent
 include_recipe 'openstack-network::l3_agent'
 
@@ -28,11 +33,20 @@ platform_options = node['openstack']['network']['platform']
 core_plugin = node['openstack']['network']['core_plugin']
 main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
 
+# Install package dependencies according node's vpn_device_driver.
+platform_options['vpn_device_driver_packages'].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+    only_if { node['openstack']['network']['vpn']['vpn_device_driver'].any? }
+  end
+end
+
 platform_options['neutron_vpn_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
     action :upgrade
-    # The vpn agent is depends on l3_agent and the providers below do not use the generic L3 agent...
+    # The vpn agent is depends on l3_agent and the providers below do not use the generic L3 agent.
     not_if { ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin) }
   end
 end

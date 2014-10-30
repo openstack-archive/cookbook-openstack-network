@@ -12,7 +12,11 @@ interface_driver = <%= node["openstack"]["network"]["interface_driver"] %>
 # vpn_device_driver=neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver
 # vpn_device_driver=neutron.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver
 # vpn_device_driver=another_driver
-vpn_device_driver = <%= node['openstack']['network']['vpn']['vpn_device_driver'] %>
+<% if node['openstack']['network']['vpn']['vpn_device_driver'].any? %>
+  <% node['openstack']['network']['vpn']['vpn_device_driver'].each do |driver| %>
+vpn_device_driver=<%= driver %>
+  <% end %>
+<% end %>
 
 [ipsec]
 # Status check interval
