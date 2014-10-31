@@ -98,7 +98,7 @@ shared_context 'neutron-stubs' do
       .with('admin', 'admin')
       .and_return({})
     allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:identity_uuid)
-      .with('tenant', 'name', 'service', {})
+      .with('tenant', 'name', 'service', {}, {})
       .and_return('000-UUID-FROM-CLI')
     allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:network_uuid)
       .with('net-external', 'name', 'public', {})

@@ -165,8 +165,13 @@ ruby_block 'query service tenant uuid' do
     begin
       admin_user = node['openstack']['identity']['admin_user']
       admin_tenant = node['openstack']['identity']['admin_tenant_name']
+      is_insecure = node['openstack']['network']['api']['auth']['insecure']
+      cafile = node['openstack']['network']['api']['auth']['cafile']
+      args = {}
+      is_insecure && args['insecure'] = ''
+      cafile && args['os-cacert'] = cafile
       env = openstack_command_env admin_user, admin_tenant
-      tenant_id = identity_uuid 'tenant', 'name', 'service', env
+      tenant_id = identity_uuid 'tenant', 'name', 'service', env, args
       Chef::Log.error('service tenant UUID for nova_admin_tenant_id not found.') if tenant_id.nil?
       node.set['openstack']['network']['nova']['admin_tenant_id'] = tenant_id
     rescue RuntimeError => e
