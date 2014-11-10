@@ -396,6 +396,7 @@ default['openstack']['network']['l3']['router_delete_namespaces'] = 'False'
 
 # VPN device drivers which vpn agent will use
 # vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
+# vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is ipsec
 default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver']
 
 # Status check interval for ipsec vpn
@@ -1056,6 +1057,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
     'neutron_vpn_agent_service' => 'neutron-vpn-agent',
+    'vpn_device_driver_services' => ['ipsec'],
     'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch',
@@ -1088,6 +1090,7 @@ when 'suse'
     'neutron_dhcp_agent_service' => 'openstack-neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'openstack-neutron-l3-agent',
     'neutron_vpn_agent_service' => 'openstack-neutron-vpn-agent',
+    'vpn_device_driver_services' => ['ipsec'],
     'neutron_lb_agent_service' => 'openstack-neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'openstack-neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',
@@ -1119,6 +1122,7 @@ when 'debian'
     'neutron_dhcp_agent_service' => 'neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'neutron-l3-agent',
     'neutron_vpn_agent_service' => 'neutron-vpn-agent',
+    'vpn_device_driver_services' => ['ipsec'],
     'neutron_lb_agent_service' => 'neutron-lbaas-agent',
     'neutron_metadata_agent_service' => 'neutron-metadata-agent',
     'neutron_openvswitch_service' => 'openvswitch-switch',

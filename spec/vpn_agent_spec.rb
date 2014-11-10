@@ -31,6 +31,10 @@ describe 'openstack-network::vpn_agent' do
       expect(chef_run).to upgrade_package('neutron-vpn-agent')
     end
 
+    it 'starts ipsec on boot' do
+      expect(chef_run).to enable_service('ipsec')
+    end
+
     it 'starts the vpn agent on boot' do
       expect(chef_run).to enable_service('neutron-vpn-agent')
     end

@@ -51,6 +51,14 @@ platform_options['neutron_vpn_packages'].each do |pkg|
   end
 end
 
+platform_options['vpn_device_driver_services'].each do |svc|
+  service 'vpn-device-driver-service' do
+    service_name svc
+    supports status: true, restart: true
+    action :enable
+  end
+end
+
 service 'neutron-vpn-agent' do
   service_name platform_options['neutron_vpn_agent_service']
   supports status: true, restart: true
