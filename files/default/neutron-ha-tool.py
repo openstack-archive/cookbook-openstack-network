@@ -521,7 +521,8 @@ def agent_alive_id_list(agent_list, agent_type):
 
     """
     return [agent['id'] for agent in agent_list
-            if agent['agent_type'] == agent_type and agent['alive'] is True]
+            if agent['agent_type'] == agent_type and agent['alive'] is True and
+            agent['admin_state_up'] is True]
 
 
 def agent_dead_id_list(agent_list, agent_type):
