@@ -169,7 +169,7 @@ ruby_block 'query service tenant uuid' do
       cafile = node['openstack']['network']['api']['auth']['cafile']
       args = {}
       is_insecure && args['insecure'] = ''
-      cafile && args['os-cacert'] = cafile
+      !cafile.to_s.empty? && args['os-cacert'] = cafile
       env = openstack_command_env admin_user, admin_tenant
       tenant_id = identity_uuid 'tenant', 'name', 'service', env, args
       Chef::Log.error('service tenant UUID for nova_admin_tenant_id not found.') if tenant_id.nil?

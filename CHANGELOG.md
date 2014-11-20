@@ -27,6 +27,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Allow rabbit ssl in the ha case
 * Fix user_group configuration in lbaas_agent.ini.erb
 * Added logic for Centos 6.5 to install newer version of dnsmasq
+* Handle nil and empty string for cafile
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
