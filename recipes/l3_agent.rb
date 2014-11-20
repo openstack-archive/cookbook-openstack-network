@@ -79,6 +79,10 @@ template '/etc/neutron/l3_agent.ini' do
   end
 end
 
+route 'enable external_network_bridge_interface' do
+  device node['openstack']['network']['l3']['external_network_bridge_interface']
+end
+
 driver_name = node['openstack']['network']['interface_driver'].split('.').last
 # See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
 case driver_name

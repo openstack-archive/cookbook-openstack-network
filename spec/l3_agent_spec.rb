@@ -51,6 +51,10 @@ describe 'openstack-network::l3_agent' do
       end
     end
 
+    it 'should enable the external physical interface' do
+      expect(chef_run).to add_route('enable external_network_bridge_interface').with(device: 'eth1')
+    end
+
     describe 'l3_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/l3_agent.ini') }
 

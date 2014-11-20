@@ -16,6 +16,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Add cacert,insecure arguments for get nova_admin_tenant_id call
 * Add multi driver support and package dependencies to vpn_agent recipe
 * Enable services required by vpn drivers
+* Set the external physical interface to up
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb
