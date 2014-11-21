@@ -71,6 +71,7 @@ Attributes
 * `openstack['network']['api']['auth']['hash_algorithms']` - Hash algorithms to use for hashing PKI tokens.
 * `openstack['network']['api']['auth']['cafile']` - A PEM encoded Certificate Authority to use when verifying HTTPs connections.
 * `openstack['network']['api']['auth']['insecure']` - Whether to allow the client to perform insecure SSL (https) requests.
+* `openstack['network']['dbsync_timeout']` - Set dbsync command timeout value
 
 TODO
 * `openstack["network"]["service_plugins"]` - Array of Python classes to be used as `service_plugins` in neutron.conf (default: []). Set it to ['neutron.plugins.services.agent_loadbalancer.plugin.LoadBalancerPlugin'] to include the load balancer plugin.
