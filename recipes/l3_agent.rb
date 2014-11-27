@@ -79,16 +79,15 @@ template '/etc/neutron/l3_agent.ini' do
   end
 end
 
-route 'enable external_network_bridge_interface' do
-  device node['openstack']['network']['l3']['external_network_bridge_interface']
-end
-
 driver_name = node['openstack']['network']['interface_driver'].split('.').last
 # See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
 case driver_name
 when 'OVSInterfaceDriver'
   ext_bridge = node['openstack']['network']['l3']['external_network_bridge']
   ext_bridge_iface = node['openstack']['network']['l3']['external_network_bridge_interface']
+  execute 'enable external_network_bridge_interface' do
+    command "ip link set #{ext_bridge_iface} up"
+  end
   execute 'create external network bridge' do
     command "ovs-vsctl add-br #{ext_bridge} && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
     action :run

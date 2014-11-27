@@ -18,6 +18,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Enable services required by vpn drivers
 * Set the external physical interface to up
 * Fix an error from restarting the metadata agent before installing the package.
+* Remove route lwrp in favor of standard exec to set external physical interface to up (only for OVS)
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb

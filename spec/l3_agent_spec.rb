@@ -51,10 +51,6 @@ describe 'openstack-network::l3_agent' do
       end
     end
 
-    it 'should enable the external physical interface' do
-      expect(chef_run).to add_route('enable external_network_bridge_interface').with(device: 'eth1')
-    end
-
     describe 'l3_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/l3_agent.ini') }
 
@@ -102,12 +98,14 @@ describe 'openstack-network::l3_agent' do
     end
 
     describe 'create ovs bridges' do
+      let(:iplink) { 'ip link set eth1 up' }
       let(:cmd) { 'ovs-vsctl add-br br-ex && ovs-vsctl add-port br-ex eth1' }
 
       it "doesn't add the external bridge if it already exists" do
         stub_command(/ovs-vsctl br-exists/).and_return(true)
         stub_command(/ip link show eth1/).and_return(true)
 
+        expect(chef_run).to run_execute(iplink)
         expect(chef_run).not_to run_execute(cmd)
       end
 
@@ -115,6 +113,7 @@ describe 'openstack-network::l3_agent' do
         stub_command(/ovs-vsctl br-exists/).and_return(true)
         stub_command(/ip link show eth1/).and_return(false)
 
+        expect(chef_run).to run_execute(iplink)
         expect(chef_run).not_to run_execute(cmd)
       end
 
@@ -122,6 +121,7 @@ describe 'openstack-network::l3_agent' do
         stub_command(/ovs-vsctl br-exists/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
 
+        expect(chef_run).to run_execute(iplink)
         expect(chef_run).to run_execute(cmd)
       end
 
@@ -129,6 +129,7 @@ describe 'openstack-network::l3_agent' do
         stub_command(/ovs-vsctl br-exists/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
 
+        expect(chef_run).to run_execute(iplink)
         expect(chef_run).to run_execute(cmd)
       end
     end
