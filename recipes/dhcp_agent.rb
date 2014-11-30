@@ -66,6 +66,25 @@ template '/etc/neutron/dhcp_agent.ini' do
   notifies :restart, 'service[neutron-dhcp-agent]', :immediately
 end
 
+case node['platform']
+when 'centos'
+  if node['platform_version'].to_f >= 6.5
+
+    dnsmasq_file = "#{Chef::Config[:file_cache_path]}/#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}"
+
+    remote_file dnsmasq_file do
+      source node['openstack']['network']['dhcp']['dnsmasq_rpm_source']
+      not_if { ::File.exists?(dnsmasq_file) }
+    end
+
+    rpm_package 'dnsmasq' do
+      source dnsmasq_file
+      action :install
+      notifies :restart, 'service[neutron-dhcp-agent]', :immediately
+    end
+  end
+end
+
 # Deal with ubuntu precise dnsmasq 2.59 version by custom
 # compiling a more recent version of dnsmasq
 #

@@ -298,6 +298,11 @@ default['openstack']['network']['dhcp']['enable_isolated_metadata'] = 'False'
 # This option requires enable_isolated_metadata = True
 default['openstack']['network']['dhcp']['enable_metadata_network'] = 'False'
 
+# the version of dnsmasq for centos 6.5 is two revs behind where the dhcp-agent needs
+# to run properly. This is a version that allows and starts the dhcp-agent correctly.
+default['openstack']['network']['dhcp']['dnsmasq_rpm_source'] = "http://pkgs.repoforge.org/dnsmasq/dnsmasq-#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}.rpm"
+default['openstack']['network']['dhcp']['dnsmasq_rpm_version'] = '2.65-1.el6.rfx.x86_64'
+
 # On ubuntu precise, we build dnsmasq from source to fetch a more recent
 # version of dnsmasq since a backport is not available. For any other
 # platform, dnsmasq will be installed as a package

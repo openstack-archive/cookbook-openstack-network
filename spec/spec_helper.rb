@@ -22,6 +22,11 @@ UBUNTU_OPTS = {
     version: '12.04',
     log_level: LOG_LEVEL
 }
+CENTOS_OPTS = {
+    platform: 'centos',
+    version: '6.5',
+    log_level: LOG_LEVEL
+}
 
 MOCK_NODE_NETWORK_DATA =
   {
