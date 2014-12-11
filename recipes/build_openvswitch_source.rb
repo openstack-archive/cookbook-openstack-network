@@ -78,10 +78,6 @@ dpkg_package 'openvswitch-common' do
   source "#{extract_path}/openvswitch-common_#{ovs_options['openvswitch_dpkgversion']}_#{ovs_options['openvswitch_architecture']}.deb"
   action :nothing
 end
-dpkg_package 'openvswitch-common' do
-  source "#{extract_path}/openvswitch-common_#{ovs_options['openvswitch_dpkgversion']}_#{ovs_options['openvswitch_architecture']}.deb"
-  action :nothing
-end
 
 dpkg_package 'openvswitch-datapath-dkms' do
   source "#{extract_path}/openvswitch-datapath-dkms_#{ovs_options['openvswitch_dpkgversion']}_all.deb"
