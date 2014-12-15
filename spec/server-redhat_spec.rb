@@ -18,6 +18,10 @@ describe 'openstack-network::server' do
       expect(chef_run).to_not upgrade_package 'openstack-neutron'
     end
 
+    it 'installs the iproute packages' do
+      expect(chef_run).to upgrade_package 'iproute'
+    end
+
     it 'upgrades openstack-neutron packages' do
       expect(chef_run).to upgrade_package 'openstack-neutron'
     end
