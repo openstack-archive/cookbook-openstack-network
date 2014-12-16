@@ -15,7 +15,7 @@ describe 'openstack-network::dhcp_agent' do
     it 'does not include recipe openstack-network::comon when nova networking' do
       node.override['openstack']['compute']['network']['service_type'] = 'nova'
 
-      expect(chef_run).to_not include_recipe('openstack-network::common')
+      expect(chef_run).to_not include_recipe('openstack-network')
     end
 
     it 'subscribes the agent service to neutron.conf' do

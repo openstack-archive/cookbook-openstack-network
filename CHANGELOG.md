@@ -20,6 +20,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Fix an error from restarting the metadata agent before installing the package.
 * Remove route lwrp in favor of standard exec to set external physical interface to up (only for OVS)
 * Added the update to iproute, because of the required support for ip netns
+* Renamed common recipe to default
 
 ## 10.0.1
 * Add tunnel_types item in ovs_neutron_plugin.ini.erb

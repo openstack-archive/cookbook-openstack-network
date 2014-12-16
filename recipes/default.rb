@@ -1,7 +1,7 @@
 # Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
-# Recipe:: common
+# Recipe:: default
 #
 # Copyright 2013, AT&T
 # Copyright 2013-2014, SUSE Linux GmbH
@@ -136,7 +136,7 @@ platform_options['neutron_client_packages'].each do |pkg|
   end
 end
 
-# all recipes include common.rb, and some servers
+# all recipes include default.rb, and some servers
 # may just be running a subset of agents (like l3_agent)
 # and not the api server components, so we ignore restart
 # failures here as there may be no neutron-server process

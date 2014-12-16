@@ -20,7 +20,7 @@
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe 'openstack-network::common'
+include_recipe 'openstack-network'
 
 ruby_block 'query gateway external network uuid' do
   block do

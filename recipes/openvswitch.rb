@@ -27,7 +27,7 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-include_recipe 'openstack-network::common'
+include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 core_plugin = node['openstack']['network']['core_plugin']

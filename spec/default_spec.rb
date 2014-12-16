@@ -36,7 +36,7 @@ shared_examples 'core plugin common configurator' do |plugin_name, file_name, at
   end
 end
 
-describe 'openstack-network::common' do
+describe 'openstack-network' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }

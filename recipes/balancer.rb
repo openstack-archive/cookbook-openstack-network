@@ -23,7 +23,7 @@
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
-include_recipe 'openstack-network::common'
+include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 

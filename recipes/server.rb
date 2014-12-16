@@ -26,7 +26,7 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-include_recipe 'openstack-network::common'
+include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 core_plugin = node['openstack']['network']['core_plugin']
@@ -39,7 +39,7 @@ platform_options['neutron_server_packages'].each do |pkg|
 end
 
 # Migrate network database to latest version
-# The node['openstack']['network']['plugin_config_file'] attribute is set in the common.rb recipe
+# The node['openstack']['network']['plugin_config_file'] attribute is set in the default.rb recipe
 
 bash 'migrate network database' do
   plugin_config_file = node['openstack']['network']['plugin_config_file']

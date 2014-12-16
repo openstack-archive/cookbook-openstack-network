@@ -1,7 +1,7 @@
 # Encoding: utf-8
 require_relative 'spec_helper'
 
-describe 'openstack-network::common' do
+describe 'openstack-network' do
   describe 'redhat' do
     let(:runner) { ChefSpec::Runner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
