@@ -4,10 +4,10 @@
 # Library:: utils
 module ::Utils
   def recipe_included?(recipe)
-    if node['recipes'].include?(recipe)
-      return true
-    else
-      return false
-    end
+    node['recipes'].include?(recipe)
+  end
+
+  def role_included?(role)
+    node['roles'].include?(role)
   end
 end

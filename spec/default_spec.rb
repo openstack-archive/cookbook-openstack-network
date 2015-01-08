@@ -397,6 +397,16 @@ describe 'openstack-network' do
         )
       end
 
+      it 'sends a notification to the service' do
+        allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+        expect(file).to notify('service[neutron-server]').to(:restart).delayed
+      end
+
+      it 'not sends a notification to the service' do
+        allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(false)
+        expect(file).not_to notify('service[neutron-server]').to(:restart).delayed
+      end
+
       context 'template contents' do
         include_context 'endpoint-stubs'
 

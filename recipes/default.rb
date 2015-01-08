@@ -43,6 +43,8 @@ platform_options = node['openstack']['network']['platform']
 core_plugin = node['openstack']['network']['core_plugin']
 main_plugin = node['openstack']['network']['core_plugin_map'][core_plugin.split('.').last.downcase]
 
+role_match = role_included? 'os-network-server'
+
 if node['openstack']['network']['syslog']['use']
   include_recipe 'openstack-common::logging'
 end
@@ -104,7 +106,7 @@ if node['openstack']['network']['policyfile_url']
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
-    notifies :restart, 'service[neutron-server]'
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 end
 
@@ -139,12 +141,12 @@ end
 
 # all recipes include default.rb, and some servers
 # may just be running a subset of agents (like l3_agent)
-# and not the api server components, so we ignore restart
-# failures here as there may be no neutron-server process
+# and not the api server components, so we add logic to
+# check whether current node is network node or not. If
+# not, we won't notify this service to restart.
 service 'neutron-server' do
   service_name platform_options['neutron_server_service']
   supports status: true, restart: true
-  ignore_failure true
 
   action :nothing
 end
@@ -197,7 +199,7 @@ template '/etc/neutron/neutron.conf' do
     router_distributed: router_distributed
   )
 
-  notifies :restart, 'service[neutron-server]', :delayed
+  notifies :restart, 'service[neutron-server]', :delayed if role_match
 end
 
 template '/etc/neutron/api-paste.ini' do
@@ -206,7 +208,7 @@ template '/etc/neutron/api-paste.ini' do
   group node['openstack']['network']['platform']['group']
   mode   00640
 
-  notifies :restart, 'service[neutron-server]', :delayed
+  notifies :restart, 'service[neutron-server]', :delayed if role_match
 end
 
 directory "/etc/neutron/plugins/#{main_plugin}" do
@@ -235,7 +237,7 @@ when 'bigswitch'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'brocade'
@@ -248,7 +250,7 @@ when 'brocade'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'cisco'
@@ -261,7 +263,7 @@ when 'cisco'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'hyperv'
@@ -274,7 +276,7 @@ when 'hyperv'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'linuxbridge'
@@ -291,7 +293,7 @@ when 'linuxbridge'
       local_ip: linuxbridge_endpoint.host
     )
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::linuxbridge')
       notifies :restart, 'service[neutron-plugin-linuxbridge-agent]', :delayed
     end
@@ -307,7 +309,7 @@ when 'metaplugin'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'midonet'
@@ -320,7 +322,7 @@ when 'midonet'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'ml2'
@@ -340,7 +342,7 @@ when 'ml2'
       mechanism_drivers: mechanism_drivers
     )
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'nec'
@@ -353,7 +355,7 @@ when 'nec'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'nicira'
@@ -366,7 +368,7 @@ when 'nicira'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'openvswitch'
@@ -393,7 +395,7 @@ when 'openvswitch'
       l2_population: l2_population,
       enable_distributed_routing: enable_distributed_routing
     )
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::openvswitch')
       notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
     end
@@ -409,7 +411,7 @@ when 'plumgrid'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 when 'ryu'
@@ -422,7 +424,7 @@ when 'ryu'
     group node['openstack']['network']['platform']['group']
     mode 00644
 
-    notifies :restart, 'service[neutron-server]', :delayed
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
 else
