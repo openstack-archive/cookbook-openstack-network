@@ -168,6 +168,7 @@ rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
 # wipe RabbitMQ database when changing this option. (boolean value)
 rabbit_hosts=<%= @rabbit_hosts %>
 rabbit_ha_queues=True
+rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
 <% else %>
 rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
 rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>

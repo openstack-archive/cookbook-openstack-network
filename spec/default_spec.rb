@@ -482,6 +482,10 @@ describe 'openstack-network' do
             it 'sets the rabbit_ha_queues attribute' do
               expect(chef_run).to render_file(file.name).with_content(/^rabbit_ha_queues=True$/)
             end
+
+            it 'sets the rabbit_use_ssl attribute' do
+              expect(chef_run).to render_file(file.name).with_content(/^rabbit_use_ssl=false$/)
+            end
           end
 
           context 'rabbit ha disabled' do
