@@ -37,7 +37,11 @@ device_driver = <%= node['openstack']['network']['lbaas']['device_driver'] %>
 # loadbalancer_state_path = $state_path/lbaas
 
 # The user group
-# user_group = nogroup
+<% if node['platform_family'] == 'debian' %>
+user_group = nogroup
+<% else %>
+user_group = nobody
+<% end %>
 
 # When delete and re-add the same vip, send this many gratuitous ARPs to flush
 # the ARP cache in the Router. Set it below or equal to 0 to disable this feature.

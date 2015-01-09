@@ -13,6 +13,22 @@ describe 'openstack-network::balancer' do
 
     include_context 'neutron-stubs'
 
+    describe 'lbaas_agent.ini' do
+      let(:file) { chef_run.template('/etc/neutron/lbaas_agent.ini') }
+
+      it 'creates lbaas_agent.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'neutron',
+          group: 'neutron',
+          mode: 0640
+        )
+      end
+
+      it 'displays user_group as nobody' do
+        expect(chef_run).to render_file('/etc/neutron/lbaas_agent.ini').with_content(/^user_group = nobody$/)
+      end
+    end
+
     ['haproxy', 'openstack-neutron'].each do |pack|
       it "upgrades #{pack} package" do
         expect(chef_run).to upgrade_package(pack)

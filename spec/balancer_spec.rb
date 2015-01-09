@@ -73,6 +73,10 @@ describe 'openstack-network::balancer' do
           node.set['openstack']['network']['lbaas_plugin'] = 'another_lbaas-plugin'
           expect(chef_run).to render_file(file.name).with_content(/^interface_driver =$/)
         end
+
+        it 'displays user_group as nogroup' do
+          expect(chef_run).to render_file(file.name).with_content(/^user_group = nogroup$/)
+        end
       end
 
       it 'notifies the lb agent service' do
