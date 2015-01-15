@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.1.1
+* Removed all files not needed by the neutron cookbook
+
 ## 10.1.0
 * Add support for Neutron VPN Service
 * Remove Neutron DB stamp and upgrade to head.

@@ -55,38 +55,6 @@ service 'neutron-server' do
   action [:enable, :start]
 end
 
-directory File.dirname(node['openstack']['network']['neutron_ha_cmd']) do
-  recursive true
-  mode 00755
-end
-
-cookbook_file 'neutron-ha-tool' do
-  source 'neutron-ha-tool.py'
-  path node['openstack']['network']['neutron_ha_cmd']
-  owner 'root'
-  group 'root'
-  mode 00755
-end
-
-if node['openstack']['network']['neutron_ha_cmd_cron']
-  # ensure period checks are offset between multiple l3 agent nodes
-  # and assumes splay will remain constant (i.e. based on hostname)
-  # Generate a uniformly distributed unique number to sleep.
-  checksum   = Digest::MD5.hexdigest(node['fqdn'] || 'unknown-hostname')
-  splay = node['chef_client']['splay'].to_i || 3000
-  sleep_time = checksum.to_s.hex % splay
-
-  cron 'neutron-ha-healthcheck' do
-    minute node['openstack']['network']['cron_l3_healthcheck']
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --l3-agent-migrate > /dev/null 2>&1"
-  end
-
-  cron 'neutron-ha-replicate-dhcp' do
-    minute node['openstack']['network']['cron_replicate_dhcp']
-    command "sleep #{sleep_time} ; . /root/openrc && #{node["openstack"]["network"]["neutron_ha_cmd"]} --replicate-dhcp > /dev/null 2>&1"
-  end
-end
-
 # the default SUSE initfile uses this sysconfig file to determine the
 # neutron plugin to use
 template '/etc/sysconfig/neutron' do
