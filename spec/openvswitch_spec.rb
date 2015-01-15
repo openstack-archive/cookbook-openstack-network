@@ -115,24 +115,6 @@ describe 'openstack-network::openvswitch' do
       expect(chef_run.package('openvswitch-datapath-dkms')).to notify("execute[#{kmod_command}]").to(:run).immediately
     end
 
-    describe 'ovs-dpctl-top' do
-      let(:file) { chef_run.cookbook_file('/usr/bin/ovs-dpctl-top') }
-
-      it 'creates /usr/bin/ovs-dpctl-top' do
-        expect(chef_run).to create_cookbook_file(file.name).with(
-          user: 'root',
-          group: 'root',
-          mode: 0755
-        )
-      end
-
-      it 'has the proper interpreter line' do
-        expect(chef_run).to render_file(file.name).with_content(
-          %r{^#!\/usr\/bin\/env python}
-        )
-      end
-    end
-
     describe 'create ovs data network bridge' do
       let(:cmd) { 'ovs-vsctl add-br br-eth1 -- add-port br-eth1 eth1' }
 

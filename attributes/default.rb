@@ -142,18 +142,6 @@ default['openstack']['network']['quota']['router'] = 10
 # Number of floating IPs allowed per tenant. A negative value means unlimited.
 default['openstack']['network']['quota']['floatingip'] = 50
 
-# Whether or not we want to disable offloading
-# on all the NIC interfaces (currently only supports
-# ubuntu and debian).  This can help if openvswitch
-# or nicira plugins are crashing the sdn routers
-default['openstack']['network']['disable_offload'] = false
-
-# configure neutron ha tool installation parameters
-default['openstack']['network']['neutron_ha_cmd_cron'] = false
-default['openstack']['network']['neutron_ha_cmd'] = '/usr/local/bin/neutron-ha-tool.py'
-default['openstack']['network']['cron_l3_healthcheck'] = '*/1'
-default['openstack']['network']['cron_replicate_dhcp'] = '*/1'
-
 # (ListOpt) Specify service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
 # Must be in form:
 # service_provider=<service_type>:<name>:<driver>[:default]
