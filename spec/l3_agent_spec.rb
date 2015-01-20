@@ -33,6 +33,10 @@ describe 'openstack-network::l3_agent' do
       expect(chef_run).to upgrade_package('neutron-l3-agent')
     end
 
+    it 'upgrades radvd package' do
+      expect(chef_run).to upgrade_package('radvd')
+    end
+
     describe 'gateway_external_network_id' do
       before do
         node.set['openstack']['network']['l3']['gateway_external_network_name'] = 'public'
