@@ -14,8 +14,19 @@ describe 'openstack-network::server' do
 
     include_context 'neutron-stubs'
 
-    it 'uses db upgrade head' do
-      expect(chef_run).to run_bash('migrate network database').with_code(/upgrade head/)
+    it 'uses db upgrade head with default timeout' do
+      expect(chef_run).to run_bash('migrate network database').with(
+        code: /upgrade head/,
+        timeout: 3600
+      )
+    end
+
+    it 'uses db upgrade head with timeout override' do
+      node.set['openstack']['network']['dbsync_timeout'] = 1234
+      expect(chef_run).to run_bash('migrate network database').with(
+        code: /upgrade head/,
+        timeout: 1234
+      )
     end
 
     it 'does not install neutron-server when nova networking' do

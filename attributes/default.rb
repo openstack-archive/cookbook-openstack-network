@@ -33,6 +33,9 @@ default['openstack']['network']['auth_strategy'] = 'keystone'
 default['openstack']['network']['state_path'] = '/var/lib/neutron'
 default['openstack']['network']['lock_path'] = '$state_path/lock'
 
+# Set dbsync command timeout value
+default['openstack']['network']['dbsync_timeout'] = 3600
+
 # Specify policy.json remote file to import
 default['openstack']['network']['policyfile_url'] = nil
 

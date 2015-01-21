@@ -42,10 +42,11 @@ end
 # The node['openstack']['network']['plugin_config_file'] attribute is set in the default.rb recipe
 
 bash 'migrate network database' do
+  timeout node['openstack']['network']['dbsync_timeout']
   plugin_config_file = node['openstack']['network']['plugin_config_file']
   migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
-  #{migrate_command} upgrade head
+#{migrate_command} upgrade head
 EOF
 end
 
