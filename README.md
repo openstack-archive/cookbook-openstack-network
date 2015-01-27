@@ -134,6 +134,7 @@ Modular Layer 2 Plugin Configuration
 DHCP Agent Configuration
 ------------------------
 * `openstack['openstack']['network']['dhcp']['dhcp_delete_namespaces']` - (StrOpt) If True, namespaces will be deleted when a dhcp server is disabled.
+* `openstack['openstack']['network']['dhcp']['dhcp_agents_per_network']` - (IntOpt) Set the number of dhcp agents for each network. (default 1)
 
 L3 Agent Configuration
 ----------------------

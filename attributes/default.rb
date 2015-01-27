@@ -341,6 +341,9 @@ default['openstack']['network']['dhcp']['default_domain'] = 'openstacklocal'
 # If True, namespaces will be deleted when a dhcp server is disabled.
 default['openstack']['network']['dhcp']['dhcp_delete_namespaces'] = 'False'
 
+# Set the default num of dhcp agents for each network.
+default['openstack']['network']['dhcp']['dhcp_agents_per_network'] = 1
+
 # ============================= L3 Agent Configuration =====================
 
 # The scheduler class to use for scheduling routers to L3 agents
