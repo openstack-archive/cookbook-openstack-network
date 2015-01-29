@@ -121,21 +121,21 @@ shared_context 'endpoint-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('network-api-bind')
       .and_return(double(host: 'network_host', port: 'network_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
       .with('compute-api')
       .and_return(double(
         scheme: 'compute_scheme',
         host: 'compute_host',
         port: 'compute_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:admin_endpoint)
       .with('identity-admin')
       .and_return(double(
         host: 'identity_host',
         port: 'identity_port',
         scheme: 'identity_scheme',
         to_s: 'identity_uri'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-      .with('identity-api')
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
+      .with('identity-internal')
       .and_return('identity_endpoint_value')
   end
 end

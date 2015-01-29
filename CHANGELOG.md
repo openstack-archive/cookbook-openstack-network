@@ -4,6 +4,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 ## 10.1.1
 * Removed all files not needed by the neutron cookbook
 * Add radvd to neutron_l3_packages to support ipv6
+* Use common specific_endpoint routines (bug 1412919)
 
 ## 10.1.0
 * Add support for Neutron VPN Service

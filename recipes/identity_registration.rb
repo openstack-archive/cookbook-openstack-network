@@ -28,12 +28,14 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-identity_admin_endpoint = endpoint 'identity-admin'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
 
 bootstrap_token = get_secret 'openstack_identity_bootstrap_token'
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
-api_endpoint = endpoint 'network-api'
+admin_api_endpoint = admin_endpoint 'network-api'
+public_api_endpoint = public_endpoint 'network-api'
+internal_api_endpoint = internal_endpoint 'network-api'
 
 service_pass = get_password 'service', 'openstack-network'
 service_tenant_name = node['openstack']['network']['service_tenant_name']
@@ -55,9 +57,9 @@ openstack_identity_register 'Register Network Endpoint' do
   bootstrap_token bootstrap_token
   service_type node['openstack']['network']['service_type']
   endpoint_region node['openstack']['network']['region']
-  endpoint_adminurl api_endpoint.to_s
-  endpoint_internalurl api_endpoint.to_s
-  endpoint_publicurl api_endpoint.to_s
+  endpoint_adminurl admin_api_endpoint.to_s
+  endpoint_internalurl internal_api_endpoint.to_s
+  endpoint_publicurl public_api_endpoint.to_s
 
   action :create_endpoint
 end

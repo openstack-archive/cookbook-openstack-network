@@ -116,8 +116,8 @@ elsif mq_service_type == 'qpid'
   mq_password = get_password 'user', node['openstack']['mq']['network']['qpid']['username']
 end
 
-identity_endpoint = endpoint 'identity-api'
-identity_admin_endpoint = endpoint 'identity-admin'
+identity_endpoint = internal_endpoint 'identity-internal'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['network']['api']['auth']['version']
@@ -149,7 +149,7 @@ service 'neutron-server' do
 end
 
 # Nova interactions
-nova_endpoint = endpoint 'compute-api'
+nova_endpoint = internal_endpoint 'compute-api'
 # TODO(MRV): Need to allow for this in common.
 # Neutron will append the admin_tenant_id for these nova interaction calls,
 # remove the tenant_id so we don't end up with two of them on the url.
