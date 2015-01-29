@@ -83,6 +83,19 @@ describe 'openstack-network::l3_agent' do
           end
         end
 
+        it 'sets the agent_mode attribute to dvr_snat' do
+          node.set['openstack']['network']['l3']['router_distributed'] = true
+          allow_any_instance_of(Chef::Recipe).to receive(:recipe_included?).with('openstack-network::server').and_return(true)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^agent_mode = dvr_snat$/)
+        end
+
+        it 'sets the agent_mode attribute to dvr' do
+          node.set['openstack']['network']['l3']['router_distributed'] = true
+          allow_any_instance_of(Chef::Recipe).to receive(:recipe_included?).with('openstack-network::server').and_return(false)
+          allow_any_instance_of(Chef::Recipe).to receive(:recipe_included?).with('openstack-compute::compute').and_return(true)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^agent_mode = dvr$/)
+        end
+
         it 'sets the ha_vrrp_advert_int attribute' do
           node.set['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] = 'ha_vrrp_advert_int_value'
           expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^ha_vrrp_advert_int = ha_vrrp_advert_int_value$/)

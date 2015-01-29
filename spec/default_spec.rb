@@ -298,8 +298,7 @@ describe 'openstack-network' do
           tunnel_bridge: 'br-tun',
           int_peer_patch_port: '',
           tun_peer_patch_port: '',
-          bridge_mappings: '',
-          tunnel_types: ''
+          bridge_mappings: ''
         }.each do |attr, value|
           it "sets the default #{attr} when present" do
             if value.present?
@@ -329,6 +328,17 @@ describe 'openstack-network' do
         it 'sets the firewall_driver attribute' do
           node.set['openstack']['network']['openvswitch']['fw_driver'] = 'fw_driver_value'
           expect(chef_run).to render_file(file.name).with_content(/^firewall_driver = fw_driver_value$/)
+        end
+
+        it 'sets related attributes for distributed routers' do
+          node.set['openstack']['network']['l3']['router_distributed'] = true
+          [
+            /^enable_distributed_routing = True$/,
+            /^l2_population = True$/,
+            /^tunnel_types = gre, vxlan$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('agent', line)
+          end
         end
       end
 
@@ -412,6 +422,18 @@ describe 'openstack-network' do
         it 'does not set the log config attribute if not using syslog' do
           node.set['openstack']['network']['syslog']['use'] = false
           expect(chef_run).not_to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+        end
+
+        it 'set the router_distributed attribute for network node' do
+          node.set['openstack']['network']['l3']['router_distributed'] = true
+          allow_any_instance_of(Chef::Recipe).to receive(:recipe_included?).with('openstack-network::server').and_return(true)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^router_distributed = True$/)
+        end
+
+        it 'set the router_distributed attribute for compute node' do
+          node.set['openstack']['network']['l3']['router_distributed'] = true
+          allow_any_instance_of(Chef::Recipe).to receive(:recipe_included?).with('openstack-network::server').and_return(false)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^router_distributed = False$/)
         end
 
         %w(host port).each do |attr|

@@ -330,6 +330,13 @@ default['openstack']['network']['dhcp']['dhcp_agents_per_network'] = 1
 
 # ============================= L3 Agent Configuration =====================
 
+# For DVR(Disributed Virtual Router) is still not stable and rubost,
+# so it make sense to set DVR disabled by default. User can set this
+# attribute ture(bool) or 'ture'(bool) to enable DVR if they what
+# they are doing. Set this 'auto', cookbook will do a simple check
+# to decide whether or not to enable DVR, default is enabled with OVS.
+default['openstack']['network']['l3']['router_distributed'] = 'False'
+
 # The scheduler class to use for scheduling routers to L3 agents
 default['openstack']['network']['l3']['scheduler'] = 'neutron.scheduler.l3_agent_scheduler.ChanceScheduler'
 

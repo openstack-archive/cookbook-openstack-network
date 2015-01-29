@@ -90,7 +90,7 @@ router_delete_namespaces = <%= node['openstack']['network']['l3']['router_delete
 # - dvr_snat: this enables centralized SNAT support in conjunction with
 #   DVR. This mode must be used for an L3 agent running on a centralized
 #   node (or in single-host deployments, e.g. devstack).
-# agent_mode = legacy
+agent_mode = <%= @agent_mode %>
 
 # Location to store keepalived and all HA configurations
 # ha_confs_path = $state_path/ha_confs
@@ -103,4 +103,3 @@ router_delete_namespaces = <%= node['openstack']['network']['l3']['router_delete
 
 # The advertisement interval in seconds
 ha_vrrp_advert_int = <%= node['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] %>
-
