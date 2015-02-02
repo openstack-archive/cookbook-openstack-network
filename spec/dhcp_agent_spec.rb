@@ -22,22 +22,6 @@ describe 'openstack-network::dhcp_agent' do
       expect(chef_run.service('neutron-dhcp-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
     end
 
-    # since our mocked version of ubuntu is precise, our compile
-    # utilities should be installed to build dnsmasq
-    it 'upgrades dnsmasq build dependencies' do
-      %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext).each do |pkg|
-        expect(chef_run).to upgrade_package pkg
-      end
-    end
-
-    it 'skips dnsmasq build when asked to' do
-      node.set['openstack']['network']['dhcp']['dnsmasq_compile'] = false
-
-      %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext).each do |pkg|
-        expect(chef_run).to_not upgrade_package pkg
-      end
-    end
-
     it 'upgrades neutron dhcp package' do
       expect(chef_run).to upgrade_package 'neutron-dhcp-agent'
     end

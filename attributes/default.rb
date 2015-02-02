@@ -294,22 +294,6 @@ default['openstack']['network']['dhcp']['enable_metadata_network'] = 'False'
 default['openstack']['network']['dhcp']['dnsmasq_rpm_source'] = "http://pkgs.repoforge.org/dnsmasq/dnsmasq-#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}.rpm"
 default['openstack']['network']['dhcp']['dnsmasq_rpm_version'] = '2.65-1.el6.rfx.x86_64'
 
-# On ubuntu precise, we build dnsmasq from source to fetch a more recent
-# version of dnsmasq since a backport is not available. For any other
-# platform, dnsmasq will be installed as a package
-#
-# See https://lists.launchpad.net/openstack/msg11696.html
-default['openstack']['network']['dhcp']['dnsmasq_url'] = 'https://codeload.github.com/guns/dnsmasq/tar.gz/v2.65'
-
-# allow a wrapper to do this another way or use it's own package
-default['openstack']['network']['dhcp']['dnsmasq_compile'] = true
-
-# The name of the file we will fetch
-default['openstack']['network']['dhcp']['dnsmasq_filename'] = 'v2.65.tar.gz'
-
-# The checksum of the remote file we fetched
-default['openstack']['network']['dhcp']['dnsmasq_checksum'] = 'f6cab8c64cb612089174f50927a05e2b'
-
 # The package architecture that will be built which should match the
 # archecture of the server this cookbook will run on which will be
 # amd64 or i386
@@ -1039,7 +1023,6 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_packages' => ['openstack-neutron', 'openstack-neutron-ml2', 'iproute'],
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron', 'iproute'],
-    'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd'],
     'neutron_vpn_packages' => ['openstack-neutron', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
@@ -1070,7 +1053,6 @@ when 'suse'
     'neutron_packages' => ['openstack-neutron'],
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron-dhcp-agent'],
-    'neutron_dhcp_build_packages' => [],
     'neutron_l3_packages' => ['openstack-neutron-l3-agent', 'radvd'],
     'neutron_vpn_packages' => ['openstack-neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
@@ -1103,7 +1085,6 @@ when 'debian'
     'neutron_packages' => ['neutron-common', 'python-pyparsing', 'python-cliff'],
     'neutron_client_packages' => ['python-neutronclient', 'python-pyparsing'],
     'neutron_dhcp_packages' => ['neutron-dhcp-agent'],
-    'neutron_dhcp_build_packages' => %w(build-essential pkg-config libidn11-dev libdbus-1-dev libnetfilter-conntrack-dev gettext),
     'neutron_l3_packages' => ['neutron-l3-agent', 'radvd'],
     'neutron_vpn_packages' => ['neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
