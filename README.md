@@ -138,7 +138,10 @@ DHCP Agent Configuration
 
 L3 Agent Configuration
 ----------------------
-* `openstack['openstack']['network']['l3']['router_delete_namespaces'] - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
+* `openstack['openstack']['network']['l3']['router_delete_namespaces']` - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
+* `openstack['openstack']['network']['l3']['ha']['l3_ha']` - (BoolOpt) If True, virtual router will be created as ha by default. (default False)
+* `openstack['openstack']['network']['l3']['ha']['max_l3_agents_per_router']` - (IntOpt)  The maximum number of l3 agents for each ha router. (default 3)
+* `openstack['openstack']['network']['l3']['ha']['ha_vrrp_advert_int']` - (IntOpt) The advertisement interval in seconds. (default 2)
 
 VPN Agent Configuration
 ----------------------

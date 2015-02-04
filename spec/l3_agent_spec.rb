@@ -83,6 +83,11 @@ describe 'openstack-network::l3_agent' do
           end
         end
 
+        it 'sets the ha_vrrp_advert_int attribute' do
+          node.set['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] = 'ha_vrrp_advert_int_value'
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^ha_vrrp_advert_int = ha_vrrp_advert_int_value$/)
+        end
+
         %w[router_id gateway_external_network_id].each do |conditional_attr|
           it "displays the #{conditional_attr} attribute when present" do
             node.set['openstack']['network']['l3'][conditional_attr] = "network_l3_#{conditional_attr}_value"

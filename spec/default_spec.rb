@@ -555,6 +555,13 @@ describe 'openstack-network' do
           expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^dhcp_agents_per_network = dhcp_agents_per_network_value$/)
         end
 
+        %w(l3_ha max_l3_agents_per_router).each do |attr|
+          it "sets the #{attr} attribute" do
+            node.set['openstack']['network']['l3']['ha'][attr] = "#{attr}_value"
+            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^#{attr} = #{attr}_value$/)
+          end
+        end
+
         %w(notify_nova_on_port_status_changes notify_nova_on_port_data_changes send_events_interval).each do |attr|
           it "sets the #{attr} nova attribute" do
             node.set['openstack']['network']['nova'][attr] = "#{attr}_value"

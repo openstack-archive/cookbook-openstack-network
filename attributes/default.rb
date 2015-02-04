@@ -375,6 +375,15 @@ default['openstack']['network']['l3']['periodic_fuzzy_delay'] = 5
 # If True, namespaces will be deleted when a router is destroyed
 default['openstack']['network']['l3']['router_delete_namespaces'] = 'False'
 
+# Set the default value of ha parameter for virtual router.
+default['openstack']['network']['l3']['ha']['l3_ha'] = 'False'
+
+# Set the default maximum number of l3 agents for each ha router.
+default['openstack']['network']['l3']['ha']['max_l3_agents_per_router'] = 3
+
+# Set the default advertisement interval in seconds
+default['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] = 2
+
 # ============================= VPN Agent Configuration ====================
 
 # VPN device drivers which vpn agent will use
