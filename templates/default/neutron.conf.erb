@@ -279,7 +279,7 @@ router_scheduler_driver = <%= node["openstack"]["network"]["l3"]["scheduler"] %>
 
 # Number of DHCP agents scheduled to host a network. This enables redundant
 # DHCP agents for configured networks.
-# dhcp_agents_per_network = 1
+dhcp_agents_per_network = <%= node['openstack']['network']['dhcp']['dhcp_agents_per_network'] %>
 
 # ===========  end of items for agent scheduler extension =====
 

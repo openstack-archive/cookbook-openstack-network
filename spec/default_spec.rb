@@ -550,6 +550,11 @@ describe 'openstack-network' do
           expect(chef_run).to render_file(file.name).with_content(/^router_scheduler_driver = router_scheduler_driver_value$/)
         end
 
+        it 'sets the dhcp_agents_per_network attribute' do
+          node.set['openstack']['network']['dhcp']['dhcp_agents_per_network'] = 'dhcp_agents_per_network_value'
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^dhcp_agents_per_network = dhcp_agents_per_network_value$/)
+        end
+
         %w(notify_nova_on_port_status_changes notify_nova_on_port_data_changes send_events_interval).each do |attr|
           it "sets the #{attr} nova attribute" do
             node.set['openstack']['network']['nova'][attr] = "#{attr}_value"
