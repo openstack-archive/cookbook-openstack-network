@@ -38,7 +38,7 @@ def parse_args():
 
     # ensure environment has necessary items to authenticate
     for key in ['OS_TENANT_NAME', 'OS_USERNAME', 'OS_PASSWORD',
-                'OS_AUTH_URL']:
+                'OS_AUTH_URL', 'OS_REGION_NAME']:
         if key not in os.environ.keys():
             LOG.exception("Your environment is missing '%s'")
 
@@ -53,6 +53,8 @@ def parse_args():
                     help='Show routers associated with offline l3 agents')
     ap.add_argument('--l3-agent-migrate', action='store_true', default=False,
                     help='Migrate routers away from offline l3 agents')
+    ap.add_argument('--l3-agent-evacuate', default=None,
+                    help='Migrate routers away from a particular l3 agent')
     ap.add_argument('--l3-agent-rebalance', action='store_true', default=False,
                     help='Rebalance router count on all l3 agents')
     ap.add_argument('--replicate-dhcp', action='store_true', default=False,
@@ -93,6 +95,7 @@ def run(args):
                             tenant_name=os.environ['OS_TENANT_NAME'],
                             password=os.environ['OS_PASSWORD'],
                             endpoint_type='internalURL',
+                            region_name=os.environ['OS_REGION_NAME'],
                             insecure=args.insecure,
                             ca_cert=ca)
 
@@ -106,6 +109,11 @@ def run(args):
     if args.l3_agent_migrate:
         LOG.info("Performing L3 Agent Migration for Offline L3 Agents")
         l3_agent_migrate(qclient, args.noop, args.now)
+
+    if args.l3_agent_evacuate:
+        LOG.info("Performing L3 Agent Evacuation from agent %s",
+                 args.l3_agent_evacuate)
+        l3_agent_evacuate(qclient, args.l3_agent_evacuate, args.noop)
 
     if args.l3_agent_rebalance:
         LOG.info("Rebalancing L3 Agent Router Count")
@@ -306,6 +314,56 @@ def l3_agent_migrate(qclient, noop=False, now=False):
 
         LOG.info("%s routers required migration from offline L3 agents",
                  migration_count)
+
+
+def l3_agent_evacuate(qclient, excludeagent, noop=False):
+    """
+    Retreive a list of routers scheduled on the listed agent, and move that
+    to another agent.
+
+    :param qclient: A neutronclient
+    :param noop: Optional noop flag
+    :param excludeagent: the name of the L3 agent to migrate routers from
+
+    """
+
+    agent_list = list_agents(qclient, agent_type='L3 agent')
+    target_list = target_agent_list(agent_list, 'L3 agent', excludeagent)
+
+    migration_count = 0
+
+    if len(target_list) < 1:
+        LOG.exception("There are no l3 agents alive to migrate "
+                      "routers onto")
+
+    agent_to_exclude = None
+    for agent in agent_list:
+        if agent.get('host', None) == excludeagent:
+            agent_to_exclude = agent
+            break
+
+    if not agent_to_exclude:
+        LOG.exception("Could not locate agent to evacuate")
+
+    agent_id = agent_to_exclude['id']
+    LOG.info("Querying agent_id=%s for routers to migrate", agent_id)
+    router_id_list = list_routers_on_l3_agent(qclient, agent_id)
+
+    for router_id in router_id_list:
+        target_id = random.choice(target_list)
+        LOG.info("Migrating router=%s to agent=%s",
+                 router_id, target_id)
+
+        try:
+            if not noop:
+                migrate_router(qclient, router_id, agent_id, target_id)
+        except Exception:
+            LOG.exception("There was an error migrating a router")
+            continue
+        migration_count += 1
+
+    LOG.info("%s routers required migration from L3 agent %s",
+             migration_count, excludeagent)
 
 
 def replicate_dhcp(qclient, noop=False):
@@ -522,6 +580,22 @@ def agent_alive_id_list(agent_list, agent_type):
     """
     return [agent['id'] for agent in agent_list
             if agent['agent_type'] == agent_type and agent['alive'] is True]
+
+
+def target_agent_list(agent_list, agent_type, excludeagent):
+    """
+    Return a list of agents that are alive, excluding the one we want to
+    migrate from
+
+    :param agent_list: API response for list_agents()
+    :param agent_type: used to filter the type of agent
+    :param excludeagent: which agent should we exclude from the list
+
+    """
+    return [agent['id'] for agent in agent_list
+            if agent['agent_type'] == agent_type
+            and agent['alive']
+            and agent['host'] != excludeagent]
 
 
 def agent_dead_id_list(agent_list, agent_type):
