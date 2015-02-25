@@ -127,6 +127,12 @@ shared_context 'endpoint-stubs' do
         scheme: 'compute_scheme',
         host: 'compute_host',
         port: 'compute_port'))
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
+      .with('compute-metadata-api')
+      .and_return(double(
+        scheme: 'compute_metadata_scheme',
+        host: 'compute_metadata_host',
+        port: 'compute_metadata_port'))
     allow_any_instance_of(Chef::Recipe).to receive(:admin_endpoint)
       .with('identity-admin')
       .and_return(double(

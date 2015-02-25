@@ -7,6 +7,7 @@ This file is used to list changes made in each version of cookbook-openstack-net
 * Use common specific_endpoint routines (bug 1412919)
 * Parameterize dhcp_agents_per_network
 * Parameterize neutron l3 agent HA parameters
+* Make use of new metadata endpoint in common
 
 ## 10.1.0
 * Add support for Neutron VPN Service

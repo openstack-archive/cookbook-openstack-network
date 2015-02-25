@@ -12,16 +12,10 @@ admin_user = <%= node["openstack"]["network"]["service_user"] %>
 admin_password = <%= @service_pass %>
 
 # IP address used by Nova metadata server
-# Default: nova_metadata_ip = 127.0.0.1
-<% if node["openstack"]["network"]["metadata"]["nova_metadata_ip"] -%>
-nova_metadata_ip = <%= node["openstack"]["network"]["metadata"]["nova_metadata_ip"] %>
-<% end -%>
+nova_metadata_ip = <%= @compute_metadata_ip %>
 
 # TCP Port used by Nova metadata server
-# Default: nova_metadata_port = 8775
-<% if node["openstack"]["network"]["metadata"]["nova_metadata_port"] -%>
-nova_metadata_port = <%= node["openstack"]["network"]["metadata"]["nova_metadata_port"] %>
-<% end -%>
+nova_metadata_port = <%= @compute_metadata_port %>
 
 # Which protocol to use for requests to Nova metadata server, http or https
 # nova_metadata_protocol = http

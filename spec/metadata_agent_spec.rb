@@ -72,15 +72,10 @@ describe 'openstack-network::metadata_agent' do
           expect(chef_run).to render_file(file.name).with_content(/^admin_password = admin_password_value$/)
         end
 
-        %w[nova_metadata_ip nova_metadata_port].each do |conditional_attr|
-          it "displays the #{conditional_attr} attribute when present" do
-            node.set['openstack']['network']['metadata'][conditional_attr] = "network_metadata_#{conditional_attr}_value"
-            expect(chef_run).to render_file(file.name).with_content(/^#{conditional_attr} = network_metadata_#{conditional_attr}_value$/)
-          end
-
-          it "does not display the #{conditional_attr} attribute if not set" do
-            node.set['openstack']['network']['metadata'][conditional_attr] = false
-            expect(chef_run).not_to render_file(file.name).with_content(/^#{conditional_attr} = /)
+        it 'has default metadata ip and port options set' do
+          [/^nova_metadata_ip = 127.0.0.1$/,
+           /^nova_metadata_port = 8775$/].each do |line|
+            expect(chef_run).to render_file(file.name).with_content(line)
           end
         end
 

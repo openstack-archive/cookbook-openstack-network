@@ -396,10 +396,6 @@ default['openstack']['network']['vpn']['ipsec_status_check_interval'] = 60
 
 # ============================= Metadata Agent Configuration ===============
 
-# The location of the Nova Metadata API service to proxy to (nil uses default)
-default['openstack']['network']['metadata']['nova_metadata_ip'] = '127.0.0.1'
-default['openstack']['network']['metadata']['nova_metadata_port'] = 8775
-
 # The name of the secret databag containing the metadata secret
 default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_secret'
 
