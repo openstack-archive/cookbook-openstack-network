@@ -5,7 +5,7 @@ maintainer_email 'opscode-chef-openstack@googlegroups.com'
 license           'Apache 2.0'
 description       'Installs and configures the OpenStack Network API Service and various agents and plugins'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           '10.1.1'
+version           '11.0.0'
 recipe            'openstack-network::client', 'Install packages required for network client'
 recipe            'openstack-network::server', 'Installs packages required for a OpenStack Network server'
 recipe            'openstack-network::openvswitch', 'Installs packages required for OVS'
@@ -17,5 +17,5 @@ recipe            'openstack-network::vpn_agent', 'Installs packages required fo
   supports os
 end
 
-depends           'openstack-common', '>= 10.4.0'
-depends           'openstack-identity', '>= 10.0.0'
+depends           'openstack-common', '>= 11.0.0'
+depends           'openstack-identity', '>= 11.0.0'
