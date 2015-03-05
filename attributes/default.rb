@@ -405,7 +405,7 @@ default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_s
 # node['openstack']['network']['service_plugins'] for the loadbalancer plugin.
 # See that attribute for details.
 
-default['openstack']['network']['lbaas']['device_driver'] = 'neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver'
+default['openstack']['network']['lbaas']['device_driver'] = 'neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver'
 
 # Number of seconds between sync of LBaaS agent with Neutron API server
 default['openstack']['network']['lbaas']['periodic_interval'] = 10
@@ -1034,7 +1034,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd'],
     'neutron_vpn_packages' => ['openstack-neutron', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
-    'neutron_lb_packages' => ['openstack-neutron', 'haproxy', 'iproute'],
+    'neutron_lb_packages' => ['python-neutron-lbaas', 'haproxy', 'iproute'],
     'neutron_openvswitch_packages' => ['openvswitch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch', 'iproute'],
     'neutron_linuxbridge_agent_packages' => ['openstack-neutron-linuxbridge', 'iproute'],
@@ -1096,7 +1096,7 @@ when 'debian'
     'neutron_l3_packages' => ['neutron-l3-agent', 'radvd'],
     'neutron_vpn_packages' => ['neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
-    'neutron_lb_packages' => ['neutron-lbaas-agent', 'haproxy'],
+    'neutron_lb_packages' => ['python-neutron-lbaas', 'neutron-lbaas-agent', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch-switch', 'openvswitch-datapath-dkms', 'bridge-utils'],
     'neutron_openvswitch_build_packages' => %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf dkms python-all python-qt4 python-zopeinterface python-twisted-conch),
     'neutron_openvswitch_agent_packages' => ['neutron-plugin-openvswitch', 'neutron-plugin-openvswitch-agent'],

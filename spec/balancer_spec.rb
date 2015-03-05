@@ -29,12 +29,18 @@ describe 'openstack-network::balancer' do
       end
     end
 
+    it 'uses db upgrade head' do
+      migrate_cmd = %r(neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      expect(chef_run).to run_bash('migrate lbaas database').with(code: migrate_cmd)
+    end
+
     it 'enables agent service' do
       expect(chef_run).to enable_service('neutron-lb-agent')
     end
 
     describe 'lbaas_agent.ini' do
-      let(:file) { chef_run.template('/etc/neutron/lbaas_agent.ini') }
+      let(:file) { chef_run.template('/etc/neutron/services/neutron-lbaas/lbaas_agent.ini') }
 
       it 'creates lbaas_agent.ini' do
         expect(chef_run).to create_template(file.name).with(
