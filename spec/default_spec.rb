@@ -59,6 +59,8 @@ describe 'openstack-network' do
         end
       end
 
+      include_context 'endpoint-stubs'
+
       it_behaves_like 'core plugin common configurator',
                       'bigswitch',
                       PLUGIN_MAP['bigswitch'],
@@ -82,6 +84,18 @@ describe 'openstack-network' do
                       vxlan_group: '',
                       enable_security_group: 'True',
                       enable_ipset: 'True'
+      # TODO: MRV
+      # OVS section is in there, need refactor this code to be able to
+      # handle sections and different attribute namespaces
+      #
+      # tenant_network_type: 'local',
+      # enable_tunneling: 'False',
+      # integration_bridge: 'br-int',
+      # tunnel_bridge: 'br-tun',
+      # local_ip: 'openvswitch_host',
+      # polling_interval: '2',
+      # veth_mtu: '1500',
+      # firewall_driver: 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 
       describe 'cisco' do
         let(:nexus_switch_value) do {
@@ -277,9 +291,6 @@ describe 'openstack-network' do
         include_context 'endpoint-stubs'
         before do
           node.set['openstack']['network']['core_plugin'] = 'openvswitch'
-          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-            .with('network-openvswitch')
-            .and_return(double(host: 'openvswitch_host'))
         end
 
         it_behaves_like 'core plugin common configurator',

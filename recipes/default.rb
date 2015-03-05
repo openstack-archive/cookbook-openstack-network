@@ -327,6 +327,7 @@ when 'midonet'
 
 when 'ml2'
 
+  openvswitch_endpoint = endpoint 'network-openvswitch'
   template_file = '/etc/neutron/plugins/ml2/ml2_conf.ini'
   mechanism_drivers = node['openstack']['network']['ml2']['mechanism_drivers']
   if node['openstack']['network']['l3']['router_distributed'] == 'auto'
@@ -339,10 +340,14 @@ when 'ml2'
     group node['openstack']['network']['platform']['group']
     mode 00644
     variables(
-      mechanism_drivers: mechanism_drivers
+      mechanism_drivers: mechanism_drivers,
+      local_ip: openvswitch_endpoint.host
     )
 
     notifies :restart, 'service[neutron-server]', :delayed if role_match
+    if node['recipes'].include?('openstack-network::openvswitch')
+      notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
+    end
   end
 
 when 'nec'

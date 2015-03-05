@@ -35,6 +35,9 @@ describe 'openstack-network' do
             group: 'neutron'
           )
       end
+      it 'does not include the ovs section' do
+        expect(chef_run).not_to render_file(file.name).with_content(/^[OVS]/)
+      end
     end
   end
 end
