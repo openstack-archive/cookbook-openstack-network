@@ -389,7 +389,7 @@ default['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] = 2
 # VPN device drivers which vpn agent will use
 # vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
 # vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is ipsec
-default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver']
+default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver']
 
 # Status check interval for ipsec vpn
 default['openstack']['network']['vpn']['ipsec_status_check_interval'] = 60
@@ -1032,7 +1032,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron', 'iproute'],
     'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd'],
-    'neutron_vpn_packages' => ['openstack-neutron', 'iproute'],
+    'neutron_vpn_packages' => ['python-neutron-vpnaas', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['python-neutron-lbaas', 'haproxy', 'iproute'],
     'neutron_openvswitch_packages' => ['openvswitch'],
@@ -1094,7 +1094,7 @@ when 'debian'
     'neutron_client_packages' => ['python-neutronclient', 'python-pyparsing'],
     'neutron_dhcp_packages' => ['neutron-dhcp-agent'],
     'neutron_l3_packages' => ['neutron-l3-agent', 'radvd'],
-    'neutron_vpn_packages' => ['neutron-vpn-agent'],
+    'neutron_vpn_packages' => ['python-neutron-vpnaas', 'neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['python-neutron-lbaas', 'neutron-lbaas-agent', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch-switch', 'openvswitch-datapath-dkms', 'bridge-utils'],

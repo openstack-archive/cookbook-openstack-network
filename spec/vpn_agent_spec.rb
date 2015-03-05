@@ -31,6 +31,12 @@ describe 'openstack-network::vpn_agent' do
       expect(chef_run).to upgrade_package('neutron-vpn-agent')
     end
 
+    it 'uses db upgrade head' do
+      migrate_cmd = %r(neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      expect(chef_run).to run_bash('migrate vpnaas database').with(code: migrate_cmd)
+    end
+
     it 'starts ipsec on boot' do
       expect(chef_run).to enable_service('ipsec')
     end
@@ -44,7 +50,7 @@ describe 'openstack-network::vpn_agent' do
     end
 
     describe 'vpn_agent.ini' do
-      let(:file) { chef_run.template('/etc/neutron/vpn_agent.ini') }
+      let(:file) { chef_run.template('/etc/neutron/services/neutron-vpnaas/vpn_agent.ini') }
 
       it 'creates vpn_agent.ini' do
         expect(chef_run).to create_template(file.name).with(
@@ -56,25 +62,25 @@ describe 'openstack-network::vpn_agent' do
 
       describe 'vpn_device_driver' do
         it 'renders one vpn_device_driver entry in vpn_agent.ini for default vpn_device_driver' do
-          [/^vpn_device_driver=neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver$/].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(line)
+          [/^vpn_device_driver=neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver$/].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('vpnagent', line)
           end
         end
 
         it 'renders multi vpn_device_driver entries in vpn_agent.ini, when multi vpn_device_driver set' do
-          chef_run.node.set['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver',
-                                                                                   'neutron.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver']
+          chef_run.node.set['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver',
+                                                                                   'neutron_vpnaas.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver']
           chef_run.converge(described_recipe)
-          [/^vpn_device_driver=neutron.services.vpn.device_drivers.ipsec.OpenSwanDriver$/,
-           /^vpn_device_driver=neutron.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver$/].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(line)
+          [/^vpn_device_driver=neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver$/,
+           /^vpn_device_driver=neutron_vpnaas.services.vpn.device_drivers.cisco_ipsec.CiscoCsrIPsecDriver$/].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('vpnagent', line)
           end
         end
 
         it 'renders no setted vpn_device_driver entry in vpn_agent.ini, when no vpn_device_driver set' do
           chef_run.node.set['openstack']['network']['vpn']['vpn_device_driver'] = []
           chef_run.converge(described_recipe)
-          expect(chef_run).to render_file(file.name).with_content(/^(?!vpn_device_driver)(.*)$/)
+          expect(chef_run).to render_config_file(file.name).with_section_content('vpnagent', /^(?!vpn_device_driver)(.*)$/)
         end
       end
 

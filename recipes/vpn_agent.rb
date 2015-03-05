@@ -51,6 +51,15 @@ platform_options['neutron_vpn_packages'].each do |pkg|
   end
 end
 
+bash 'migrate vpnaas database' do
+  timeout node['openstack']['network']['dbsync_timeout']
+  plugin_config_file = node['openstack']['network']['plugin_config_file']
+  migrate_command = "neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  code <<-EOF
+#{migrate_command} upgrade head
+EOF
+end
+
 platform_options['vpn_device_driver_services'].each do |svc|
   service 'vpn-device-driver-service' do
     service_name svc
@@ -66,8 +75,8 @@ service 'neutron-vpn-agent' do
   subscribes :restart, 'template[/etc/neutron/neutron.conf]'
 end
 
-template '/etc/neutron/vpn_agent.ini' do
-  source 'vpn_agent.ini.erb'
+template '/etc/neutron/services/neutron-vpnaas/vpn_agent.ini' do
+  source 'services/neutron-vpnaas/vpn_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode   00640
