@@ -23,7 +23,7 @@ tenant_network_types = <%= node['openstack']['network']['ml2']['tenant_network_t
 # Example: mechanism_drivers = cisco,logger
 # Example: mechanism_drivers = openvswitch,brocade
 # Example: mechanism_drivers = linuxbridge,brocade
-mechanism_drivers = <%= node['openstack']['network']['ml2']['mechanism_drivers'] %>
+mechanism_drivers = <%= @mechanism_drivers %>
 
 [ml2_type_flat]
 # (ListOpt) List of physical_network names with which flat networks

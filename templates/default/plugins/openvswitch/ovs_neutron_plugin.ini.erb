@@ -131,9 +131,7 @@ polling_interval = <%= node['openstack']['network']['openvswitch']['polling_inte
 # Example: tunnel_types = gre
 # Example: tunnel_types = vxlan
 # Example: tunnel_types = vxlan, gre
-<% if node["openstack"]["network"]["openvswitch"]["tunnel_types"] -%>
-tunnel_types = <%= node["openstack"]["network"]["openvswitch"]["tunnel_types"] %>
-<% end -%>
+tunnel_types = <%= @tunnel_types %>
 
 # (IntOpt) The port number to utilize if tunnel_types includes 'vxlan'. By
 # default, this will make use of the Open vSwitch default value of '4789' if
@@ -154,8 +152,7 @@ veth_mtu = <%= node["openstack"]["network"]["openvswitch"]["veth_mtu"] %>
 # enable plugin to populate remote ports macs and IPs (using fdb_add/remove
 # RPC calbbacks instead of tunnel_sync/update) on OVS agents in order to
 # optimize tunnel management.
-#
-# l2_population = False
+l2_population = <%= @l2_population %>
 
 # Enable local ARP responder. Requires OVS 2.1. This is only used by the l2
 # population ML2 MechanismDriver.
@@ -169,8 +166,7 @@ veth_mtu = <%= node["openstack"]["network"]["openvswitch"]["veth_mtu"] %>
 
 # (BoolOpt) Set to True on L2 agents to enable support
 # for distributed virtual routing.
-#
-# enable_distributed_routing = False
+enable_distributed_routing = <%= @enable_distributed_routing %>
 
 [securitygroup]
 # Firewall driver for realizing neutron security group function.

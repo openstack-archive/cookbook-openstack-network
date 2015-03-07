@@ -22,6 +22,12 @@
 
 include_recipe 'openstack-network'
 
+# Make Openstack object available in Chef::Recipe
+class ::Chef::Recipe
+  include ::Openstack
+  include ::Utils
+end
+
 ruby_block 'query gateway external network uuid' do
   block do
     begin
@@ -69,11 +75,22 @@ service 'neutron-l3-agent' do
   end
 end
 
+agent_mode = 'legacy'
+if [true, 'true', 'auto'].include?(node['openstack']['network']['l3']['router_distributed'])
+  if recipe_included? 'openstack-network::server'
+    agent_mode = 'dvr_snat'
+  elsif recipe_included? 'openstack-compute::compute'
+    agent_mode = 'dvr'
+  end
+end
 template '/etc/neutron/l3_agent.ini' do
   source 'l3_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode   00640
+  variables(
+    agent_mode: agent_mode
+  )
   unless node['openstack']['network']['enable_vpn']
     notifies :restart, 'service[neutron-l3-agent]', :immediately
   end

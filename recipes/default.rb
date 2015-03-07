@@ -30,6 +30,7 @@ require 'uri'
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
   include ::Openstack
+  include ::Utils
 end
 
 # Make Openstack object available in Chef::Resource::RubyBlock
@@ -186,6 +187,21 @@ ruby_block 'query service tenant uuid' do
   end
 end
 
+if node['openstack']['network']['l3']['router_distributed'] == 'auto'
+  if node['openstack']['network']['interface_driver'].split('.').last != 'OVSInterfaceDriver'
+    node.set['openstack']['network']['l3']['router_distributed'] = 'false'
+    Chef::Log.warn('OVSInterfaceDirver is not used as interface_driver, DVR is not supported without OVS')
+  end
+end
+
+router_distributed = 'False'
+if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
+  if recipe_included? 'openstack-network::server'
+    router_distributed = 'True'
+  else
+    router_distributed = 'False'
+  end
+end
 template '/etc/neutron/neutron.conf' do
   source 'neutron.conf.erb'
   owner node['openstack']['network']['platform']['user']
@@ -203,7 +219,8 @@ template '/etc/neutron/neutron.conf' do
     service_pass: service_pass,
     sql_connection: sql_connection,
     nova_endpoint: nova_endpoint,
-    nova_admin_pass: nova_admin_pass
+    nova_admin_pass: nova_admin_pass,
+    router_distributed: router_distributed
   )
 
   notifies :restart, 'service[neutron-server]', :delayed
@@ -335,12 +352,19 @@ when 'midonet'
 when 'ml2'
 
   template_file = '/etc/neutron/plugins/ml2/ml2_conf.ini'
+  mechanism_drivers = node['openstack']['network']['ml2']['mechanism_drivers']
+  if node['openstack']['network']['l3']['router_distributed'] == 'auto'
+    mechanism_drivers = 'openvswitch,l2population'
+  end
 
   template template_file do
     source 'plugins/ml2/ml2_conf.ini.erb'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
     mode 00644
+    variables(
+      mechanism_drivers: mechanism_drivers
+    )
 
     notifies :restart, 'service[neutron-server]', :delayed
   end
@@ -375,6 +399,14 @@ when 'openvswitch'
 
   openvswitch_endpoint = endpoint 'network-openvswitch'
   template_file = '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
+  tunnel_types = node['openstack']['network']['openvswitch']['tunnel_types']
+  l2_population = 'False'
+  enable_distributed_routing = 'False'
+  if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
+    tunnel_types = 'gre, vxlan'
+    l2_population = 'True'
+    enable_distributed_routing = 'True'
+  end
 
   template template_file do
     source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
@@ -382,7 +414,10 @@ when 'openvswitch'
     group node['openstack']['network']['platform']['group']
     mode 00644
     variables(
-      local_ip: openvswitch_endpoint.host
+      local_ip: openvswitch_endpoint.host,
+      tunnel_types: tunnel_types,
+      l2_population: l2_population,
+      enable_distributed_routing: enable_distributed_routing
     )
     notifies :restart, 'service[neutron-server]', :delayed
     if node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::openvswitch')

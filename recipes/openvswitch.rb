@@ -106,13 +106,24 @@ directory '/etc/neutron/plugins/openvswitch' do
 end
 
 openvswitch_endpoint = endpoint 'network-openvswitch'
+tunnel_types = node['openstack']['network']['openvswitch']['tunnel_types']
+l2_population = 'False'
+enable_distributed_routing = 'False'
+if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
+  tunnel_types = 'gre, vxlan'
+  l2_population = 'True'
+  enable_distributed_routing = 'True'
+end
 template '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini' do
   source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode 00644
   variables(
-    local_ip: openvswitch_endpoint.host
+    local_ip: openvswitch_endpoint.host,
+    tunnel_types: tunnel_types,
+    l2_population: l2_population,
+    enable_distributed_routing: enable_distributed_routing
   )
   only_if { platform_family?('rhel') }
 end
@@ -160,5 +171,11 @@ unless ['nicira', 'plumgrid', 'bigswitch'].include?(main_plugin)
       only_if "ip link show #{ext_bridge_iface}"
       notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
     end
+  end
+end
+
+if [true, 'true', 'auto'].include?(node['openstack']['network']['l3']['router_distributed'])
+  if !node['recipes'].include?('openstack-network::server') && node['recipes'].include?('openstack-compute::compute')
+    include_recipe 'openstack-network::l3_agent'
   end
 end

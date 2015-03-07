@@ -9,7 +9,7 @@ verbose = <%= node["openstack"]["network"]["verbose"] %>
 # the type of the router on the create request (admin-only attribute). Default
 # value is "False" to support legacy mode (centralized) routers.
 #
-# router_distributed = False
+router_distributed = <%= @router_distributed %>
 #
 # ===========End Global Config Option for Distributed L3 Router===============
 
