@@ -421,6 +421,13 @@ default['openstack']['network']['lbaas']['periodic_interval'] = 10
 # Supported types are: 'ovs' (ovs based plugins(OVS, Ryu, NEC, NVP, BigSwitch/Floodlight))
 # and 'linuxbridge'.
 default['openstack']['network']['lbaas_plugin'] = 'ovs'
+# ============================= FWaaS Configuration ==================
+
+# Set to True to enable firewall service
+default['openstack']['network']['fwaas']['enabled'] = 'True'
+
+# Firewall service driver with linux iptables
+default['openstack']['network']['fwaas']['driver'] = 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
 
 # ============================= OVS Plugin Configuration ===================
 
@@ -1038,7 +1045,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_packages' => ['openstack-neutron', 'openstack-neutron-ml2', 'iproute'],
     'neutron_client_packages' => ['python-neutronclient'],
     'neutron_dhcp_packages' => ['openstack-neutron', 'iproute'],
-    'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd'],
+    'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd', 'python-neutron-fwaas'],
     'neutron_vpn_packages' => ['python-neutron-vpnaas', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['python-neutron-lbaas', 'haproxy', 'iproute'],
@@ -1100,7 +1107,7 @@ when 'debian'
     'neutron_packages' => ['neutron-common', 'python-pyparsing', 'python-cliff'],
     'neutron_client_packages' => ['python-neutronclient', 'python-pyparsing'],
     'neutron_dhcp_packages' => ['neutron-dhcp-agent'],
-    'neutron_l3_packages' => ['neutron-l3-agent', 'radvd'],
+    'neutron_l3_packages' => ['neutron-l3-agent', 'radvd', 'python-neutron-fwaas'],
     'neutron_vpn_packages' => ['python-neutron-vpnaas', 'neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
     'neutron_lb_packages' => ['python-neutron-lbaas', 'neutron-lbaas-agent', 'haproxy'],
