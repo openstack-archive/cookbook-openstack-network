@@ -413,7 +413,16 @@ default['openstack']['network']['lbaas']['periodic_interval'] = 10
 # Set lbaas plugin
 # Supported types are: 'ovs' (ovs based plugins(OVS, Ryu, NEC, NVP, BigSwitch/Floodlight))
 # and 'linuxbridge'.
+# The lbaas plugin type can also be used for other drivers using
+# node['openstack']['network']['lbaas']['custom_interface_driver'] attribute.
+# Set this attribute to 'other' in order to load a custom driver
 default['openstack']['network']['lbaas_plugin'] = 'ovs'
+
+# Custom plugin to support new interface drivers.
+default['openstack']['network']['lbaas']['custom_interface_driver'] = nil
+
+# Using veth pairs for OVS based plugins.
+default['openstack']['network']['lbaas']['ovs_use_veth'] = 'False'
 
 # ============================= OVS Plugin Configuration ===================
 

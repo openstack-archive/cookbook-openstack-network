@@ -61,7 +61,9 @@ describe 'openstack-network::balancer' do
 
         it 'displays the interface driver setting for ovs lbaas plugin' do
           node.set['openstack']['network']['lbaas_plugin'] = 'ovs'
+          node.set['openstack']['network']['lbaas']['ovs_use_veth'] = 'True'
           expect(chef_run).to render_file(file.name).with_content(/^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/)
+          expect(chef_run).to render_file(file.name).with_content(/^ovs_use_veth = True$/)
         end
 
         it 'displays the interface driver setting for linuxbridge lbaas plugin' do
@@ -71,7 +73,8 @@ describe 'openstack-network::balancer' do
 
         it 'displays a null interface driver setting for other lbaas plugins' do
           node.set['openstack']['network']['lbaas_plugin'] = 'another_lbaas-plugin'
-          expect(chef_run).to render_file(file.name).with_content(/^interface_driver =$/)
+          node.set['openstack']['network']['lbaas']['custom_interface_driver'] = 'custom_driver'
+          expect(chef_run).to render_file(file.name).with_content(/^interface_driver = custom_driver$/)
         end
 
         it 'displays user_group as nogroup' do

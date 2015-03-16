@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.1.2
+* Added support for providing custom interface driver in lbaas_agent.ini.erb
+
 ## 10.1.1
 * Removed all files not needed by the neutron cookbook
 * Add radvd to neutron_l3_packages to support ipv6

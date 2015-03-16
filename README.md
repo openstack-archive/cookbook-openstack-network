@@ -149,6 +149,11 @@ VPN Agent Configuration
 * `openstack['openstack']['network']['vpn']['vpn_device_driver'] - (ListOpt) Comma-separated list of VPN device drivers which VPN agent will use
 * `openstack['openstack']['network']['vpn']['ipsec_status_check_interval'] - (IntOpt) Status check interval for ipsec VPN
 
+LBaaS Agent Configuration
+----------------------
+* `openstack['openstack']['network']['lbaas']['custom_interface_driver']` - (StrOpt) Custom plugin to support new interface drivers
+* `openstack['openstack']['network']['lbaas']['ovs_use_veth']` - (BoolOpt) Used to enable veth pairs for OVS based plugins
+
 The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
 
 * `openstack['endpoints']['network-api-bind']['host']` - The IP address to bind the api service to
