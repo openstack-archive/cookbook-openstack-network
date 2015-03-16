@@ -160,32 +160,6 @@ nova_endpoint = internal_endpoint 'compute-api'
 nova_version = node['openstack']['network']['nova']['url_version']
 nova_endpoint = uri_from_hash('scheme' => nova_endpoint.scheme.to_s, 'host' => nova_endpoint.host.to_s, 'port' => nova_endpoint.port.to_s, 'path' => nova_version)
 nova_admin_pass = get_password 'service', 'openstack-compute'
-ruby_block 'query service tenant uuid' do
-  # query keystone for the service tenant uuid
-  block do
-    begin
-      admin_user = node['openstack']['identity']['admin_user']
-      admin_tenant = node['openstack']['identity']['admin_tenant_name']
-      is_insecure = node['openstack']['network']['api']['auth']['insecure']
-      cafile = node['openstack']['network']['api']['auth']['cafile']
-      args = {}
-      is_insecure && args['insecure'] = ''
-      !cafile.to_s.empty? && args['os-cacert'] = cafile
-      env = openstack_command_env admin_user, admin_tenant
-      tenant_id = identity_uuid 'tenant', 'name', 'service', env, args
-      Chef::Log.error('service tenant UUID for nova_admin_tenant_id not found.') if tenant_id.nil?
-      node.set['openstack']['network']['nova']['admin_tenant_id'] = tenant_id
-    rescue RuntimeError => e
-      Chef::Log.error("Could not query service tenant UUID for nova_admin_tenant_id. Error was #{e.message}")
-    end
-  end
-  action :run
-  only_if do
-    (node['openstack']['network']['nova']['notify_nova_on_port_status_changes'] == 'True' ||
-    node['openstack']['network']['nova']['notify_nova_on_port_data_changes'] == 'True') &&
-    node['openstack']['network']['nova']['admin_tenant_id'].nil?
-  end
-end
 
 if node['openstack']['network']['l3']['router_distributed'] == 'auto'
   if node['openstack']['network']['interface_driver'].split('.').last != 'OVSInterfaceDriver'

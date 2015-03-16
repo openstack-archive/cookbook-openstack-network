@@ -591,10 +591,14 @@ describe 'openstack-network' do
           end
         end
 
-        %w(region_name admin_username admin_tenant_id).each do |attr|
+        it 'does not set the sets admin_tenant_id' do
+          expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', /^nova_admin_tenant_id =/)
+        end
+
+        %w(region_name admin_username admin_tenant_id admin_tenant_name).each do |attr|
           it "sets the #{attr} nova attribute" do
             node.set['openstack']['network']['nova'][attr] = "nova_#{attr}_value"
-            expect(chef_run).to render_file(file.name).with_content(/^nova_#{attr} = nova_#{attr}_value$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^nova_#{attr} = nova_#{attr}_value$/)
           end
         end
 
@@ -776,134 +780,6 @@ describe 'openstack-network' do
         it 'does not show the service_provider key if none present' do
           node.set['openstack']['network']['service_provider'] = []
           expect(chef_run).not_to render_file(file.name).with_content(/^service_provider = /)
-        end
-      end
-
-      describe 'query service tenant uuid' do
-        it 'has queried service tenant uuid for nova interactions' do
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has queried service tenant uuid for nova interactions with ssl' do
-          chef_run.node.set['openstack']['network']['api']['auth']['cafile'] = 'cafile'
-          chef_run.node.set['openstack']['network']['api']['auth']['insecure'] = true
-          allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:identity_uuid)
-            .with('tenant', 'name', 'service', {}, 'insecure' => '', 'os-cacert' => 'cafile')
-            .and_return('000-UUID-FROM-CLI')
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has queried service tenant uuid for nova interactions with ssl empty cafile' do
-          chef_run.node.set['openstack']['network']['api']['auth']['cafile'] = ''
-          chef_run.node.set['openstack']['network']['api']['auth']['insecure'] = true
-          allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:identity_uuid)
-            .with('tenant', 'name', 'service', {}, 'insecure' => '')
-            .and_return('000-UUID-FROM-CLI')
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has queried service tenant uuid for nova interactions with ssl nil cafile' do
-          chef_run.node.set['openstack']['network']['api']['auth']['cafile'] = nil
-          chef_run.node.set['openstack']['network']['api']['auth']['insecure'] = true
-          allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:identity_uuid)
-            .with('tenant', 'name', 'service', {}, 'insecure' => '')
-            .and_return('000-UUID-FROM-CLI')
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has status changes for nova interactions disabled without id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has data changes for nova interactions disabled without id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('000-UUID-FROM-CLI')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 000-UUID-FROM-CLI')
-        end
-
-        it 'has all changes for nova interactions disabled without id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq(nil)
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id =')
-        end
-
-        it 'has status changes for nova interactions disabled with id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
-          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
-          expect(chef_run).to render_file(file.name).with_content(
-          'nova_admin_tenant_id = 111-UUID-OVERRIDE')
-        end
-
-        it 'has data changes for nova interactions disabled with id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
-          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
-        end
-
-        it 'has all changes for nova interactions disabled with id override' do
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'False'
-          chef_run.node.set['openstack']['network']['nova']['notify_nova_on_port_data_changes'] = 'False'
-          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
-        end
-
-        it 'has overriden service tenant uuid for nova interactions' do
-          chef_run.node.set['openstack']['network']['nova']['admin_tenant_id'] = '111-UUID-OVERRIDE'
-          # run actual ruby_block resource
-          chef_run.find_resource(:ruby_block, 'query service tenant uuid').old_run_action(:create)
-          nova_tenant_id = chef_run.node['openstack']['network']['nova']['admin_tenant_id']
-          expect(nova_tenant_id).to eq('111-UUID-OVERRIDE')
-          expect(chef_run).to render_file(file.name).with_content(
-            'nova_admin_tenant_id = 111-UUID-OVERRIDE')
         end
       end
     end

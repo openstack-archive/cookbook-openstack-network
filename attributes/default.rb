@@ -250,8 +250,15 @@ default['openstack']['network']['nova']['admin_username'] = 'nova'
 default['openstack']['network']['nova']['url_version'] = '/v2'
 
 # The uuid of the nova tenant
-# Nil will cause the uuid to be queried from keystone.
+# Nil will cause the name below to be used.
 default['openstack']['network']['nova']['admin_tenant_id'] = nil
+
+# The name of the nova tenant
+# defined here based upon Compute cookbook attribute:
+# default['openstack']['compute']['service_tenant_name'] = 'service'
+# Since this cookbook does not depend upon Compute, can't directly
+# reference that here.
+default['openstack']['network']['nova']['admin_tenant_name'] = 'service'
 
 # Number of seconds between sending events to nova if there are any events to send
 default['openstack']['network']['nova']['send_events_interval'] = 2

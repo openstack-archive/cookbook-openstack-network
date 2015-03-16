@@ -359,8 +359,14 @@ nova_region_name = <%= node["openstack"]["network"]["nova"]["region_name"] %>
 # Username for connection to nova in admin context
 nova_admin_username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
 
+<% if node['openstack']['network']['nova']['admin_tenant_id'] -%>
 # The uuid of the admin nova tenant
 nova_admin_tenant_id = <%= node["openstack"]["network"]["nova"]["admin_tenant_id"] %>
+<% end -%>
+
+# The name of the admin nova tenant. If the uuid of the admin nova tenant
+# is set, this is optional.
+nova_admin_tenant_name = <%= node["openstack"]["network"]["nova"]["admin_tenant_name"] %>
 
 # Password for connection to nova in admin context.
 nova_admin_password = <%= @nova_admin_pass %>
