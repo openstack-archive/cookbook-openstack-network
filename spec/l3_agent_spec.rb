@@ -29,12 +29,10 @@ describe 'openstack-network::l3_agent' do
       expect(chef_run).to_not upgrade_package('neutron-l3-agent')
     end
 
-    it 'upgrades neutron l3 package' do
-      expect(chef_run).to upgrade_package('neutron-l3-agent')
-    end
-
-    it 'upgrades radvd package' do
-      expect(chef_run).to upgrade_package('radvd')
+    ['neutron-l3-agent', 'radvd', 'keepalived'].each do |pack|
+      it "upgrades #{pack} package" do
+        expect(chef_run).to upgrade_package(pack)
+      end
     end
 
     describe 'gateway_external_network_id' do
