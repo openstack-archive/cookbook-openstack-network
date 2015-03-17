@@ -61,22 +61,6 @@ describe 'openstack-network::server' do
       end
     end
 
-    describe 'api-paste.ini' do
-      let(:file) { chef_run.template('/etc/neutron/api-paste.ini') }
-
-      it 'creates api-paste.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0640
-        )
-      end
-
-      it_behaves_like 'custom template banner displayer' do
-        let(:file_name) { file.name }
-      end
-    end
-
     describe '/etc/default/neutron-server' do
       let(:file) { chef_run.template('/etc/default/neutron-server') }
 
