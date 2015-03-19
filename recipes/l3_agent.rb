@@ -96,6 +96,26 @@ template '/etc/neutron/l3_agent.ini' do
   end
 end
 
+# Only if the fwaas is enabled, migrate the database.
+bash 'migrate fwaas database' do
+  only_if { [true, 'true', 'True'].include?(node['openstack']['network']['fwaas']['enabled']) }
+  timeout node['openstack']['network']['dbsync_timeout']
+  plugin_config_file = node['openstack']['network']['plugin_config_file']
+  migrate_command = "neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  code <<-EOF
+  #{migrate_command} upgrade head
+  EOF
+end
+
+# As the fwaas package will be installed anyway, configure its config-file attributes following environment.
+template '/etc/neutron/services/neutron-fwaas/fwaas_driver.ini' do
+  source 'services/neutron-fwaas/fwaas_driver.ini.erb'
+  user node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00640
+  notifies :restart, 'service[neutron-l3-agent]', :immediately
+end
+
 driver_name = node['openstack']['network']['interface_driver'].split('.').last
 # See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
 case driver_name
