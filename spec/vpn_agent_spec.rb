@@ -84,6 +84,10 @@ describe 'openstack-network::vpn_agent' do
         end
       end
 
+      it 'renders default_config_area for strongswan driver' do
+        expect(chef_run).to render_config_file(file.name).with_section_content('strongswan', %r(^default_config_area=/etc/strongswan.d$))
+      end
+
       it 'notifies the vpn agent service' do
         expect(file).to notify('service[neutron-vpn-agent]').to(:restart).immediately
       end

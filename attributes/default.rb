@@ -403,6 +403,7 @@ default['openstack']['network']['l3']['ha']['ha_vrrp_advert_int'] = 2
 # VPN device drivers which vpn agent will use
 # vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
 # vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is ipsec
+# default_config_area in platform-specific settings is used to set the area where default StrongSwan configuration files are located
 default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver']
 
 # Status check interval for ipsec vpn
@@ -1064,6 +1065,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_l3_packages' => ['openstack-neutron', 'iproute', 'radvd', 'python-neutron-fwaas'],
     'neutron_vpn_packages' => ['python-neutron-vpnaas', 'iproute'],
     'vpn_device_driver_packages' => ['openswan'],
+    'default_config_area' => '/usr/share/strongswan/templates/config/strongswan.d',
     'neutron_lb_packages' => ['python-neutron-lbaas', 'haproxy', 'iproute'],
     'neutron_openvswitch_packages' => ['openvswitch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch', 'iproute'],
@@ -1094,6 +1096,7 @@ when 'suse'
     'neutron_l3_packages' => ['openstack-neutron-l3-agent', 'radvd'],
     'neutron_vpn_packages' => ['openstack-neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
+    'default_config_area' => '/etc/strongswan.d',
     'neutron_lb_packages' => ['openstack-neutron-lbaas-agent'],
     # plugins are installed by the main openstack-neutron package on SUSE
     'neutron_plugin_package' => '',
@@ -1126,6 +1129,7 @@ when 'debian'
     'neutron_l3_packages' => ['neutron-l3-agent', 'radvd', 'python-neutron-fwaas'],
     'neutron_vpn_packages' => ['python-neutron-vpnaas', 'neutron-vpn-agent'],
     'vpn_device_driver_packages' => ['openswan'],
+    'default_config_area' => '/etc/strongswan.d',
     'neutron_lb_packages' => ['python-neutron-lbaas', 'neutron-lbaas-agent', 'haproxy'],
     'neutron_openvswitch_packages' => ['openvswitch-switch', 'openvswitch-datapath-dkms', 'bridge-utils'],
     'neutron_openvswitch_build_packages' => %w(build-essential pkg-config fakeroot libssl-dev openssl debhelper autoconf dkms python-all python-qt4 python-zopeinterface python-twisted-conch),
