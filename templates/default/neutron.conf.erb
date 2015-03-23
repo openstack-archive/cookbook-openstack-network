@@ -158,6 +158,10 @@ amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
 allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] %>
 
 <% if @mq_service_type == "rabbitmq"  %>
+<% if node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] && node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
+kombu_ssl_version=<%= node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
+<% end -%>
+
 ##### RABBITMQ #####
 rpc_backend=neutron.openstack.common.rpc.impl_kombu
 rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
