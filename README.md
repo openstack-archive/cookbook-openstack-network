@@ -142,14 +142,14 @@ L3 Agent Configuration
 * `openstack['openstack']['network']['l3']['ha']['l3_ha']` - (BoolOpt) If True, virtual router will be created as ha by default. (default False)
 * `openstack['openstack']['network']['l3']['ha']['max_l3_agents_per_router']` - (IntOpt)  The maximum number of l3 agents for each ha router. (default 3)
 * `openstack['openstack']['network']['l3']['ha']['ha_vrrp_advert_int']` - (IntOpt) The advertisement interval in seconds. (default 2)
-* `openstack['openstack']['network']['l3']['router_distributed'] - Both true(bool) and 'true'(str) will set DVR(Distributed Virtual Router) configure enabled. Setting 'auto' will do a simple check then decide whether or not to enable DVR, default is enabled with OVS.
-* `openstack['openstack']['network']['l3']['router_delete_namespaces'] - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
+* `openstack['openstack']['network']['l3']['router_distributed']` - Both true(bool) and 'true'(str) will set DVR(Distributed Virtual Router) configure enabled. Setting 'auto' will do a simple check then decide whether or not to enable DVR, default is enabled with OVS.
+* `openstack['openstack']['network']['l3']['router_delete_namespaces']` - (StrOpt) If True, namespaces will be deleted when a router is destroyed.
 
 VPN Agent Configuration
 ----------------------
-* `openstack['openstack']['network']['enable_vpn'] - (BoolOpt) Used to enable VPN agent, if true, namespaces must be enabled. (default false)
-* `openstack['openstack']['network']['vpn']['vpn_device_driver'] - (ListOpt) Comma-separated list of VPN device drivers which VPN agent will use
-* `openstack['openstack']['network']['vpn']['ipsec_status_check_interval'] - (IntOpt) Status check interval for ipsec VPN
+* `openstack['openstack']['network']['enable_vpn']` - (BoolOpt) Used to enable VPN agent, if true, namespaces must be enabled. (default false)
+* `openstack['openstack']['network']['vpn']['vpn_device_driver']` - (ListOpt) Comma-separated list of VPN device drivers which VPN agent will use
+* `openstack['openstack']['network']['vpn']['ipsec_status_check_interval']` - (IntOpt) Status check interval for ipsec VPN
 
 LBaaS Agent Configuration
 ----------------------
