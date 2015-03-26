@@ -124,6 +124,7 @@ identity_admin_endpoint = admin_endpoint 'identity-admin'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['network']['api']['auth']['version']
+identity_uri = identity_uri_transform(identity_admin_endpoint)
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
@@ -191,7 +192,7 @@ template '/etc/neutron/neutron.conf' do
     mq_password: mq_password,
     core_plugin: core_plugin,
     auth_uri: auth_uri,
-    identity_admin_endpoint: identity_admin_endpoint,
+    identity_uri: identity_uri,
     service_pass: service_pass,
     sql_connection: sql_connection,
     nova_endpoint: nova_endpoint,
