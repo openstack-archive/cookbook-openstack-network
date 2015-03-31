@@ -7,7 +7,7 @@ describe 'openstack-network::balancer' do
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-
+      node.set['openstack']['network']['lbaas']['enabled'] = 'True'
       runner.converge(described_recipe)
     end
 

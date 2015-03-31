@@ -39,16 +39,7 @@ platform_options['neutron_server_packages'].each do |pkg|
 end
 
 # Migrate network database to latest version
-# The node['openstack']['network']['plugin_config_file'] attribute is set in the default.rb recipe
-
-bash 'migrate network database' do
-  timeout node['openstack']['network']['dbsync_timeout']
-  plugin_config_file = node['openstack']['network']['plugin_config_file']
-  migrate_command = "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
-end
+include_recipe 'openstack-network::db_migration'
 
 service 'neutron-server' do
   service_name platform_options['neutron_server_service']

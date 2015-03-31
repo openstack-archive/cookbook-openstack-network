@@ -31,12 +31,6 @@ describe 'openstack-network::vpn_agent' do
       expect(chef_run).to upgrade_package('neutron-vpn-agent')
     end
 
-    it 'uses db upgrade head' do
-      migrate_cmd = %r(neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
-      expect(chef_run).to run_bash('migrate vpnaas database').with(code: migrate_cmd)
-    end
-
     it 'starts ipsec on boot' do
       expect(chef_run).to enable_service('ipsec')
     end
@@ -50,7 +44,7 @@ describe 'openstack-network::vpn_agent' do
     end
 
     describe 'vpn_agent.ini' do
-      let(:file) { chef_run.template('/etc/neutron/services/neutron-vpnaas/vpn_agent.ini') }
+      let(:file) { chef_run.template('/etc/neutron/vpn_agent.ini') }
 
       it 'creates vpn_agent.ini' do
         expect(chef_run).to create_template(file.name).with(

@@ -23,6 +23,8 @@
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
 
+[true, 'true', 'True'].include?(node['openstack']['network']['lbaas']['enabled']) || return
+
 include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
@@ -34,16 +36,7 @@ platform_options['neutron_lb_packages'].each do |pkg|
   end
 end
 
-bash 'migrate lbaas database' do
-  timeout node['openstack']['network']['dbsync_timeout']
-  plugin_config_file = node['openstack']['network']['plugin_config_file']
-  migrate_command = "neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
-end
-
-template '/etc/neutron/services/neutron-lbaas/lbaas_agent.ini' do
+template node['openstack']['network']['lbaas']['config_file'] do
   source 'services/neutron-lbaas/lbaas_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']

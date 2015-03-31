@@ -7,14 +7,14 @@ describe 'openstack-network::balancer' do
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-
+      node.set['openstack']['network']['lbaas']['enabled'] = 'True'
       runner.converge(described_recipe)
     end
 
     include_context 'neutron-stubs'
 
     describe 'lbaas_agent.ini' do
-      let(:file) { chef_run.template('/etc/neutron/services/neutron-lbaas/lbaas_agent.ini') }
+      let(:file) { chef_run.template('/etc/neutron/lbaas_agent.ini') }
 
       it 'creates lbaas_agent.ini' do
         expect(chef_run).to create_template(file.name).with(
@@ -25,7 +25,7 @@ describe 'openstack-network::balancer' do
       end
 
       it 'displays user_group as nobody' do
-        expect(chef_run).to render_file('/etc/neutron/services/neutron-lbaas/lbaas_agent.ini').with_content(/^user_group = nobody$/)
+        expect(chef_run).to render_file(file.name).with_content(/^user_group = nobody$/)
       end
     end
 

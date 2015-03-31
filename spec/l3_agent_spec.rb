@@ -118,7 +118,7 @@ describe 'openstack-network::l3_agent' do
     end
 
     describe 'fwaas_driver.ini' do
-      let(:file) { chef_run.template('/etc/neutron/services/neutron-fwaas/fwaas_driver.ini') }
+      let(:file) { chef_run.template('/etc/neutron/fwaas_driver.ini') }
 
       it 'creates fwaas_driver.ini' do
         expect(chef_run).to create_template(file.name).with(
@@ -134,13 +134,13 @@ describe 'openstack-network::l3_agent' do
         end
 
         it 'displays the fwaas section attributes when fwaas is enabled' do
+          node.set['openstack']['network']['fwaas']['enabled'] = 'True'
           [/^driver = neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver$/, /^enabled = True$/].each do |line|
             expect(chef_run).to render_config_file(file.name).with_section_content('fwaas', line)
           end
         end
 
         it 'displays the fwaas section attributes when fwaas is not enabled' do
-          node.set['openstack']['network']['fwaas']['enabled'] = 'False'
           [/^driver = neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver$/, /^enabled = False$/].each do |line|
             expect(chef_run).to render_config_file(file.name).with_section_content('fwaas', line)
           end
@@ -149,20 +149,6 @@ describe 'openstack-network::l3_agent' do
 
       it 'upgrades neutron fwaas package' do
         expect(chef_run).to upgrade_package('python-neutron-fwaas')
-      end
-
-      it 'uses db upgrade head' do
-        migrate_cmd = %r(neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
-          --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
-        expect(chef_run).to run_bash('migrate fwaas database').with(code: migrate_cmd)
-      end
-
-      it 'does not use db upgrade head when fwaas is not enabled' do
-        # when fwaas is not enabled, do not migrate db
-        node.set['openstack']['network']['fwaas']['enabled'] = 'False'
-        migrate_cmd = %r(neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
-          --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
-        expect(chef_run).not_to run_bash('migrate fwaas database').with(code: migrate_cmd)
       end
     end
 

@@ -409,6 +409,9 @@ default['openstack']['network']['vpn']['vpn_device_driver'] = ['neutron_vpnaas.s
 # Status check interval for ipsec vpn
 default['openstack']['network']['vpn']['ipsec_status_check_interval'] = 60
 
+# Custom the vpnaas config file path
+default['openstack']['network']['vpn']['config_file'] = '/etc/neutron/vpn_agent.ini'
+
 # ============================= Metadata Agent Configuration ===============
 
 # The name of the secret databag containing the metadata secret
@@ -425,6 +428,12 @@ default['openstack']['network']['lbaas']['device_driver'] = 'neutron_lbaas.servi
 # Number of seconds between sync of LBaaS agent with Neutron API server
 default['openstack']['network']['lbaas']['periodic_interval'] = 10
 
+# Set to True to enable lbaas
+default['openstack']['network']['lbaas']['enabled'] = 'False'
+
+# Custom the lbaas config file path
+default['openstack']['network']['lbaas']['config_file'] = '/etc/neutron/lbaas_agent.ini'
+
 # Set lbaas plugin
 # Supported types are: 'ovs' (ovs based plugins(OVS, Ryu, NEC, NVP, BigSwitch/Floodlight))
 # and 'linuxbridge'.
@@ -432,19 +441,23 @@ default['openstack']['network']['lbaas']['periodic_interval'] = 10
 # node['openstack']['network']['lbaas']['custom_interface_driver'] attribute.
 # Set this attribute to 'other' in order to load a custom driver
 default['openstack']['network']['lbaas_plugin'] = 'ovs'
-# ============================= FWaaS Configuration ==================
-
-# Set to True to enable firewall service
-default['openstack']['network']['fwaas']['enabled'] = 'True'
-
-# Firewall service driver with linux iptables
-default['openstack']['network']['fwaas']['driver'] = 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
 
 # Custom plugin to support new interface drivers.
 default['openstack']['network']['lbaas']['custom_interface_driver'] = nil
 
 # Using veth pairs for OVS based plugins.
 default['openstack']['network']['lbaas']['ovs_use_veth'] = 'False'
+
+# ============================= FWaaS Configuration ==================
+
+# Set to True to enable firewall service
+default['openstack']['network']['fwaas']['enabled'] = 'False'
+
+# Firewall service driver with linux iptables
+default['openstack']['network']['fwaas']['driver'] = 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
+
+# Custom the fwaas config file path
+default['openstack']['network']['fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
 
 # ============================= OVS Plugin Configuration ===================
 
