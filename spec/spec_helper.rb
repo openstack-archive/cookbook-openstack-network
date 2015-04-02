@@ -119,6 +119,9 @@ end
 shared_context 'endpoint-stubs' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+      .with('network-openvswitch')
+      .and_return(double(host: 'openvswitch_host', port: 'openvswitch_port'))
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('network-api-bind')
       .and_return(double(host: 'network_host', port: 'network_port'))
     allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)

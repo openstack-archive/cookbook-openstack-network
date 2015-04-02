@@ -70,3 +70,8 @@ enable_security_group = <%= node['openstack']['network']['ml2']['enable_security
 # Use ipset to speed-up the iptables security groups. Enabling ipset support
 # requires that ipset is installed on L2 agent node.
 enable_ipset = <%= node['openstack']['network']['ml2']['enable_ipset'] %>
+
+<% if node['platform_family'] == 'debian' -%>
+# For ubuntu, pull in the openvswitch configuration
+<%= render 'plugins/openvswitch/ovs_neutron_plugin.ini.erb' -%>
+<% end -%>
