@@ -52,7 +52,7 @@ default['openstack']['network']['rabbit_server_chef_role'] = 'rabbitmq-server'
 # Used in the Keystone authtoken middleware configuration
 default['openstack']['network']['service_tenant_name'] = 'service'
 default['openstack']['network']['service_user'] = 'neutron'
-default['openstack']['network']['service_role'] = 'admin'
+default['openstack']['network']['service_role'] = 'service'
 
 # Number of separate worker processes to spawn.  The default, 0, runs the
 # worker thread in the current process.  Greater than 0 launches that number of
