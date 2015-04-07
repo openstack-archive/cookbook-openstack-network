@@ -180,9 +180,9 @@ rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
 <% end %>
 # Maximum retries with trying to connect to RabbitMQ
 # (the default of 0 implies an infinite retry count)
-# rabbit_max_retries = 0
+rabbit_max_retries=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_max_retries"] %>
 # RabbitMQ connection retry interval
-# rabbit_retry_interval = 1
+rabbit_retry_interval=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_retry_interval"] %>
 <% end %>
 
 <% if @mq_service_type == "qpid"  %>

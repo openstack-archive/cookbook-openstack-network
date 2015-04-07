@@ -506,6 +506,14 @@ describe 'openstack-network' do
             expect(chef_run).to render_file(file.name).with_content(/^rabbit_virtual_host=rabbit_virtual_host_value$/)
           end
 
+          it 'sets the rabbit_retry_interval' do
+            expect(chef_run).to render_file(file.name).with_content(/^rabbit_retry_interval=1$/)
+          end
+
+          it 'sets the rabbit_max_retries' do
+            expect(chef_run).to render_file(file.name).with_content(/^rabbit_max_retries=0$/)
+          end
+
           context 'rabbit ha enabled' do
             before do
               node.set['openstack']['mq']['network']['rabbit']['ha'] = true

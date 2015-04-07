@@ -17,5 +17,5 @@ recipe            'openstack-network::vpn_agent', 'Installs packages required fo
   supports os
 end
 
-depends           'openstack-common', '>= 11.0.0'
+depends           'openstack-common', '>= 11.2.0'
 depends           'openstack-identity', '>= 11.0.0'
