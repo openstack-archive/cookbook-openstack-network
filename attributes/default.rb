@@ -298,8 +298,8 @@ default['openstack']['network']['dhcp']['enable_metadata_network'] = 'False'
 
 # the version of dnsmasq for centos 6.5 is two revs behind where the dhcp-agent needs
 # to run properly. This is a version that allows and starts the dhcp-agent correctly.
-default['openstack']['network']['dhcp']['dnsmasq_rpm_source'] = "http://pkgs.repoforge.org/dnsmasq/dnsmasq-#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}.rpm"
 default['openstack']['network']['dhcp']['dnsmasq_rpm_version'] = '2.65-1.el6.rfx.x86_64'
+default['openstack']['network']['dhcp']['dnsmasq_rpm_source'] = "http://pkgs.repoforge.org/dnsmasq/dnsmasq-#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}.rpm"
 
 # The package architecture that will be built which should match the
 # archecture of the server this cookbook will run on which will be
