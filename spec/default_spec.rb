@@ -442,7 +442,7 @@ describe 'openstack-network' do
           let(:file_name) { file.name }
         end
 
-        %w(debug verbose state_path lock_path log_dir auth_strategy
+        %w(debug verbose state_path log_dir auth_strategy
            dhcp_lease_duration rpc_thread_pool_size rpc_conn_pool_size
            rpc_response_timeout control_exchange allow_overlapping_ips
            notification_driver api_workers rpc_workers).each do |attr|
@@ -450,6 +450,11 @@ describe 'openstack-network' do
             node.set['openstack']['network'][attr] = "#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
           end
+        end
+
+        it 'sets the lock_path attribute' do
+          node.set['openstack']['network']['lock_path'] = 'lock_path_value'
+          expect(chef_run).to render_config_file(file.name).with_section_content('oslo_concurrency', /^lock_path = lock_path_value$/)
         end
 
         it 'sets the log_config attribute if using syslog' do
@@ -501,13 +506,6 @@ describe 'openstack-network' do
           expect(chef_run).not_to render_file(file.name).with_content(/^service_plugins = $/)
         end
 
-        %w(durable_queues auto_delete).each do |attr|
-          it "sets the ampq queue #{attr} attribute" do
-            node.set['openstack']['mq']['network'][attr] = "#{attr}_value"
-            expect(chef_run).to render_file(file.name).with_content(/^amqp_#{attr}=#{attr}_value$/)
-          end
-        end
-
         context 'rabbitmq service' do
           let(:userid) { 'rabbit_userid_value' }
           let(:password) { 'rabbit_password' }
@@ -519,25 +517,32 @@ describe 'openstack-network' do
               .and_return(password)
           end
 
+          %w(durable_queues auto_delete).each do |attr|
+            it "sets the ampq queue #{attr} attribute" do
+              node.set['openstack']['mq']['network'][attr] = "#{attr}_value"
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^amqp_#{attr}=#{attr}_value$/)
+            end
+          end
+
           it 'sets the rabbit_userid attribute' do
-            expect(chef_run).to render_file(file.name).with_content(/^rabbit_userid=#{userid}$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_userid=#{userid}$/)
           end
 
           it 'sets the rabbit_password attribute' do
-            expect(chef_run).to render_file(file.name).with_content(/^rabbit_password=#{password}$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_password=#{password}$/)
           end
 
           it 'sets the rabbit_virtual_host attribute' do
             node.set['openstack']['mq']['network']['rabbit']['vhost'] = 'rabbit_virtual_host_value'
-            expect(chef_run).to render_file(file.name).with_content(/^rabbit_virtual_host=rabbit_virtual_host_value$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_virtual_host=rabbit_virtual_host_value$/)
           end
 
           it 'sets the rabbit_retry_interval' do
-            expect(chef_run).to render_file(file.name).with_content(/^rabbit_retry_interval=1$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_retry_interval=1$/)
           end
 
           it 'sets the rabbit_max_retries' do
-            expect(chef_run).to render_file(file.name).with_content(/^rabbit_max_retries=0$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_max_retries=0$/)
           end
 
           context 'rabbit ha enabled' do
@@ -548,15 +553,15 @@ describe 'openstack-network' do
             it 'sets the rabbit_hosts attribute' do
               allow_any_instance_of(Chef::Recipe).to receive(:rabbit_servers)
                 .and_return('rabbit_servers_value')
-              expect(chef_run).to render_file(file.name).with_content(/^rabbit_hosts=rabbit_servers_value$/)
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_hosts=rabbit_servers_value$/)
             end
 
             it 'sets the rabbit_ha_queues attribute' do
-              expect(chef_run).to render_file(file.name).with_content(/^rabbit_ha_queues=True$/)
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_ha_queues=True$/)
             end
 
             it 'sets the rabbit_use_ssl attribute' do
-              expect(chef_run).to render_file(file.name).with_content(/^rabbit_use_ssl=false$/)
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_use_ssl=false$/)
             end
           end
 
@@ -568,20 +573,20 @@ describe 'openstack-network' do
             %w(host port use_ssl).each do |attr|
               it "sets the non-ha rabbit_#{attr} attribute" do
                 node.set['openstack']['mq']['network']['rabbit'][attr] = "rabbit_#{attr}_value"
-                expect(chef_run).to render_file(file.name).with_content(/^rabbit_#{attr}=rabbit_#{attr}_value$/)
+                expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_#{attr}=rabbit_#{attr}_value$/)
               end
             end
           end
 
           it 'does not have kombu ssl version set' do
-            expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', /^kombu_ssl_version=TLSv1.2$/)
+            expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
           end
 
           it 'sets kombu ssl version' do
             node.set['openstack']['mq']['network']['rabbit']['use_ssl'] = true
             node.set['openstack']['mq']['network']['rabbit']['kombu_ssl_version'] = 'TLSv1.2'
 
-            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^kombu_ssl_version=TLSv1.2$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
           end
         end
 
@@ -593,23 +598,30 @@ describe 'openstack-network' do
               .and_return('qpid_password_value')
           end
 
+          %w(durable_queues auto_delete).each do |attr|
+            it "sets the ampq queue #{attr} attribute" do
+              node.set['openstack']['mq']['network'][attr] = "#{attr}_value"
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_qpid', /^amqp_#{attr}=#{attr}_value$/)
+            end
+          end
+
           %w(port username sasl_mechanisms reconnect reconnect_timeout reconnect_limit
              reconnect_interval_min reconnect_interval_max reconnect_interval heartbeat
              protocol tcp_nodelay topology_version).each do |attr|
             it "sets the common qpid #{attr} attribute" do
               node.set['openstack']['mq']['network']['qpid'][attr] = "qpid_#{attr}_value"
-              expect(chef_run).to render_file(file.name).with_content(/^qpid_#{attr}=qpid_#{attr}_value$/)
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_qpid', /^qpid_#{attr}=qpid_#{attr}_value$/)
             end
           end
 
           it 'sets the qpid_hostname attribute' do
             node.set['openstack']['mq']['network']['qpid']['host'] = 'qpid_hostname_value'
-            expect(chef_run).to render_file(file.name).with_content(/^qpid_hostname=qpid_hostname_value$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_qpid', /^qpid_hostname=qpid_hostname_value$/)
           end
 
           it 'sets the qpid_password attribute' do
             node.set['openstack']['mq']['network']['qpid']['username'] = 'qpid_username_value'
-            expect(chef_run).to render_file(file.name).with_content(/^qpid_password=qpid_password_value$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_qpid', /^qpid_password=qpid_password_value$/)
           end
         end
 
@@ -652,46 +664,50 @@ describe 'openstack-network' do
           end
         end
 
+        it 'has default nova auth_plugin attribute' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^auth_plugin = password/)
+        end
+
         it 'does not set the sets admin_tenant_id' do
-          expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', /^nova_admin_tenant_id =/)
+          expect(chef_run).not_to render_config_file(file.name).with_section_content('nova', /^admin_tenant_id =/)
         end
 
         %w(region_name admin_username admin_tenant_id admin_tenant_name).each do |attr|
           it "sets the #{attr} nova attribute" do
             node.set['openstack']['network']['nova'][attr] = "nova_#{attr}_value"
-            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^nova_#{attr} = nova_#{attr}_value$/)
+            expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^#{attr} = nova_#{attr}_value$/)
           end
         end
 
-        it 'sets the nova_url attribute with the right version' do
+        it 'sets the nova url attribute with the right version' do
           node.set['openstack']['network']['nova']['url_version'] = '/nova_version_value'
-          expect(chef_run).to render_file(file.name).with_content(%r(^nova_url = http://127.0.0.1:8774/nova_version_value$))
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^url = http://127.0.0.1:8774/nova_version_value$))
         end
 
-        it 'sets the nova_admin_password attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^nova_admin_password = nova-pass$/)
+        it 'sets the nova admin_password attribute' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^admin_password = nova-pass$/)
         end
 
-        it 'sets the nova_admin_auth_url attribute' do
-          expect(chef_run).to render_file(file.name).with_content(%r(^nova_admin_auth_url = http://127.0.0.1:35357/v2.0$))
+        it 'sets the nova admin_auth_url attribute' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^admin_auth_url = http://127.0.0.1:35357/v2.0$))
         end
 
-        it 'has default nova_api_insecure' do
-          expect(chef_run).to render_file(file.name).with_content(/^nova_api_insecure = false$/)
+        it 'has default nova api insecure' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^insecure = false$/)
         end
 
-        it 'sets nova_api_insecure' do
-          node.set['openstack']['network']['nova']['nova_api_insecure'] = true
-          expect(chef_run).to render_file(file.name).with_content(/^nova_api_insecure = true$/)
+        it 'sets nova api insecure' do
+          node.set['openstack']['network']['nova']['insecure'] = true
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^insecure = true$/)
         end
 
-        it 'has no nova_ca_certificates_file set by default' do
-          expect(chef_run).not_to render_file(file.name).with_content(/^nova_ca_certificates_file =/)
+        it 'has no nova ca certificates file set by default' do
+          expect(chef_run).not_to render_config_file(file.name).with_section_content('nova', /^cafile =/)
         end
 
         it 'sets nova_ca_certificates_file' do
-          node.set['openstack']['network']['nova']['nova_ca_certificates_file'] = 'dir/to/path'
-          expect(chef_run).to render_file(file.name).with_content(%r{^nova_ca_certificates_file = dir/to/path$})
+          node.set['openstack']['network']['nova']['cafile'] = 'dir/to/path'
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r{^cafile = dir/to/path$})
         end
 
         it 'sets the misc_neutron values' do

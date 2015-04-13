@@ -78,8 +78,8 @@ TODO
 
 Neutron Nova interactions
 -------------------------
-* `openstack["network"]["nova"]["nova_ca_certificates_file"]` - CA file for novaclient to verify server certificates
-* `openstack["network"]["nova"]["nova_api_insecure"]` - Boolean to control ignoring SSL errors on the nova url
+* `openstack["network"]["nova"]["cafile"]` - CA file for novaclient to verify server certificates
+* `openstack["network"]["nova"]["insecure"]` - Boolean to control ignoring SSL errors on the nova url
 
 MQ attributes
 -------------

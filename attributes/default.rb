@@ -222,11 +222,14 @@ default['openstack']['network']['rpc_conn_pool_size'] = 30
 default['openstack']['network']['rpc_response_timeout'] = 60
 
 # ======== Neutron Nova interactions ==========
+# Name of the plugin to load
+default['openstack']['network']['nova']['auth_plugin'] = 'password'
+
 # CA file for novaclient to verify server certificates
-default['openstack']['network']['nova']['nova_ca_certificates_file'] = nil
+default['openstack']['network']['nova']['cafile'] = nil
 
 # Boolean to control ignoring SSL errors on the nova url
-default['openstack']['network']['nova']['nova_api_insecure'] = false
+default['openstack']['network']['nova']['insecure'] = false
 
 # Send notification to nova when port status is active.
 default['openstack']['network']['nova']['notify_nova_on_port_status_changes'] = 'True'

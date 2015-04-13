@@ -20,9 +20,6 @@ debug = <%= node["openstack"]["network"]["debug"] %>
 # user executing the agent.
 state_path = <%= node["openstack"]["network"]["state_path"] %>
 
-# Where to store lock files
-lock_path = <%= node["openstack"]["network"]["lock_path"] %>
-
 # log_format = %(asctime)s %(levelname)8s [%(name)s] %(message)s
 # log_date_format = %Y-%m-%d %H:%M:%S
 
@@ -139,9 +136,6 @@ rpc_response_timeout = <%= node['openstack']['network']['rpc_response_timeout'] 
 # allowed_rpc_exception_modules = neutron.openstack.common.exception, nova.exception
 # AMQP exchange to connect to if using RabbitMQ or QPID
 control_exchange = <%= node["openstack"]["network"]["control_exchange"] %>
-# AMQP queue config options
-amqp_durable_queues=<%= node['openstack']['mq']['network']['durable_queues'] %>
-amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
 
 # Configuration options if sending notifications via kombu rpc (these are
 # the defaults)
@@ -156,55 +150,6 @@ amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
 
 # allow_overlapping_ips = False
 allow_overlapping_ips = <%= node["openstack"]["network"]["allow_overlapping_ips"] %>
-
-<% if @mq_service_type == "rabbitmq"  %>
-<% if node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] && node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
-kombu_ssl_version=<%= node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
-<% end -%>
-
-##### RABBITMQ #####
-rpc_backend=neutron.openstack.common.rpc.impl_kombu
-rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
-rabbit_password=<%= @mq_password %>
-rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
-<% if node["openstack"]["mq"]["network"]["rabbit"]["ha"] %>
-# Use HA queues in RabbitMQ (x-ha-policy: all).You need to
-# wipe RabbitMQ database when changing this option. (boolean value)
-rabbit_hosts=<%= @rabbit_hosts %>
-rabbit_ha_queues=True
-rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
-<% else %>
-rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
-rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
-rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
-<% end %>
-# Maximum retries with trying to connect to RabbitMQ
-# (the default of 0 implies an infinite retry count)
-rabbit_max_retries=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_max_retries"] %>
-# RabbitMQ connection retry interval
-rabbit_retry_interval=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_retry_interval"] %>
-<% end %>
-
-<% if @mq_service_type == "qpid"  %>
-##### QPID #####
-rpc_backend=neutron.openstack.common.rpc.impl_qpid
-qpid_hostname=<%= node["openstack"]["mq"]["network"]["qpid"]["host"] %>
-qpid_port=<%= node["openstack"]["mq"]["network"]["qpid"]["port"] %>
-qpid_password=<%= @mq_password %>
-qpid_username=<%= node["openstack"]["mq"]["network"]["qpid"]["username"] %>
-qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["network"]["qpid"]["sasl_mechanisms"] %>
-qpid_reconnect=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect"] %>
-qpid_reconnect_timeout=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_timeout"] %>
-qpid_reconnect_limit=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_limit"] %>
-qpid_reconnect_interval_min=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_min"] %>
-qpid_reconnect_interval_max=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_max"] %>
-qpid_reconnect_interval=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval"] %>
-qpid_heartbeat=<%= node["openstack"]["mq"]["network"]["qpid"]["heartbeat"] %>
-# qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
-qpid_protocol=<%= node["openstack"]["mq"]["network"]["qpid"]["protocol"] %>
-qpid_tcp_nodelay=<%= node["openstack"]["mq"]["network"]["qpid"]["tcp_nodelay"] %>
-qpid_topology_version=<%= node['openstack']['mq']['network']['qpid']['topology_version'] %>
-<% end %>
 
 # ZMQ
 # rpc_backend=neutron.openstack.common.rpc.impl_zmq
@@ -354,41 +299,6 @@ notify_nova_on_port_status_changes = <%= node["openstack"]["network"]["nova"]["n
 # so nova can update it's cache.
 notify_nova_on_port_data_changes = <%= node["openstack"]["network"]["nova"]["notify_nova_on_port_data_changes"] %>
 
-# URL for connection to nova (Only supports one nova region currently).
-nova_url = <%= @nova_endpoint %>
-
-# Name of nova region to use. Useful if keystone manages more than one region
-nova_region_name = <%= node["openstack"]["network"]["nova"]["region_name"] %>
-
-# Username for connection to nova in admin context
-nova_admin_username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
-
-<% if node['openstack']['network']['nova']['admin_tenant_id'] -%>
-# The uuid of the admin nova tenant
-nova_admin_tenant_id = <%= node["openstack"]["network"]["nova"]["admin_tenant_id"] %>
-<% end -%>
-
-# The name of the admin nova tenant. If the uuid of the admin nova tenant
-# is set, this is optional.
-nova_admin_tenant_name = <%= node["openstack"]["network"]["nova"]["admin_tenant_name"] %>
-
-# Password for connection to nova in admin context.
-nova_admin_password = <%= @nova_admin_pass %>
-
-# Authorization URL for connection to nova in admin context.
-nova_admin_auth_url = <%= @identity_admin_endpoint.to_s %>
-
-# CA file for novaclient to verify server certificates
-<% if node['openstack']['network']['nova']['nova_ca_certificates_file'] -%>
-nova_ca_certificates_file = <%= node['openstack']['network']['nova']['nova_ca_certificates_file'] %>
-<% else -%>
-# nova_ca_certificates_file =
-<% end -%>
-
-# Boolean to control ignoring SSL errors on the nova url
-# nova_api_insecure = False
-nova_api_insecure = <%= node['openstack']['network']['nova']['nova_api_insecure'] %>
-
 # Number of seconds between sending events to nova if there are any events to send
 send_events_interval = <%= node["openstack"]["network"]["nova"]["send_events_interval"] %>
 
@@ -426,6 +336,90 @@ send_events_interval = <%= node["openstack"]["network"]["nova"]["send_events_int
 # Matchmaker ring file (JSON). (string value)
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile=/etc/oslo/matchmaker_ring.json
+
+
+[oslo_concurrency]
+
+# Directory to use for lock files. For security, the specified directory should
+# only be writable by the user running the processes that need locking.
+# Defaults to environment variable OSLO_LOCK_PATH. If external locks are used,
+# a lock path must be set.
+lock_path = <%= node["openstack"]["network"]["lock_path"] %>
+
+# Enables or disables inter-process locks.
+# disable_process_locking = False
+
+
+<% if @mq_service_type == "qpid"  %>
+[oslo_messaging_qpid]
+
+#
+# From oslo.messaging
+#
+
+# AMQP queue config options
+amqp_durable_queues=<%= node['openstack']['mq']['network']['durable_queues'] %>
+amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
+
+##### QPID #####
+rpc_backend=neutron.openstack.common.rpc.impl_qpid
+qpid_hostname=<%= node["openstack"]["mq"]["network"]["qpid"]["host"] %>
+qpid_port=<%= node["openstack"]["mq"]["network"]["qpid"]["port"] %>
+qpid_password=<%= @mq_password %>
+qpid_username=<%= node["openstack"]["mq"]["network"]["qpid"]["username"] %>
+qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["network"]["qpid"]["sasl_mechanisms"] %>
+qpid_reconnect=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect"] %>
+qpid_reconnect_timeout=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_timeout"] %>
+qpid_reconnect_limit=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_limit"] %>
+qpid_reconnect_interval_min=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_min"] %>
+qpid_reconnect_interval_max=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval_max"] %>
+qpid_reconnect_interval=<%= node["openstack"]["mq"]["network"]["qpid"]["reconnect_interval"] %>
+qpid_heartbeat=<%= node["openstack"]["mq"]["network"]["qpid"]["heartbeat"] %>
+# qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
+qpid_protocol=<%= node["openstack"]["mq"]["network"]["qpid"]["protocol"] %>
+qpid_tcp_nodelay=<%= node["openstack"]["mq"]["network"]["qpid"]["tcp_nodelay"] %>
+qpid_topology_version=<%= node['openstack']['mq']['network']['qpid']['topology_version'] %>
+<% end %>
+
+
+<% if @mq_service_type == "rabbitmq"  %>
+[oslo_messaging_rabbit]
+
+#
+# From oslo.messaging
+#
+
+# AMQP queue config options
+amqp_durable_queues=<%= node['openstack']['mq']['network']['durable_queues'] %>
+amqp_auto_delete=<%= node['openstack']['mq']['network']['auto_delete'] %>
+
+<% if node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] && node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
+kombu_ssl_version=<%= node["openstack"]["mq"]["network"]["rabbit"]["kombu_ssl_version"] %>
+<% end -%>
+
+##### RABBITMQ #####
+rpc_backend=neutron.openstack.common.rpc.impl_kombu
+rabbit_userid=<%= node["openstack"]["mq"]["network"]["rabbit"]["userid"] %>
+rabbit_password=<%= @mq_password %>
+rabbit_virtual_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["vhost"] %>
+<% if node["openstack"]["mq"]["network"]["rabbit"]["ha"] %>
+# Use HA queues in RabbitMQ (x-ha-policy: all).You need to
+# wipe RabbitMQ database when changing this option. (boolean value)
+rabbit_hosts=<%= @rabbit_hosts %>
+rabbit_ha_queues=True
+rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
+<% else %>
+rabbit_host=<%= node["openstack"]["mq"]["network"]["rabbit"]["host"] %>
+rabbit_port=<%= node["openstack"]["mq"]["network"]["rabbit"]["port"] %>
+rabbit_use_ssl=<%= node["openstack"]["mq"]["network"]["rabbit"]["use_ssl"] %>
+<% end %>
+# Maximum retries with trying to connect to RabbitMQ
+# (the default of 0 implies an infinite retry count)
+rabbit_max_retries=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_max_retries"] %>
+# RabbitMQ connection retry interval
+rabbit_retry_interval=<%= node["openstack"]["mq"]["network"]["rabbit"]["rabbit_retry_interval"] %>
+<% end %>
+
 
 [quotas]
 # Default driver to use for quota checks
@@ -577,6 +571,46 @@ connection_trace = <%= node['openstack']['db']['network']['connection_trace'] %>
 
 # If set, use this value for pool_timeout with sqlalchemy
 pool_timeout = <%= node['openstack']['db']['network']['pool_timeout'] %>
+
+[nova]
+
+# Name of the plugin to load
+auth_plugin = <%= node['openstack']['network']['nova']['auth_plugin'] %>
+
+# Boolean to control ignoring SSL errors on the nova url
+# insecure = False
+insecure = <%= node['openstack']['network']['nova']['insecure'] %>
+
+# URL for connection to nova (Only supports one nova region currently).
+url = <%= @nova_endpoint %>
+
+# Username for connection to nova in admin context
+admin_username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
+
+<% if node['openstack']['network']['nova']['admin_tenant_id'] -%>
+# The uuid of the admin nova tenant
+admin_tenant_id = <%= node["openstack"]["network"]["nova"]["admin_tenant_id"] %>
+<% end -%>
+
+# The name of the admin nova tenant. If the uuid of the admin nova tenant
+# is set, this is optional.
+admin_tenant_name = <%= node["openstack"]["network"]["nova"]["admin_tenant_name"] %>
+
+# Password for connection to nova in admin context.
+admin_password = <%= @nova_admin_pass %>
+
+# Authorization URL for connection to nova in admin context.
+admin_auth_url = <%= @identity_admin_endpoint.to_s %>
+
+# Name of nova region to use. Useful if keystone manages more than one region
+region_name = <%= node["openstack"]["network"]["nova"]["region_name"] %>
+
+# CA file for novaclient to verify server certificates
+<% if node['openstack']['network']['nova']['cafile'] -%>
+cafile = <%= node['openstack']['network']['nova']['cafile'] %>
+<% else -%>
+# cafile =
+<% end -%>
 
 [service_providers]
 # Specify service providers (drivers) for advanced services like loadbalancer, VPN, Firewall.
