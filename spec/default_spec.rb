@@ -71,31 +71,57 @@ describe 'openstack-network' do
                       PLUGIN_MAP['brocade'],
                       physical_interface_mappings: ''
 
-      it_behaves_like 'core plugin common configurator',
-                      'ml2',
-                      PLUGIN_MAP['ml2'],
-                      type_drivers: 'local,flat,vlan,gre,vxlan',
-                      tenant_network_types: 'local',
-                      mechanism_drivers: 'openvswitch',
-                      flat_networks: '',
-                      network_vlan_ranges: '',
-                      tunnel_id_ranges: '',
-                      vni_ranges: '',
-                      vxlan_group: '',
-                      enable_security_group: 'True',
-                      enable_ipset: 'True'
-      # TODO: MRV
-      # OVS section is in there, need refactor this code to be able to
-      # handle sections and different attribute namespaces
-      #
-      # tenant_network_type: 'local',
-      # enable_tunneling: 'False',
-      # integration_bridge: 'br-int',
-      # tunnel_bridge: 'br-tun',
-      # local_ip: 'openvswitch_host',
-      # polling_interval: '2',
-      # veth_mtu: '1500',
-      # firewall_driver: 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
+      describe 'ml2' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
+
+        it_behaves_like 'core plugin common configurator',
+                        'ml2',
+                        PLUGIN_MAP['ml2'],
+                        type_drivers: 'local,flat,vlan,gre,vxlan',
+                        tenant_network_types: 'local',
+                        mechanism_drivers: 'openvswitch',
+                        flat_networks: '',
+                        network_vlan_ranges: '',
+                        tunnel_id_ranges: '',
+                        vni_ranges: '',
+                        vxlan_group: '',
+                        enable_security_group: 'True',
+                        enable_ipset: 'True'
+
+        it 'sets related attributes for openvswitch section' do
+          [
+            /^tenant_network_type = local$/,
+            /^enable_tunneling = False$/,
+            /^tunnel_type = $/,
+            /^integration_bridge = br-int$/,
+            /^tunnel_bridge = br-tun$/,
+            /^local_ip = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('OVS', line)
+          end
+        end
+
+        it 'sets related attributes for agent section' do
+          [
+            /^polling_interval = 2$/,
+            /^tunnel_types = $/,
+            /^veth_mtu = 1500$/,
+            /^l2_population = False$/,
+            /^enable_distributed_routing = False$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('agent', line)
+          end
+        end
+
+        it 'sets related attributes for securitygroup section' do
+          [
+            /^firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver$/,
+            /^enable_security_group = True$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('securitygroup', line)
+          end
+        end
+      end
 
       describe 'cisco' do
         let(:nexus_switch_value) do {
