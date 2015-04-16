@@ -116,39 +116,6 @@ shared_context 'neutron-stubs' do
   end
 end
 
-shared_context 'endpoint-stubs' do
-  before do
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-      .with('network-openvswitch')
-      .and_return(double(host: 'openvswitch_host', port: 'openvswitch_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-      .with('network-api-bind')
-      .and_return(double(host: 'network_host', port: 'network_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
-      .with('compute-api')
-      .and_return(double(
-        scheme: 'compute_scheme',
-        host: 'compute_host',
-        port: 'compute_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
-      .with('compute-metadata-api')
-      .and_return(double(
-        scheme: 'compute_metadata_scheme',
-        host: 'compute_metadata_host',
-        port: 'compute_metadata_port'))
-    allow_any_instance_of(Chef::Recipe).to receive(:admin_endpoint)
-      .with('identity-admin')
-      .and_return(double(
-        host: 'identity_host',
-        port: 'identity_port',
-        scheme: 'identity_scheme',
-        to_s: 'identity_uri'))
-    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
-      .with('identity-internal')
-      .and_return('identity_endpoint_value')
-  end
-end
-
 shared_examples 'custom template banner displayer' do
   it 'shows the custom banner' do
     node.set['openstack']['network']['custom_template_banner'] = 'custom_template_banner_value'

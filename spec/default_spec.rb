@@ -59,8 +59,6 @@ describe 'openstack-network' do
         end
       end
 
-      include_context 'endpoint-stubs'
-
       it_behaves_like 'core plugin common configurator',
                       'bigswitch',
                       PLUGIN_MAP['bigswitch'],
@@ -168,12 +166,8 @@ describe 'openstack-network' do
       describe 'linuxbridge' do
         let(:file) { chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini') }
 
-        include_context 'endpoint-stubs'
         before do
           node.set['openstack']['network']['core_plugin'] = 'linuxbridge'
-          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-            .with('network-linuxbridge')
-            .and_return(double(host: 'linuxbridge_host'))
         end
 
         it_behaves_like 'core plugin common configurator',
@@ -193,7 +187,7 @@ describe 'openstack-network' do
                         enable_security_group: 'True'
 
         it 'sets the local_ip' do
-          expect(chef_run).to render_file(file.name).with_content(/^local_ip = linuxbridge_host$/)
+          expect(chef_run).to render_file(file.name).with_content(/^local_ip = 127.0.0.1$/)
         end
       end
 
@@ -288,7 +282,6 @@ describe 'openstack-network' do
           node.set['openstack']['network']['core_plugin'] = 'openvswitch'
         end
 
-        include_context 'endpoint-stubs'
         before do
           node.set['openstack']['network']['core_plugin'] = 'openvswitch'
         end
@@ -329,7 +322,7 @@ describe 'openstack-network' do
         end
 
         it 'sets the local_ip' do
-          expect(chef_run).to render_file(file.name).with_content(/^local_ip = openvswitch_host$/)
+          expect(chef_run).to render_file(file.name).with_content(/^local_ip = 127.0.0.1$/)
         end
 
         it 'sets the default firewall_driver attribute' do
@@ -419,8 +412,6 @@ describe 'openstack-network' do
       end
 
       context 'template contents' do
-        include_context 'endpoint-stubs'
-
         it_behaves_like 'custom template banner displayer' do
           let(:file_name) { file.name }
         end
@@ -457,9 +448,13 @@ describe 'openstack-network' do
           expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^router_distributed = False$/)
         end
 
-        %w(host port).each do |attr|
-          it "sets the bind #{attr} attribute" do
-            expect(chef_run).to render_file(file.name).with_content(/^bind_#{attr} = network_#{attr}$/)
+        it 'sets port and host attributes' do
+          [
+            /^bind_port = 9696$/,
+            /^bind_host = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name)\
+              .with_section_content('DEFAULT', line)
           end
         end
 
@@ -634,13 +629,9 @@ describe 'openstack-network' do
           end
         end
 
-        it 'sets the nova_url attribute' do
-          node.set['openstack']['network']['nova']['url_version'] = 'nova_version_value'
-          allow_any_instance_of(Chef::Recipe).to receive(:uri_from_hash)
-          allow_any_instance_of(Chef::Recipe).to receive(:uri_from_hash)
-            .with('scheme' => 'compute_scheme', 'host' => 'compute_host', 'port' => 'compute_port', 'path' => 'nova_version_value')
-            .and_return('nova_url_value')
-          expect(chef_run).to render_file(file.name).with_content(/^nova_url = nova_url_value$/)
+        it 'sets the nova_url attribute with the right version' do
+          node.set['openstack']['network']['nova']['url_version'] = '/nova_version_value'
+          expect(chef_run).to render_file(file.name).with_content(%r(^nova_url = http://127.0.0.1:8774/nova_version_value$))
         end
 
         it 'sets the nova_admin_password attribute' do
@@ -648,7 +639,7 @@ describe 'openstack-network' do
         end
 
         it 'sets the nova_admin_auth_url attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^nova_admin_auth_url = identity_uri$/)
+          expect(chef_run).to render_file(file.name).with_content(%r(^nova_admin_auth_url = http://127.0.0.1:35357/$))
         end
 
         it 'has default nova_api_insecure' do
@@ -705,19 +696,11 @@ describe 'openstack-network' do
         end
 
         it 'sets the auth_uri attribute' do
-          allow_any_instance_of(Chef::Recipe).to receive(:auth_uri_transform)
-            .and_return('auth_uri_value')
-          expect(chef_run).to render_file(file.name).with_content(/^auth_uri = auth_uri_value$/)
+          expect(chef_run).to render_file(file.name).with_content(%r(^auth_uri = http://127.0.0.1:5000/v2.0$))
         end
 
-        %w(host port).each do |attr|
-          it "sets the auth_#{attr} attribute" do
-            expect(chef_run).to render_file(file.name).with_content(/^auth_#{attr} = identity_#{attr}$/)
-          end
-        end
-
-        it 'sets the auth_protocol attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^auth_protocol = identity_scheme$/)
+        it 'sets the identity_uri attribute' do
+          expect(chef_run).to render_file(file.name).with_content(%r(^identity_uri = http://127.0.0.1:35357/$))
         end
 
         it 'sets the auth_version attribute if not equal to v2.0' do
