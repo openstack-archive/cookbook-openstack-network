@@ -202,15 +202,6 @@ template '/etc/neutron/neutron.conf' do
   notifies :restart, 'service[neutron-server]', :delayed if role_match
 end
 
-template '/etc/neutron/api-paste.ini' do
-  source 'api-paste.ini.erb'
-  owner node['openstack']['network']['platform']['user']
-  group node['openstack']['network']['platform']['group']
-  mode   00640
-
-  notifies :restart, 'service[neutron-server]', :delayed if role_match
-end
-
 directory "/etc/neutron/plugins/#{main_plugin}" do
   recursive true
   owner node['openstack']['network']['platform']['user']

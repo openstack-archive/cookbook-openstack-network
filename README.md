@@ -167,7 +167,6 @@ If the value of the 'bind_interface' attribute is non-nil, then the network serv
 
 Templates
 =========
-* `api-paste.ini.erb` - Paste config for OpenStack Network server
 * `neutron.conf.erb` - Config file for OpenStack Network server
 * `ml2_conf.ini.erb` - Configuration of Network ML2 Plugins
 * `vpn_agent.ini.erb` - Config file for Network VPN agent
