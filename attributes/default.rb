@@ -42,17 +42,13 @@ default['openstack']['network']['policyfile_url'] = nil
 # Gets set in the Network Endpoint when registering with Keystone
 default['openstack']['network']['region'] = node['openstack']['region']
 default['openstack']['network']['service_user'] = 'neutron'
-default['openstack']['network']['service_role'] = 'admin'
+default['openstack']['network']['service_role'] = 'service'
 default['openstack']['network']['service_name'] = 'neutron'
 default['openstack']['network']['service_type'] = 'network'
+default['openstack']['network']['service_tenant_name'] = 'service'
 default['openstack']['network']['description'] = 'OpenStack Networking service'
 
 default['openstack']['network']['rabbit_server_chef_role'] = 'rabbitmq-server'
-
-# Used in the Keystone authtoken middleware configuration
-default['openstack']['network']['service_tenant_name'] = 'service'
-default['openstack']['network']['service_user'] = 'neutron'
-default['openstack']['network']['service_role'] = 'service'
 
 # Number of separate worker processes to spawn.  The default, 0, runs the
 # worker thread in the current process.  Greater than 0 launches that number of
