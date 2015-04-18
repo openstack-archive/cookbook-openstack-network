@@ -29,7 +29,7 @@ describe 'openstack-network::balancer' do
       end
     end
 
-    ['haproxy', 'python-neutron-lbaas'].each do |pack|
+    ['haproxy', 'openstack-neutron-lbaas'].each do |pack|
       it "upgrades #{pack} package" do
         expect(chef_run).to upgrade_package(pack)
       end

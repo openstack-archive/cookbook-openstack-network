@@ -27,8 +27,9 @@ describe 'openstack-network::vpn_agent' do
       expect(chef_run).to upgrade_package('openswan')
     end
 
-    it 'upgrades neutron vpn package' do
+    it 'upgrades neutron vpn packages' do
       expect(chef_run).to upgrade_package('neutron-vpn-agent')
+      expect(chef_run).to upgrade_package('python-neutron-vpnaas')
     end
 
     it 'starts ipsec on boot' do
