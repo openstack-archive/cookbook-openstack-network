@@ -74,13 +74,14 @@ when 'centos'
 
     remote_file dnsmasq_file do
       source node['openstack']['network']['dhcp']['dnsmasq_rpm_source']
-      not_if { ::File.exists?(dnsmasq_file) }
+      not_if { ::File.exists?(dnsmasq_file) || node['openstack']['network']['dhcp']['dnsmasq_rpm_version'].to_s.empty? }
     end
 
     rpm_package 'dnsmasq' do
       source dnsmasq_file
       action :install
       notifies :restart, 'service[neutron-dhcp-agent]', :immediately
+      not_if { node['openstack']['network']['dhcp']['dnsmasq_rpm_version'].to_s.empty? }
     end
   end
 end

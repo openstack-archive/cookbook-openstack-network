@@ -8,7 +8,6 @@ describe 'openstack-network::dhcp_agent' do
     let(:node) { runner.node }
     let(:chef_run) do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-      node.set['openstack']['compute']['network']['dhcp']['dnsmasq_rpm_source'] = 'http://pkgs.repoforge.org/dnsmasq/dnsmasq-2.65-1.el6.rfx.x86_64.rpm'
       runner.converge(described_recipe)
     end
 
@@ -36,7 +35,7 @@ describe 'openstack-network::dhcp_agent' do
     end
 
     it 'should have the correct dnsmasq remote file' do
-      expect(chef_run).to create_remote_file("#{Chef::Config[:file_cache_path]}/2.65-1.el6.rfx.x86_64").with(source: 'http://pkgs.repoforge.org/dnsmasq/dnsmasq-.rpm')
+      expect(chef_run).to create_remote_file("#{Chef::Config[:file_cache_path]}/2.65-1.el6.rfx.x86_64").with(source: 'http://pkgs.repoforge.org/dnsmasq/dnsmasq-2.65-1.el6.rfx.x86_64.rpm')
     end
 
     it 'should install the corrcet dnsmasq rpm' do
@@ -45,6 +44,11 @@ describe 'openstack-network::dhcp_agent' do
 
     it 'should notify dhcp agent to restart immediately' do
       expect(chef_run.rpm_package('dnsmasq')).to notify('service[neutron-dhcp-agent]').to(:restart).immediately
+    end
+
+    it 'should not have the correct dnsmasq remote file when no version' do
+      node.set['openstack']['network']['dhcp']['dnsmasq_rpm_version'] = ''
+      expect(chef_run).not_to create_remote_file("#{Chef::Config[:file_cache_path]}/2.65-1.el6.rfx.x86_64")
     end
 
     describe '/etc/neutron/dhcp_agent.ini' do
