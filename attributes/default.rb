@@ -42,7 +42,7 @@ default['openstack']['network']['policyfile_url'] = nil
 # Gets set in the Network Endpoint when registering with Keystone
 default['openstack']['network']['region'] = node['openstack']['region']
 default['openstack']['network']['service_user'] = 'neutron'
-default['openstack']['network']['service_role'] = 'service'
+default['openstack']['network']['service_role'] = 'admin'
 default['openstack']['network']['service_name'] = 'neutron'
 default['openstack']['network']['service_type'] = 'network'
 default['openstack']['network']['service_tenant_name'] = 'service'
