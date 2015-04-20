@@ -218,6 +218,16 @@ end
 
 template_file = nil
 
+# Common template values (between ML2 and Openvswitch)
+tunnel_types = node['openstack']['network']['openvswitch']['tunnel_types']
+l2_population = 'False'
+enable_distributed_routing = 'False'
+if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
+  tunnel_types = 'gre, vxlan'
+  l2_population = 'True'
+  enable_distributed_routing = 'True'
+end
+
 case main_plugin
 when 'bigswitch'
 
@@ -333,7 +343,10 @@ when 'ml2'
     mode 00644
     variables(
       mechanism_drivers: mechanism_drivers,
-      local_ip: openvswitch_endpoint.host
+      local_ip: openvswitch_endpoint.host,
+      tunnel_types: tunnel_types,
+      l2_population: l2_population,
+      enable_distributed_routing: enable_distributed_routing
     )
 
     notifies :restart, 'service[neutron-server]', :delayed if role_match
@@ -372,14 +385,6 @@ when 'openvswitch'
 
   openvswitch_endpoint = endpoint 'network-openvswitch'
   template_file = '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini'
-  tunnel_types = node['openstack']['network']['openvswitch']['tunnel_types']
-  l2_population = 'False'
-  enable_distributed_routing = 'False'
-  if ['auto', 'true', true].include?(node['openstack']['network']['l3']['router_distributed'])
-    tunnel_types = 'gre, vxlan'
-    l2_population = 'True'
-    enable_distributed_routing = 'True'
-  end
 
   template template_file do
     source 'plugins/openvswitch/ovs_neutron_plugin.ini.erb'
