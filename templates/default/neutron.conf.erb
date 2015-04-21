@@ -376,7 +376,7 @@ nova_admin_tenant_name = <%= node["openstack"]["network"]["nova"]["admin_tenant_
 nova_admin_password = <%= @nova_admin_pass %>
 
 # Authorization URL for connection to nova in admin context.
-nova_admin_auth_url = <%= @identity_uri %>
+nova_admin_auth_url = <%= @identity_admin_endpoint.to_s %>
 
 # CA file for novaclient to verify server certificates
 <% if node['openstack']['network']['nova']['nova_ca_certificates_file'] -%>

@@ -193,6 +193,7 @@ template '/etc/neutron/neutron.conf' do
     core_plugin: core_plugin,
     auth_uri: auth_uri,
     identity_uri: identity_uri,
+    identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     sql_connection: sql_connection,
     nova_endpoint: nova_endpoint,

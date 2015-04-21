@@ -673,7 +673,7 @@ describe 'openstack-network' do
         end
 
         it 'sets the nova_admin_auth_url attribute' do
-          expect(chef_run).to render_file(file.name).with_content(%r(^nova_admin_auth_url = http://127.0.0.1:35357/$))
+          expect(chef_run).to render_file(file.name).with_content(%r(^nova_admin_auth_url = http://127.0.0.1:35357/v2.0$))
         end
 
         it 'has default nova_api_insecure' do
