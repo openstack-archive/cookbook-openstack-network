@@ -413,6 +413,11 @@ default['openstack']['network']['vpn']['config_file'] = '/etc/neutron/vpn_agent.
 # The name of the secret databag containing the metadata secret
 default['openstack']['network']['metadata']['secret_name'] = 'neutron_metadata_secret'
 
+# This attribute is used to designate the number of the separate
+# neutron-metadata-agent processes to spawn. If it is not specified explicitly,
+# the default value shall be half of the CPU cores.
+default['openstack']['network']['metadata']['metadata_workers'] = nil
+
 # ============================= LBaaS Agent Configuration ==================
 
 # node['openstack']['network']['neutron_loadbalancer'] is deprecated.  Use
