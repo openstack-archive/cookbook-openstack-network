@@ -672,24 +672,34 @@ describe 'openstack-network' do
           expect(chef_run).not_to render_config_file(file.name).with_section_content('nova', /^admin_tenant_id =/)
         end
 
-        %w(region_name admin_username admin_tenant_id admin_tenant_name).each do |attr|
-          it "sets the #{attr} nova attribute" do
-            node.set['openstack']['network']['nova'][attr] = "nova_#{attr}_value"
-            expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^#{attr} = nova_#{attr}_value$/)
+        it 'sets the nova admin_tenant_id' do
+          node.set['openstack']['network']['nova']['admin_tenant_id'] = 'admin_tenant_id_value'
+
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^admin_tenant_id = admin_tenant_id_value/)
+        end
+
+        it 'has default nova user and project attributes' do
+          [
+            /^username = nova$/,
+            /^user_domain_id = default$/,
+            /^project_name = service$/,
+            /^project_domain_id = default$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name).with_section_content('nova', line)
           end
         end
 
-        it 'sets the nova url attribute with the right version' do
-          node.set['openstack']['network']['nova']['url_version'] = '/nova_version_value'
-          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^url = http://127.0.0.1:8774/nova_version_value$))
+        it 'sets the nova region_name attribute' do
+          node.set['openstack']['network']['nova']['region_name'] = 'nova_region_name_value'
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^region_name = nova_region_name_value$/)
         end
 
-        it 'sets the nova admin_password attribute' do
-          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^admin_password = nova-pass$/)
+        it 'sets the nova password attribute' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^password = nova-pass$/)
         end
 
-        it 'sets the nova admin_auth_url attribute' do
-          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^admin_auth_url = http://127.0.0.1:35357/v2.0$))
+        it 'sets the nova auth_url attribute' do
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^auth_url = http://127.0.0.1:35357/v2.0$))
         end
 
         it 'has default nova api insecure' do

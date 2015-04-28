@@ -577,30 +577,32 @@ pool_timeout = <%= node['openstack']['db']['network']['pool_timeout'] %>
 # Name of the plugin to load
 auth_plugin = <%= node['openstack']['network']['nova']['auth_plugin'] %>
 
+# Authorization URL for connection to nova in admin context.
+auth_url = <%= @identity_admin_endpoint.to_s %>
+
+# Username for connection to nova in admin context
+username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
+
+user_domain_id = <%= node["openstack"]["network"]["nova"]["user_domain_id"] %>
+
+# Password for connection to nova in admin context.
+password = <%= @nova_admin_pass %>
+
+# Project's domain name for project.
+project_name = <%= node["openstack"]["network"]["nova"]["project_name"] %>
+
+# Project's domain ID for project.
+project_domain_id = <%= node["openstack"]["network"]["nova"]["project_domain_id"] %>
+
+
 # Boolean to control ignoring SSL errors on the nova url
 # insecure = False
 insecure = <%= node['openstack']['network']['nova']['insecure'] %>
-
-# URL for connection to nova (Only supports one nova region currently).
-url = <%= @nova_endpoint %>
-
-# Username for connection to nova in admin context
-admin_username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
 
 <% if node['openstack']['network']['nova']['admin_tenant_id'] -%>
 # The uuid of the admin nova tenant
 admin_tenant_id = <%= node["openstack"]["network"]["nova"]["admin_tenant_id"] %>
 <% end -%>
-
-# The name of the admin nova tenant. If the uuid of the admin nova tenant
-# is set, this is optional.
-admin_tenant_name = <%= node["openstack"]["network"]["nova"]["admin_tenant_name"] %>
-
-# Password for connection to nova in admin context.
-admin_password = <%= @nova_admin_pass %>
-
-# Authorization URL for connection to nova in admin context.
-admin_auth_url = <%= @identity_admin_endpoint.to_s %>
 
 # Name of nova region to use. Useful if keystone manages more than one region
 region_name = <%= node["openstack"]["network"]["nova"]["region_name"] %>
