@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 
 describe 'openstack-network::openvswitch' do
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:kmod_command) { '/usr/share/openvswitch/scripts/ovs-ctl force-reload-kmod' }
     let(:chef_run) do

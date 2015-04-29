@@ -199,6 +199,7 @@ License and Author
 |                      |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 |                      |  Mark Vanderwiel(<vanderwl@us.ibm.com>)            |
 |                      |  Eric Zhou(<zyouzhou@cn.ibm.com>)                  |
+|                      |  Jan Klare (<j.klare@x-ion.de>)                    |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2013, AT&T Services, Inc.           |
 |                      |  Copyright (c) 2013-2014, SUSE Linux GmbH          |
