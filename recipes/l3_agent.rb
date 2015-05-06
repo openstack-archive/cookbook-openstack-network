@@ -66,7 +66,9 @@ end
 service 'neutron-l3-agent' do
   service_name platform_options['neutron_l3_agent_service']
   supports status: true, restart: true
-  # if the vpn agent is enabled, we should stop and disable the l3 agent
+  # As l3 and vpn agents are both working based on l3 bisic strategy, and there will be
+  # potential synchronization problems when vpn and l3 agents both running in network node.
+  # So if the vpn agent is enabled, we should stop and disable the l3 agent.
   if node['openstack']['network']['enable_vpn']
     action [:stop, :disable]
   else
@@ -92,6 +94,7 @@ template '/etc/neutron/l3_agent.ini' do
   variables(
     agent_mode: agent_mode
   )
+  # Not restart l3 agent to avoid synchronization problem, when vpn agent is enabled.
   unless node['openstack']['network']['enable_vpn']
     notifies :restart, 'service[neutron-l3-agent]', :immediately
   end
@@ -103,7 +106,12 @@ template node['openstack']['network']['fwaas']['config_file'] do
   user node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode 00640
-  notifies :restart, 'service[neutron-l3-agent]', :immediately
+  # Only restart vpn agent to avoid synchronization problem, when vpn agent is enabled.
+  if node['openstack']['network']['enable_vpn']
+    notifies :restart, 'service[neutron-vpn-agent]', :delayed
+  else
+    notifies :restart, 'service[neutron-l3-agent]', :immediately
+  end
 end
 
 driver_name = node['openstack']['network']['interface_driver'].split('.').last

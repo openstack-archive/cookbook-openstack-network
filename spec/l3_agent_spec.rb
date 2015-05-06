@@ -150,6 +150,11 @@ describe 'openstack-network::l3_agent' do
       it 'upgrades neutron fwaas package' do
         expect(chef_run).to upgrade_package('python-neutron-fwaas')
       end
+
+      it 'notifies the l3 agent service when vpn is not enabled' do
+        node.set['openstack']['network']['enable_vpn'] = false
+        expect(file).to notify('service[neutron-l3-agent]').to(:restart).immediately
+      end
     end
 
     describe 'create ovs bridges' do
