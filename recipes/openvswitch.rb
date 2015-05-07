@@ -46,7 +46,7 @@ if platform_family?('debian')
 end
 
 if node['openstack']['network']['openvswitch']['use_source_version']
-  if node['lsb'] && node['lsb']['codename'] == 'precise'
+  if node['lsb'] && ['precise', 'trusty'].include?(node['lsb']['codename'])
     include_recipe 'openstack-network::build_openvswitch_source'
   end
 else

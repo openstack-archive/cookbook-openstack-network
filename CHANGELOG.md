@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-network
 This file is used to list changes made in each version of cookbook-openstack-network.
 
+## 10.1.3
+* Add possibility to install OVS from source in Ubuntu 14.04
+
 ## 10.1.2
 * Added support for providing custom interface driver in lbaas_agent.ini.erb
 
