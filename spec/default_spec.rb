@@ -666,7 +666,7 @@ describe 'openstack-network' do
         end
 
         it 'has default nova auth_plugin attribute' do
-          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^auth_plugin = password/)
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^auth_plugin = v2password/)
         end
 
         it 'does not set the sets admin_tenant_id' do
@@ -683,6 +683,7 @@ describe 'openstack-network' do
           [
             /^username = nova$/,
             /^user_domain_id = default$/,
+            /^tenant_name = service$/,
             /^project_name = service$/,
             /^project_domain_id = default$/
           ].each do |line|
@@ -699,8 +700,18 @@ describe 'openstack-network' do
           expect(chef_run).to render_config_file(file.name).with_section_content('nova', /^password = nova-pass$/)
         end
 
-        it 'sets the nova auth_url attribute' do
+        it 'sets the nova auth_url attribute when auth_plugin is password' do
+          node.set['openstack']['network']['nova']['auth_plugin'] = 'password'
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r{^auth_url = http://127.0.0.1:35357/$})
+        end
+
+        it 'sets the nova auth_url attribute when auth_plugin is v2password by default' do
           expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r{^auth_url = http://127.0.0.1:35357/v2.0$})
+        end
+
+        it 'sets the nova auth_url attribute when auth_plugin is v3password' do
+          node.set['openstack']['network']['nova']['auth_plugin'] = 'v3password'
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r{^auth_url = http://127.0.0.1:35357/v3$})
         end
 
         it 'has default nova api insecure' do

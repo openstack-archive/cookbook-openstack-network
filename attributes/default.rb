@@ -223,7 +223,7 @@ default['openstack']['network']['rpc_response_timeout'] = 60
 
 # ======== Neutron Nova interactions ==========
 # Name of the plugin to load
-default['openstack']['network']['nova']['auth_plugin'] = 'password'
+default['openstack']['network']['nova']['auth_plugin'] = 'v2password'
 
 # CA file for novaclient to verify server certificates
 default['openstack']['network']['nova']['cafile'] = nil

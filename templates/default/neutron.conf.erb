@@ -578,7 +578,7 @@ pool_timeout = <%= node['openstack']['db']['network']['pool_timeout'] %>
 auth_plugin = <%= node['openstack']['network']['nova']['auth_plugin'] %>
 
 # Authorization URL for connection to nova in admin context.
-auth_url = <%= @identity_admin_endpoint.to_s %>
+auth_url = <%= @nova_auth_url %>
 
 # Username for connection to nova in admin context
 username = <%= node["openstack"]["network"]["nova"]["admin_username"] %>
@@ -588,7 +588,9 @@ user_domain_id = <%= node["openstack"]["network"]["nova"]["user_domain_id"] %>
 # Password for connection to nova in admin context.
 password = <%= @nova_admin_pass %>
 
-# Project's domain name for project.
+# Project/tenant name. Keystone client v2 requires using tenant_name while v3 requires using project_name.
+# The value for both of them is the same. Adding both of them to handle both situations.
+tenant_name = <%= node["openstack"]["network"]["nova"]["project_name"] %>
 project_name = <%= node["openstack"]["network"]["nova"]["project_name"] %>
 
 # Project's domain ID for project.
