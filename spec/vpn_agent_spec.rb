@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::vpn_agent' do
-
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
@@ -80,7 +79,7 @@ describe 'openstack-network::vpn_agent' do
       end
 
       it 'renders default_config_area for strongswan driver' do
-        expect(chef_run).to render_config_file(file.name).with_section_content('strongswan', %r(^default_config_area=/etc/strongswan.d$))
+        expect(chef_run).to render_config_file(file.name).with_section_content('strongswan', %r{^default_config_area=/etc/strongswan.d$})
       end
 
       it 'notifies the vpn agent service' do

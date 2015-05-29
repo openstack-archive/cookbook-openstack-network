@@ -183,7 +183,7 @@ template '/etc/neutron/neutron.conf' do
   source 'neutron.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00640
+  mode 00640
   variables(
     bind_address: network_api_bind.host,
     bind_port: network_api_bind.port,
@@ -439,7 +439,7 @@ link '/etc/neutron/plugin.ini' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   action :create
-  only_if { platform_family? %w{fedora rhel} }
+  only_if { platform_family? %w(fedora rhel) }
 end
 
 node.set['openstack']['network']['plugin_config_file'] = template_file
@@ -454,6 +454,6 @@ template '/etc/default/neutron-server' do
   )
   only_if do
     node.run_list.expand(node.chef_environment).recipes.include?('openstack-network::server')
-    platform_family?(%w{debian})
+    platform_family?('debian')
   end
 end

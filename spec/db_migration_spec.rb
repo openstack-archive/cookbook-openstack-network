@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::db_migration' do
-
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
@@ -28,40 +27,40 @@ describe 'openstack-network::db_migration' do
 
     it 'uses db upgrade head when vpnaas is enabled' do
       node.set['openstack']['network']['enable_vpn'] = true
-      migrate_cmd = %r(neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).to run_bash('migrate vpnaas database').with(code: migrate_cmd)
     end
 
     it 'does not use db upgrade head when vpnaas is not enabled' do
-      migrate_cmd = %r(neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).not_to run_bash('migrate vpnaas database').with(code: migrate_cmd)
     end
 
     it 'uses db upgrade head when fwaas is enabled' do
       node.set['openstack']['network']['fwaas']['enabled'] = 'True'
-      migrate_cmd = %r(neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).to run_bash('migrate fwaas database').with(code: migrate_cmd)
     end
 
     it 'does not use db upgrade head when fwaas is not enabled' do
-      migrate_cmd = %r(neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).not_to run_bash('migrate fwaas database').with(code: migrate_cmd)
     end
 
     it 'uses db upgrade head when lbaas is enabled' do
       node.set['openstack']['network']['lbaas']['enabled'] = 'True'
-      migrate_cmd = %r(neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).to run_bash('migrate lbaas database').with(code: migrate_cmd)
     end
 
     it 'does not use db upgrade head when lbaas is not enabled' do
-      migrate_cmd = %r(neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf|
-        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head)
+      migrate_cmd = %r{neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf|
+        --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
       expect(chef_run).not_to run_bash('migrate lbaas database').with(code: migrate_cmd)
     end
   end

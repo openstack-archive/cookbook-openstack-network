@@ -72,7 +72,7 @@ describe 'openstack-network::openvswitch' do
       node.set['openstack']['network']['platform']['neutron_openvswitch_service'] = 'my-ovs-server'
       node.set['openstack']['network']['platform']['neutron_openvswitch_agent_service'] = 'my-ovs-agent'
 
-      %w{my-ovs-server my-ovs-agent}.each do |service|
+      %w(my-ovs-server my-ovs-agent).each do |service|
         expect(chef_run).to enable_service service
       end
     end
@@ -80,7 +80,7 @@ describe 'openstack-network::openvswitch' do
     it 'allows overriding package options' do
       node.set['openstack']['network']['platform']['package_overrides'] = '--my-override1 --my-override2'
 
-      %w{openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent}.each do |pkg|
+      %w(openvswitch-switch openvswitch-datapath-dkms neutron-plugin-openvswitch neutron-plugin-openvswitch-agent).each do |pkg|
         expect(chef_run).to upgrade_package(pkg).with(options: '--my-override1 --my-override2')
       end
     end
@@ -89,7 +89,7 @@ describe 'openstack-network::openvswitch' do
       node.set['openstack']['network']['platform']['neutron_openvswitch_packages'] = ['my-openvswitch', 'my-other-openvswitch']
       node.set['openstack']['network']['platform']['neutron_openvswitch_agent_packages'] = ['my-openvswitch-agent', 'my-other-openvswitch-agent']
 
-      %w{my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent}.each do |pkg|
+      %w(my-openvswitch my-other-openvswitch my-openvswitch-agent my-other-openvswitch-agent).each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
     end

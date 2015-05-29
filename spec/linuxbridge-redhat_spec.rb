@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::linuxbridge' do
-
   describe 'redhat' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
@@ -51,10 +50,10 @@ describe 'openstack-network::linuxbridge' do
 
       it 'create plugin.ini symlink' do
         expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
-            to: file.name,
-            owner: 'neutron',
-            group: 'neutron'
-          )
+          to: file.name,
+          owner: 'neutron',
+          group: 'neutron'
+        )
       end
     end
   end

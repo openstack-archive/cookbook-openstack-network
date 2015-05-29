@@ -173,9 +173,9 @@ default['openstack']['network']['interface_driver'] = 'neutron.agent.linux.inter
 # Maps the above core plugin driver to a simple name
 # This is used in the neutron_plugin_package package name and common recipe case statements
 default['openstack']['network']['core_plugin_map'] = {
-   'ovsneutronpluginv2' => 'openvswitch',
-   'linuxbridgepluginv2' => 'linuxbridge',
-   'ml2plugin' => 'ml2'
+  'ovsneutronpluginv2' => 'openvswitch',
+  'linuxbridgepluginv2' => 'linuxbridge',
+  'ml2plugin' => 'ml2'
 }
 
 # This is used by SUSE to setup the sysconfig neutron initfile

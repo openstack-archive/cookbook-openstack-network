@@ -70,6 +70,6 @@ template node['openstack']['network']['vpn']['config_file'] do
   source 'services/neutron-vpnaas/vpn_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00640
+  mode 00640
   notifies :restart, 'service[neutron-vpn-agent]', :immediately
 end

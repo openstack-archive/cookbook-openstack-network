@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::l3_agent' do
-
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
@@ -73,8 +72,8 @@ describe 'openstack-network::l3_agent' do
           let(:file_name) { file.name }
         end
 
-        %w[handle_internal_only_routers external_network_bridge metadata_port send_arp_for_ha
-           periodic_interval periodic_fuzzy_delay router_delete_namespaces].each do |attr|
+        %w(handle_internal_only_routers external_network_bridge metadata_port send_arp_for_ha
+           periodic_interval periodic_fuzzy_delay router_delete_namespaces).each do |attr|
           it "displays the #{attr} l3 attribute" do
             node.set['openstack']['network']['l3'][attr] = "network_l3_#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = network_l3_#{attr}_value$/)
@@ -99,7 +98,7 @@ describe 'openstack-network::l3_agent' do
           expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^ha_vrrp_advert_int = ha_vrrp_advert_int_value$/)
         end
 
-        %w[router_id gateway_external_network_id].each do |conditional_attr|
+        %w(router_id gateway_external_network_id).each do |conditional_attr|
           it "displays the #{conditional_attr} attribute when present" do
             node.set['openstack']['network']['l3'][conditional_attr] = "network_l3_#{conditional_attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{conditional_attr} = network_l3_#{conditional_attr}_value$/)

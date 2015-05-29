@@ -39,7 +39,7 @@ remote_file src_filepath do
   owner 'root'
   group 'root'
   mode 00644
-  not_if { ::File.exists?("#{Chef::Config['file_cache_path']}/#{ovs_options['openvswitch_filename']}") }
+  not_if { ::File.exist?("#{Chef::Config['file_cache_path']}/#{ovs_options['openvswitch_filename']}") }
 end
 
 bash 'disable_openvswitch_before_upgrade' do

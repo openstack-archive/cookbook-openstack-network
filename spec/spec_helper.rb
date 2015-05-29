@@ -13,19 +13,19 @@ SUSE_OPTS = {
   log_level: LOG_LEVEL
 }
 REDHAT_OPTS = {
-    platform: 'redhat',
-    version: '7.1',
-    log_level: LOG_LEVEL
+  platform: 'redhat',
+  version: '7.1',
+  log_level: LOG_LEVEL
 }
 UBUNTU_OPTS = {
-    platform: 'ubuntu',
-    version: '14.04',
-    log_level: LOG_LEVEL
+  platform: 'ubuntu',
+  version: '14.04',
+  log_level: LOG_LEVEL
 }
 CENTOS_OPTS = {
-    platform: 'centos',
-    version: '6.5',
-    log_level: LOG_LEVEL
+  platform: 'centos',
+  version: '6.5',
+  log_level: LOG_LEVEL
 }
 
 MOCK_NODE_NETWORK_DATA =
@@ -124,7 +124,7 @@ shared_examples 'custom template banner displayer' do
 end
 
 shared_examples 'common network attributes displayer' do
-  %w[debug interface_driver use_namespaces].each do |attr|
+  %w(debug interface_driver use_namespaces).each do |attr|
     it "displays the #{attr} common attribute" do
       node.set['openstack']['network'][attr] = "network_#{attr}_value"
       expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_#{attr}_value$/)
@@ -142,8 +142,8 @@ shared_examples 'dhcp agent template configurator' do
     expect(chef_run).to render_file(file_name).with_content(/^dhcp_driver = network_dhcp_driver_value$/)
   end
 
-  %w[resync_interval ovs_use_veth enable_isolated_metadata
-     enable_metadata_network dnsmasq_lease_max dhcp_delete_namespaces].each do |attr|
+  %w(resync_interval ovs_use_veth enable_isolated_metadata
+     enable_metadata_network dnsmasq_lease_max dhcp_delete_namespaces).each do |attr|
     it "displays the #{attr} dhcp attribute" do
       node.set['openstack']['network']['dhcp'][attr] = "network_dhcp_#{attr}_value"
       expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_dhcp_#{attr}_value$/)
@@ -165,7 +165,7 @@ shared_examples 'dnsmasq template configurator' do
   end
 
   it 'displays the upstream dns servers setting' do
-    node.set['openstack']['network']['dhcp']['upstream_dns_servers'] = %w[server0 server1]
+    node.set['openstack']['network']['dhcp']['upstream_dns_servers'] = %w(server0 server1)
     node['openstack']['network']['dhcp']['upstream_dns_servers'].each do |dns_server|
       expect(chef_run).to render_file(file_name).with_content(/^server=#{dns_server}$/)
     end

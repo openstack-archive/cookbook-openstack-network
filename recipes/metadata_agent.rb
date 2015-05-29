@@ -40,7 +40,7 @@ template '/etc/neutron/metadata_agent.ini' do
   source 'metadata_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00644
+  mode 00644
   variables(
     identity_endpoint: identity_endpoint,
     metadata_secret: metadata_secret,

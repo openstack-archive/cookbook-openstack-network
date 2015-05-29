@@ -86,7 +86,5 @@ describe 'openstack-network::balancer' do
         expect(file).to notify('service[neutron-lb-agent]').to(:restart).delayed
       end
     end
-
   end
-
 end

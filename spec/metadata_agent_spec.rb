@@ -49,7 +49,7 @@ describe 'openstack-network::metadata_agent' do
 
         context 'endpoint related attributes' do
           it 'sets the auth_url attribute' do
-            expect(chef_run).to render_file(file.name).with_content(%r(^auth_url = http://127.0.0.1:5000/v2.0$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^auth_url = http://127.0.0.1:5000/v2.0$})
           end
         end
 

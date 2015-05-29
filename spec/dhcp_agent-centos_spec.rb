@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::dhcp_agent' do
-
   describe 'centos' do
     let(:runner) { ChefSpec::SoloRunner.new(CENTOS_OPTS) }
     let(:node) { runner.node }

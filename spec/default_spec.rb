@@ -54,7 +54,7 @@ describe 'openstack-network' do
 
     context 'plugins' do
       before do
-        PLUGIN_MAP.each do |key, value|
+        PLUGIN_MAP.each do |key, _value|
           node.set['openstack']['network']['core_plugin_map'][key] = key
         end
       end
@@ -122,7 +122,8 @@ describe 'openstack-network' do
       end
 
       describe 'cisco' do
-        let(:nexus_switch_value) do {
+        let(:nexus_switch_value) do
+          {
             'ip0' => { 'hosts' => ['host_info00', 'host_info01'],
                        'ssh_port' => 'ssh_port0',
                        'username' => 'username0',
@@ -157,13 +158,13 @@ describe 'openstack-network' do
 
         context 'nexus_switch' do
           it 'shows the ip' do
-            nexus_switch_value.each do |ip, info|
+            nexus_switch_value.each do |ip, _info|
               expect(chef_run).to render_file(file.name).with_content(/^\[NEXUS_SWITCH:#{ip}\]$/)
             end
           end
 
           it 'shows the host_info' do
-            nexus_switch_value.each do |ip, info|
+            nexus_switch_value.each do |_ip, info|
               info['hosts'].each do |host_info|
                 expect(chef_run).to render_file(file.name).with_content(/^#{host_info[0]} = #{host_info[1]}$/)
               end
@@ -172,7 +173,7 @@ describe 'openstack-network' do
 
           %w(ssh_port username password).each do |attr|
             it "shows the #{attr}" do
-              nexus_switch_value.each do |ip, info|
+              nexus_switch_value.each do |_ip, info|
                 expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{info[attr]}$/)
               end
             end
@@ -459,12 +460,12 @@ describe 'openstack-network' do
 
         it 'sets the log_config attribute if using syslog' do
           node.set['openstack']['network']['syslog']['use'] = true
-          expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^log_config = /etc/openstack/logging.conf$})
         end
 
         it 'does not set the log config attribute if not using syslog' do
           node.set['openstack']['network']['syslog']['use'] = false
-          expect(chef_run).not_to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+          expect(chef_run).not_to render_file(file.name).with_content(%r{^log_config = /etc/openstack/logging.conf$})
         end
 
         it 'set the router_distributed attribute for network node' do
@@ -699,7 +700,7 @@ describe 'openstack-network' do
         end
 
         it 'sets the nova auth_url attribute' do
-          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r(^auth_url = http://127.0.0.1:35357/v2.0$))
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', %r{^auth_url = http://127.0.0.1:35357/v2.0$})
         end
 
         it 'has default nova api insecure' do
@@ -742,12 +743,12 @@ describe 'openstack-network' do
 
         it 'sets the root_helper attribute if enabled' do
           node.set['openstack']['network']['use_rootwrap'] = true
-          expect(chef_run).to render_file(file.name).with_content(%r(^root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"$})
         end
 
         it 'does not set the root_helper attribute if disabled' do
           node.set['openstack']['network']['use_rootwrap'] = false
-          expect(chef_run).not_to render_file(file.name).with_content(%r(^root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"$))
+          expect(chef_run).not_to render_file(file.name).with_content(%r{^root_helper = "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"$})
         end
 
         it 'sets the report_interval attribute' do
@@ -756,11 +757,11 @@ describe 'openstack-network' do
         end
 
         it 'sets the auth_uri attribute' do
-          expect(chef_run).to render_file(file.name).with_content(%r(^auth_uri = http://127.0.0.1:5000/v2.0$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^auth_uri = http://127.0.0.1:5000/v2.0$})
         end
 
         it 'sets the identity_uri attribute' do
-          expect(chef_run).to render_file(file.name).with_content(%r(^identity_uri = http://127.0.0.1:35357/$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^identity_uri = http://127.0.0.1:35357/$})
         end
 
         it 'sets the auth_version attribute if not equal to v2.0' do
@@ -895,7 +896,7 @@ describe 'openstack-network' do
           it "sets the path to the #{plugin_name} plugin config" do
             node.set['openstack']['network']['core_plugin'] = plugin_name
             node.set['openstack']['network']['core_plugin_map'][plugin_name] = plugin_name
-            expect(chef_run).to render_file(file.name).with_content(%r(^NEUTRON_PLUGIN_CONFIG=/etc/neutron/plugins/#{plugin_name}/#{plugin_cfg}$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^NEUTRON_PLUGIN_CONFIG=/etc/neutron/plugins/#{plugin_name}/#{plugin_cfg}$})
           end
         end
       end

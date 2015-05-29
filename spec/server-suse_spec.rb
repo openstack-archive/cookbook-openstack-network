@@ -46,7 +46,7 @@ describe 'openstack-network::server' do
           node.set['openstack']['network']['core_plugin'] = plugin_name
           node.set['openstack']['network']['plugin_conf_map'][plugin_name] = plugin_cfg
           node.set['openstack']['network']['core_plugin_map'][plugin_name] = plugin_name
-          expect(chef_run).to render_file(file.name).with_content(%r(^NEUTRON_PLUGIN_CONF="/etc/neutron/plugins/#{plugin_cfg}"$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^NEUTRON_PLUGIN_CONF="/etc/neutron/plugins/#{plugin_cfg}"$})
         end
       end
     end

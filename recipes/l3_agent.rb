@@ -45,8 +45,8 @@ ruby_block 'query gateway external network uuid' do
   end
   action :run
   only_if do
-    node['openstack']['network']['l3']['gateway_external_network_id'].nil? &&
-    node['openstack']['network']['l3']['gateway_external_network_name']
+    (node['openstack']['network']['l3']['gateway_external_network_id'].nil? &&
+     node['openstack']['network']['l3']['gateway_external_network_name'])
   end
 end
 
@@ -90,7 +90,7 @@ template '/etc/neutron/l3_agent.ini' do
   source 'l3_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00640
+  mode 00640
   variables(
     agent_mode: agent_mode
   )

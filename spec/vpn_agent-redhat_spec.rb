@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::vpn_agent' do
-
   describe 'redhat' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }

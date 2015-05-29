@@ -27,10 +27,10 @@ describe 'openstack-network::openvswitch' do
 
       it 'create plugin.ini symlink' do
         expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
-            to: file.name,
-            owner: 'neutron',
-            group: 'neutron'
-          )
+          to: file.name,
+          owner: 'neutron',
+          group: 'neutron'
+        )
       end
     end
   end

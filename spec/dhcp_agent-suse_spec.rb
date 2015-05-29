@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::dhcp_agent' do
-
   describe 'suse' do
     let(:runner) { ChefSpec::SoloRunner.new(SUSE_OPTS) }
     let(:node) { runner.node }

@@ -6,9 +6,7 @@ describe 'openstack-network::server' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-
       runner.converge(described_recipe)
     end
 
@@ -131,8 +129,8 @@ describe 'openstack-network::server' do
 
         it 'sets the default attributes' do
           [
-            %r(^filters_path=/etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap$),
-            %r(^exec_dirs=/sbin,/usr/sbin,/bin,/usr/bin$),
+            %r{^filters_path=/etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap$},
+            %r{^exec_dirs=/sbin,/usr/sbin,/bin,/usr/bin$},
             /^use_syslog=false$/,
             /^syslog_log_facility=syslog$/,
             /^syslog_log_level=ERROR$/

@@ -30,10 +30,10 @@ describe 'openstack-network' do
 
       it 'create plugin.ini symlink' do
         expect(chef_run).to create_link('/etc/neutron/plugin.ini').with(
-            to: file.name,
-            owner: 'neutron',
-            group: 'neutron'
-          )
+          to: file.name,
+          owner: 'neutron',
+          group: 'neutron'
+        )
       end
       it 'does not include the ovs section' do
         expect(chef_run).not_to render_file(file.name).with_content(/^[OVS]/)

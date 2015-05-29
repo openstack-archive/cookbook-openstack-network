@@ -54,7 +54,7 @@ template '/etc/neutron/dnsmasq.conf' do
   source 'dnsmasq.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00644
+  mode 00644
   notifies :restart, 'service[neutron-dhcp-agent]', :delayed
 end
 
@@ -62,7 +62,7 @@ template '/etc/neutron/dhcp_agent.ini' do
   source 'dhcp_agent.ini.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode   00644
+  mode 00644
   notifies :restart, 'service[neutron-dhcp-agent]', :immediately
 end
 
@@ -74,7 +74,7 @@ when 'centos'
 
     remote_file dnsmasq_file do
       source node['openstack']['network']['dhcp']['dnsmasq_rpm_source']
-      not_if { ::File.exists?(dnsmasq_file) || node['openstack']['network']['dhcp']['dnsmasq_rpm_version'].to_s.empty? }
+      not_if { ::File.exist?(dnsmasq_file) || node['openstack']['network']['dhcp']['dnsmasq_rpm_version'].to_s.empty? }
     end
 
     rpm_package 'dnsmasq' do
