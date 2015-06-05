@@ -525,6 +525,13 @@ describe 'openstack-network' do
             end
           end
 
+          it 'has default heartbeat options set' do
+            [/^heartbeat_timeout_threshold=0$/,
+             /^heartbeat_rate=2$/].each do |line|
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
+            end
+          end
+
           it 'sets the rabbit_userid attribute' do
             expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_userid=#{userid}$/)
           end
