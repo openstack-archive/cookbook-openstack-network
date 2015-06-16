@@ -567,10 +567,6 @@ describe 'openstack-network' do
             it 'sets the rabbit_ha_queues attribute' do
               expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_ha_queues=True$/)
             end
-
-            it 'sets the rabbit_use_ssl attribute' do
-              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_use_ssl=false$/)
-            end
           end
 
           context 'rabbit ha disabled' do
@@ -578,7 +574,7 @@ describe 'openstack-network' do
               node.set['openstack']['mq']['network']['rabbit']['ha'] = false
             end
 
-            %w(host port use_ssl).each do |attr|
+            %w(host port).each do |attr|
               it "sets the non-ha rabbit_#{attr} attribute" do
                 node.set['openstack']['mq']['network']['rabbit'][attr] = "rabbit_#{attr}_value"
                 expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^rabbit_#{attr}=rabbit_#{attr}_value$/)
@@ -586,15 +582,35 @@ describe 'openstack-network' do
             end
           end
 
-          it 'does not have kombu ssl version set' do
-            expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
+          it 'does not have ssl config set' do
+            [/^rabbit_use_ssl=/,
+             /^kombu_ssl_version=/,
+             /^kombu_ssl_keyfile=/,
+             /^kombu_ssl_certfile=/,
+             /^kombu_ssl_ca_certs=/,
+             /^kombu_reconnect_delay=/,
+             /^kombu_reconnect_timeout=/].each do |line|
+              expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
+            end
           end
 
-          it 'sets kombu ssl version' do
+          it 'sets ssl config' do
             node.set['openstack']['mq']['network']['rabbit']['use_ssl'] = true
             node.set['openstack']['mq']['network']['rabbit']['kombu_ssl_version'] = 'TLSv1.2'
-
-            expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
+            node.set['openstack']['mq']['network']['rabbit']['kombu_ssl_keyfile'] = 'keyfile'
+            node.set['openstack']['mq']['network']['rabbit']['kombu_ssl_certfile'] = 'certfile'
+            node.set['openstack']['mq']['network']['rabbit']['kombu_ssl_ca_certs'] = 'certsfile'
+            node.set['openstack']['mq']['network']['rabbit']['kombu_reconnect_delay'] = 123.123
+            node.set['openstack']['mq']['network']['rabbit']['kombu_reconnect_timeout'] = 123
+            [/^rabbit_use_ssl=true/,
+             /^kombu_ssl_version=TLSv1.2$/,
+             /^kombu_ssl_keyfile=keyfile$/,
+             /^kombu_ssl_certfile=certfile$/,
+             /^kombu_ssl_ca_certs=certsfile$/,
+             /^kombu_reconnect_delay=123.123$/,
+             /^kombu_reconnect_timeout=123$/].each do |line|
+              expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
+            end
           end
         end
 
