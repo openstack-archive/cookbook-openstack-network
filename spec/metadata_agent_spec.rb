@@ -79,8 +79,8 @@ describe 'openstack-network::metadata_agent' do
 
         it 'sets the metadata_proxy_shared_secret attribute' do
           node.set['openstack']['network']['metadata']['secret_name'] = 'network_metadata_secret'
-          allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
-            .with('network_metadata_secret')
+          allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+            .with('token', 'network_metadata_secret')
             .and_return('network_metadata_secret_value')
           expect(chef_run).to render_file(file.name).with_content(/^metadata_proxy_shared_secret = network_metadata_secret_value$/)
         end

@@ -26,7 +26,7 @@ platform_options = node['openstack']['network']['platform']
 
 identity_endpoint = internal_endpoint 'identity-internal'
 service_pass = get_password 'service', 'openstack-network'
-metadata_secret = get_secret node['openstack']['network']['metadata']['secret_name']
+metadata_secret = get_password 'token', node['openstack']['network']['metadata']['secret_name']
 compute_metadata_api = internal_endpoint 'compute-metadata-api'
 
 platform_options['neutron_metadata_agent_packages'].each do |pkg|
