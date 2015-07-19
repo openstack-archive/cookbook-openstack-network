@@ -19,5 +19,15 @@
 #
 
 ['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
+node['openstack']['network']['ml2']['mechanism_drivers'].downcase.include?('hyperv') || return
+
+platform_options = node['openstack']['network']['platform']
+
+platform_options['neutron_hyperv_packages'].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+  end
+end
 
 include_recipe 'openstack-network'

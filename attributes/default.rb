@@ -1110,6 +1110,8 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'neutron_openvswitch_agent_service' => 'neutron-openvswitch-agent',
     'neutron_linuxbridge_agent_service' => 'neutron-linuxbridge-agent',
     'neutron_server_service' => 'neutron-server',
+    # TODO: networking-hperv has not been included in Fedora or RHEL distribution, need be created by users.
+    'neutron_hyperv_packages' => ['networking-hyperv'],
     'package_overrides' => ''
   }
 when 'suse'
@@ -1143,6 +1145,8 @@ when 'suse'
     'neutron_openvswitch_agent_service' => 'openstack-neutron-openvswitch-agent',
     'neutron_linuxbridge_agent_service' => 'openstack-neutron-linuxbridge-agent',
     'neutron_server_service' => 'openstack-neutron',
+    # TODO: networking-hperv has not been included in SUSE distribution, need be created by users.
+    'neutron_hyperv_packages' => ['networking-hyperv'],
     'package_overrides' => ''
   }
 when 'debian'
@@ -1175,6 +1179,8 @@ when 'debian'
     'neutron_openvswitch_agent_service' => 'neutron-plugin-openvswitch-agent',
     'neutron_linuxbridge_agent_service' => 'neutron-plugin-linuxbridge-agent',
     'neutron_server_service' => 'neutron-server',
+    # TODO: networking-hperv has not been included in DEBIAN distribution, need be created by users.
+    'neutron_hyperv_packages' => ['networking-hyperv'],
     'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

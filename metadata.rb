@@ -12,6 +12,7 @@ recipe 'openstack-network::openvswitch', 'Installs packages required for OVS'
 recipe 'openstack-network::metadata_agent', 'Installs packages required for a OpenStack Network Metadata Agent'
 recipe 'openstack-network::identity_registration', 'Registers OpenStack Network endpoints and service user with Keystone'
 recipe 'openstack-network::vpn_agent', 'Installs packages required for Network VPN Agent'
+recipe 'openstack-network::hyperv', 'Installs packages required for OpenStack Network Hyperv drivers'
 
 %w(ubuntu fedora redhat centos suse).each do |os|
   supports os

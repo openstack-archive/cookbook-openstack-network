@@ -59,6 +59,13 @@ Identity-registration
 
 - Registers the OpenStack Network API endpoint and service user with Keystone
 
+hyperv
+------
+
+- Install the drivers for hyperv needed by OpenStack network.
+- The networking-hyperv has not been included by linux distributions, it needs been created by users.
+- The source code of networking-hyperv maintains in https://github.com/stackforge/networking-hyperv.
+
 Attributes
 ==========
 
