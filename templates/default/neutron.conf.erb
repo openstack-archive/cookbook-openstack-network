@@ -560,7 +560,11 @@ connection = <%= @sql_connection %>
 # engine =
 
 # The SQLAlchemy connection string used to connect to the slave database
+<% if node['openstack']['endpoints']['db']['enabled_slave'] %>
+slave_connection = <%= @slave_connection %>
+<% else %>
 slave_connection = <%= node['openstack']['db']['network']['slave_connection'] %>
+<% end %>
 
 # Database reconnection retry times - in event connectivity is lost
 # set to -1 implies an infinite retry count

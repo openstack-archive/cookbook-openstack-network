@@ -893,6 +893,15 @@ describe 'openstack-network' do
           expect(chef_run).to render_file(file.name).with_content(/^connection = connection_value$/)
         end
 
+        it 'sets enabled_slave attribute' do
+          node.set['openstack']['endpoints']['db']['enabled_slave'] = true
+          node.set['openstack']['db']['network']['username'] = 'db_username_value'
+          allow_any_instance_of(Chef::Recipe).to receive(:db_uri)
+            .and_return('slave_connection_value')
+          expect(chef_run).to render_file(file.name)
+            .with_content(/^slave_connection = slave_connection_value$/)
+        end
+
         %w(slave_connection max_retries retry_interval min_pool_size max_pool_size idle_timeout
            max_overflow connection_debug connection_trace pool_timeout).each do |attr|
           it "sets the #{attr} attribute" do

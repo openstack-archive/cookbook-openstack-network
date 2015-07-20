@@ -155,6 +155,9 @@ identity_uri = identity_uri_transform(identity_admin_endpoint)
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
+if node['openstack']['endpoints']['db']['enabled_slave']
+  slave_connection =  db_uri('network', db_user, db_pass, true)
+end
 
 network_api_bind = endpoint 'network-api-bind'
 service_pass = get_password 'service', 'openstack-network'
@@ -233,6 +236,7 @@ template '/etc/neutron/neutron.conf' do
     identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     sql_connection: sql_connection,
+    slave_connection: slave_connection,
     nova_endpoint: nova_endpoint,
     nova_admin_pass: nova_admin_pass,
     nova_auth_url: nova_auth_url,
