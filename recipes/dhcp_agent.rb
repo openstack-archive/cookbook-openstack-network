@@ -68,7 +68,7 @@ end
 
 case node['platform']
 when 'centos'
-  if node['platform_version'].to_f >= 6.5
+  if node['platform_version'].to_f < 7.1
 
     dnsmasq_file = "#{Chef::Config[:file_cache_path]}/#{node['openstack']['network']['dhcp']['dnsmasq_rpm_version']}"
 
