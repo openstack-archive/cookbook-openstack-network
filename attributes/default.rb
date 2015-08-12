@@ -375,7 +375,8 @@ default['openstack']['network']['l3']['gateway_external_network_name'] = nil
 default['openstack']['network']['l3']['handle_internal_only_routers'] = 'True'
 
 # Name of bridge used for external network traffic. This should be set to
-# empty value for the linux bridge
+# empty value for the linux bridge. When external_network_bridge is empty or nil,
+# creation of external bridge will be skipped in the recipe.
 default['openstack']['network']['l3']['external_network_bridge'] = 'br-ex'
 
 # Interface to use for external bridge.
