@@ -12,6 +12,10 @@ describe 'openstack-network::l3_agent' do
       runner.converge(described_recipe)
     end
 
+    before do
+      stub_command('ovs-vsctl br-exists br-ex').and_return(false)
+    end
+
     include_context 'neutron-stubs'
 
     it 'starts the l3 agent on boot' do
@@ -72,12 +76,18 @@ describe 'openstack-network::l3_agent' do
           let(:file_name) { file.name }
         end
 
-        %w(handle_internal_only_routers external_network_bridge metadata_port send_arp_for_ha
-           periodic_interval periodic_fuzzy_delay router_delete_namespaces).each do |attr|
+        %w(handle_internal_only_routers metadata_port send_arp_for_ha periodic_interval
+           periodic_fuzzy_delay router_delete_namespaces).each do |attr|
           it "displays the #{attr} l3 attribute" do
             node.set['openstack']['network']['l3'][attr] = "network_l3_#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = network_l3_#{attr}_value$/)
           end
+        end
+
+        it 'displays the external_network_bridge l3 attribute' do
+          node.set['openstack']['network']['l3']['external_network_bridge'] = 'network_l3_external_network_bridge_value'
+          stub_command('ovs-vsctl br-exists network_l3_external_network_bridge_value').and_return(false)
+          expect(chef_run).to render_file(file.name).with_content(/^external_network_bridge = network_l3_external_network_bridge_value$/)
         end
 
         it 'sets the agent_mode attribute to dvr_snat' do
@@ -157,39 +167,46 @@ describe 'openstack-network::l3_agent' do
     end
 
     describe 'create ovs bridges' do
-      let(:iplink) { 'ip link set eth1 up' }
-      let(:cmd) { 'ovs-vsctl add-br br-ex && ovs-vsctl add-port br-ex eth1' }
+      let(:cmd) { 'ovs-vsctl add-br br-ex' }
+      let(:iplink) { 'ip link set eth1 up && ovs-vsctl add-port br-ex eth1' }
 
-      it "doesn't add the external bridge if it already exists" do
-        stub_command(/ovs-vsctl br-exists/).and_return(true)
-        stub_command(/ip link show eth1/).and_return(true)
+      it 'does not add the external bridge and disable external_network_bridge_interface if external_network_bridge is empty' do
+        node.set['openstack']['network']['l3']['external_network_bridge'] = ''
 
-        expect(chef_run).to run_execute(iplink)
         expect(chef_run).not_to run_execute(cmd)
+        expect(chef_run).not_to run_execute(iplink)
       end
 
-      it "doesn't add the external bridge if the physical interface doesn't exist" do
-        stub_command(/ovs-vsctl br-exists/).and_return(true)
+      it 'does not add the external bridge if it already exists' do
+        stub_command(/ovs-vsctl br-exists br-ex/).and_return(true)
+        stub_command(/ip link show eth1/).and_return(true)
+
+        expect(chef_run).not_to run_execute(cmd)
+        expect(chef_run).to run_execute(iplink)
+      end
+
+      it 'disable external_network_bridge_interface if the physical interface does not exist' do
+        stub_command(/ovs-vsctl br-exists br-ex/).and_return(false)
         stub_command(/ip link show eth1/).and_return(false)
 
-        expect(chef_run).to run_execute(iplink)
-        expect(chef_run).not_to run_execute(cmd)
+        expect(chef_run).to run_execute(cmd)
+        expect(chef_run).not_to run_execute(iplink)
       end
 
       it 'adds the external bridge if it does not yet exist' do
-        stub_command(/ovs-vsctl br-exists/).and_return(false)
+        stub_command(/ovs-vsctl br-exists br-ex/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
 
-        expect(chef_run).to run_execute(iplink)
         expect(chef_run).to run_execute(cmd)
+        expect(chef_run).to run_execute(iplink)
       end
 
-      it 'adds the external bridge if the physical interface exists' do
-        stub_command(/ovs-vsctl br-exists/).and_return(false)
+      it 'enable external_network_bridge_interface if the physical interface exists' do
+        stub_command(/ovs-vsctl br-exists br-ex/).and_return(false)
         stub_command(/ip link show eth1/).and_return(true)
 
-        expect(chef_run).to run_execute(iplink)
         expect(chef_run).to run_execute(cmd)
+        expect(chef_run).to run_execute(iplink)
       end
     end
   end

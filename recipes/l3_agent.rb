@@ -120,14 +120,16 @@ case driver_name
 when 'OVSInterfaceDriver'
   ext_bridge = node['openstack']['network']['l3']['external_network_bridge']
   ext_bridge_iface = node['openstack']['network']['l3']['external_network_bridge_interface']
-  execute 'enable external_network_bridge_interface' do
-    command "ip link set #{ext_bridge_iface} up"
-  end
-  execute 'create external network bridge' do
-    command "ovs-vsctl add-br #{ext_bridge} && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
-    action :run
-    not_if "ovs-vsctl br-exists #{ext_bridge}"
-    only_if "ip link show #{ext_bridge_iface}"
+  unless ext_bridge.to_s.empty?
+    execute 'create external network bridge' do
+      command "ovs-vsctl add-br #{ext_bridge}"
+      action :run
+      not_if "ovs-vsctl br-exists #{ext_bridge}"
+    end
+    execute 'enable external_network_bridge_interface' do
+      command "ip link set #{ext_bridge_iface} up && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
+      only_if "ip link show #{ext_bridge_iface}"
+    end
   end
 when 'BridgeInterfaceDriver'
   # TODO: Handle linuxbridge case
