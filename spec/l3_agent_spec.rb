@@ -168,7 +168,7 @@ describe 'openstack-network::l3_agent' do
 
     describe 'create ovs bridges' do
       let(:cmd) { 'ovs-vsctl add-br br-ex' }
-      let(:iplink) { 'ip link set eth1 up && ovs-vsctl add-port br-ex eth1' }
+      let(:iplink) { 'ip link set eth1 up && ovs-vsctl --may-exist add-port br-ex eth1' }
 
       it 'does not add the external bridge and disable external_network_bridge_interface if external_network_bridge is empty' do
         node.set['openstack']['network']['l3']['external_network_bridge'] = ''

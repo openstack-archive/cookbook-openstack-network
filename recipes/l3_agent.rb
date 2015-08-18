@@ -127,7 +127,7 @@ when 'OVSInterfaceDriver'
       not_if "ovs-vsctl br-exists #{ext_bridge}"
     end
     execute 'enable external_network_bridge_interface' do
-      command "ip link set #{ext_bridge_iface} up && ovs-vsctl add-port #{ext_bridge} #{ext_bridge_iface}"
+      command "ip link set #{ext_bridge_iface} up && ovs-vsctl --may-exist add-port #{ext_bridge} #{ext_bridge_iface}"
       only_if "ip link show #{ext_bridge_iface}"
     end
   end
