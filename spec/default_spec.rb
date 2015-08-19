@@ -417,6 +417,28 @@ describe 'openstack-network' do
       expect(chef_run).to upgrade_package('python-mysqldb')
     end
 
+    it 'does not upgrade python-neutron-lbaas when lbaas not enabled' do
+      node.override['openstack']['network']['lbaas']['enabled'] = false
+      expect(chef_run).to_not upgrade_package('python-neutron-lbaas')
+    end
+
+    it 'upgrades python-neutron-lbaas on network node when lbaas enabled' do
+      node.override['openstack']['network']['lbaas']['enabled'] = true
+      allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+      expect(chef_run).to upgrade_package('python-neutron-lbaas')
+    end
+
+    it 'does not upgrade python-neutron-vpnaas when vpnaas not enabled' do
+      node.override['openstack']['network']['enable_vpn'] = false
+      expect(chef_run).to_not upgrade_package('python-neutron-vpnaas')
+    end
+
+    it 'upgrades python-neutron-vpnaas on network node when vpnaas enabled' do
+      node.override['openstack']['network']['enable_vpn'] = true
+      allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+      expect(chef_run).to upgrade_package('python-neutron-vpnaas')
+    end
+
     describe 'neutron.conf' do
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
 
