@@ -23,7 +23,8 @@ describe 'openstack-network::server' do
     end
 
     it 'enables openstack-neutron service' do
-      expect(chef_run).to enable_service 'openstack-neutron'
+      expect(chef_run).to enable_service('neutron-server').with(
+        service_name: 'openstack-neutron')
     end
 
     it 'does not upgrade openvswitch package' do

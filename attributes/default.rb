@@ -1134,7 +1134,6 @@ when 'suse'
     'neutron_openvswitch_packages' => ['openvswitch-switch'],
     'neutron_openvswitch_agent_packages' => ['openstack-neutron-openvswitch-agent'],
     'neutron_linuxbridge_agent_packages' => ['openstack-neutron-linuxbridge-agent'],
-    'neutron_metadata_agent_packages' => ['openstack-neutron-metadata-agent'],
     'neutron_server_packages' => [],
     'neutron_dhcp_agent_service' => 'openstack-neutron-dhcp-agent',
     'neutron_l3_agent_service' => 'openstack-neutron-l3-agent',

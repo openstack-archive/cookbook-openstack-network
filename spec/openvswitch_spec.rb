@@ -56,14 +56,6 @@ describe 'openstack-network::openvswitch' do
       expect(chef_run).to upgrade_package 'neutron-plugin-openvswitch-agent'
     end
 
-    it 'creates the /etc/neutron/plugins/openvswitch agent directory' do
-      expect(chef_run).to create_directory('/etc/neutron/plugins/openvswitch').with(
-        owner: 'neutron',
-        group: 'neutron',
-        mode: 0700
-      )
-    end
-
     it 'sets the openvswitch service to start on boot' do
       expect(chef_run).to enable_service 'neutron-plugin-openvswitch-agent'
     end
