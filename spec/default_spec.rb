@@ -251,7 +251,7 @@ describe 'openstack-network' do
                         firewall_driver: 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 
         context 'OpenFlow Controller settings' do
-          { host: '127.0.0.1',  port: '8888', driver: 'trema', enable_packet_filter: 'true' }.each do |attr, value|
+          { host: '127.0.0.1', port: '8888', driver: 'trema', enable_packet_filter: 'true' }.each do |attr, value|
             it "sets the default #{attr} ofc value" do
               expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{value}$/)
             end

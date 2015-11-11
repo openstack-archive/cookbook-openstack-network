@@ -156,7 +156,7 @@ db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
 sql_connection = db_uri('network', db_user, db_pass)
 if node['openstack']['endpoints']['db']['enabled_slave']
-  slave_connection =  db_uri('network', db_user, db_pass, true)
+  slave_connection = db_uri('network', db_user, db_pass, true)
 end
 
 network_api_bind = endpoint 'network-api-bind'
@@ -274,7 +274,7 @@ end
 case main_plugin
 when 'bigswitch'
 
-  template_file =  '/etc/neutron/plugins/bigswitch/restproxy.ini'
+  template_file = '/etc/neutron/plugins/bigswitch/restproxy.ini'
 
   template template_file do
     source 'plugins/bigswitch/restproxy.ini.erb'

@@ -42,7 +42,8 @@ describe 'openstack-network::server' do
       it 'allows overriding service names' do
         node.set['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
 
-        expect(chef_run).to enable_service 'my-neutron-server'
+        expect(chef_run).to enable_service('neutron-server').with(
+          service_name: 'my-neutron-server')
       end
 
       it 'allows overriding package options' do
