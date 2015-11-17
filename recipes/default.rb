@@ -472,6 +472,19 @@ when 'ryu'
     notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
+when 'nuage'
+
+  template_file = '/etc/neutron/plugins/nuage/nuage_plugin.ini'
+
+  template template_file do
+    source 'plugins/nuage/nuage_plugin.ini.erb'
+    owner node['openstack']['network']['platform']['user']
+    group node['openstack']['network']['platform']['group']
+    mode 00644
+
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
+  end
+
 else
   Chef::Log.fatal("Main plugin #{main_plugin}is not supported")
 end

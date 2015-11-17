@@ -1,0 +1,17 @@
+<%= node["openstack"]["network"]["custom_template_banner"] %>
+[RESTPROXY]
+# Desired Name of VSD Organization/Enterprise to use when net-partition
+# is not specified
+default_net_partition_name = <%= node["openstack"]["network"]["nuage"]["default_net_partition_name"] %>
+# Hostname or IP address and port for connection to VSD server
+server = <%= node["openstack"]["network"]["nuage"]["server"] %>
+# VSD Username and password for OpenStack plugin connection
+# User must belong to CSP Root group and CSP CMS group
+serverauth = <%= node["openstack"]["network"]["nuage"]["serverauth"]["username"] %>:<%= node["openstack"]["network"]["nuage"]["serverauth"]["password"] %>
+
+### Do not change the below options for standard installs
+organization = <%= node["openstack"]["network"]["nuage"]["organization"] %>
+auth_resource = <%= node["openstack"]["network"]["nuage"]["auth_resource"] %>
+serverssl = <%= node["openstack"]["network"]["nuage"]["serverssl"] %>
+base_uri = <%= node["openstack"]["network"]["nuage"]["base_uri"] %>
+cms_id = <%= node["openstack"]["network"]["nuage"]["cms_id"]%>

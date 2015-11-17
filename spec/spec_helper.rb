@@ -64,6 +64,7 @@ PLUGIN_MAP = {
   'ml2' => 'ml2_conf.ini',
   'nec' => 'nec.ini',
   'nicira' => 'nvp.ini',
+  'nuage' => 'nuage_plugin.ini',
   'openvswitch' => 'ovs_neutron_plugin.ini',
   'plumgrid' => 'plumgrid.ini',
   'ryu' => 'ryu.ini'

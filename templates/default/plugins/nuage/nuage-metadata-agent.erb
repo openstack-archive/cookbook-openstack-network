@@ -1,0 +1,40 @@
+<%= node["openstack"]["network"]["custom_template_banner"] %>
+### Configuration options for nuage-metadata-agent
+
+# Copyright (C) 2014, Nuage Networks
+
+# METADATA_PORT: TCP Port used by Nuage metadata agent
+METADATA_PORT=<%= node['openstack']['network']['nuage']['metadata_port'] %>
+
+# NOVA_METADATA_IP: IP address used by Nova metadata server
+NOVA_METADATA_IP=<%= @compute_metadata_ip %>
+
+# NOVA_METADATA_PORT: TCP Port used by Nova metadata server
+NOVA_METADATA_PORT=<%= @compute_metadata_port %>
+
+# METADATA_PROXY_SHARED_SECRET: with which to sign the Instance-ID header
+METADATA_PROXY_SHARED_SECRET=<%= @metadata_secret %>
+
+# NOVA_CLIENT_VERSION:
+NOVA_CLIENT_VERSION=<%= node['openstack']['network']['nuage']['nova_client_version'] %>
+
+# NOVA_OS_USERNAME:
+NOVA_OS_USERNAME=<%= node["openstack"]["network"]["service_user"] %>
+
+# NOVA_OS_PASSWORD:
+NOVA_OS_PASSWORD=<%= @service_pass %>
+
+# NOVA_OS_TENANT_NAME:
+NOVA_OS_TENANT_NAME=<%= node["openstack"]["network"]["service_tenant_name"] %>
+
+# NOVA_OS_AUTH_URL:
+NOVA_OS_AUTH_URL=<%= @identity_endpoint.to_s %>
+
+# NUAGE_METADATA_AGENT_START_WITH_OVS: if nuage-metadata-agent needs to be started with nuage-openvswitch-switch
+NUAGE_METADATA_AGENT_START_WITH_OVS=<%= node['openstack']['network']['nuage']['metadata_start_with_vrs'] %>
+
+# NOVA_API_ENDPOINT_TYPE: one of publicURL, internalURL, adminURL
+NOVA_API_ENDPOINT_TYPE=<%= node['openstack']['network']['nuage']['nova_api_endpoint_type'] %>
+
+# NOVA_REGION_NAME:
+NOVA_REGION_NAME=<%= node["openstack"]["network"]["region"] %>
