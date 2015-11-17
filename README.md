@@ -1,6 +1,8 @@
 Description
 ===========
 
+TODO: (jklare) needs refactoring too
+
 This cookbook installs the **OpenStack Network** service (formerly project-named Quantum, current name is Neutron)
 as part of a Chef reference deployment of OpenStack.
 
@@ -212,6 +214,7 @@ License and Author
 |                      |  Copyright (c) 2013-2014, SUSE Linux GmbH          |
 |                      |  Copyright (c) 2012, Rackspace US, Inc.            |
 |                      |  Copyright (c) 2013-2014, IBM Corp.                |
+|                      |  Copyright (c) 2016, cloudbau GmbH                 |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

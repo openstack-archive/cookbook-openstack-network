@@ -17,8 +17,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-class ::Chef::Recipe # rubocop:disable Documentation
+# Make Openstack object available in Chef::Recipe
+class ::Chef::Recipe
   include ::Openstack
 end
 
@@ -26,7 +26,6 @@ platform_options = node['openstack']['network']['platform']
 platform_options['neutron_client_packages'].each do |pkg|
   package pkg do
     options platform_options['package_overrides']
-
     action :upgrade
   end
 end

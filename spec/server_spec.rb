@@ -9,13 +9,11 @@ describe 'openstack-network::server' do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
-
-    include_context 'neutron-stubs'
-
-    it 'does not install neutron-server when nova networking' do
-      node.override['openstack']['compute']['network']['service_type'] = 'nova'
-      expect(chef_run).to_not upgrade_package 'neutron-server'
+    before do
+      node.set['openstack']['network']['plugins']['ml2']['path'] = '/etc/neutron/plugins/ml2'
+      node.set['openstack']['network']['plugins']['ml2']['filename'] = 'ml2_conf.ini'
     end
+    include_context 'neutron-stubs'
 
     describe 'package and services' do
       it 'upgrades neutron-server packages' do
@@ -70,44 +68,6 @@ describe 'openstack-network::server' do
           mode: 0644
         )
       end
-
-      it 'has a correct plugin config path' do
-        expect(chef_run).to render_file(file.name).with_content(
-          '/etc/neutron/plugins/ml2/ml2_conf.ini')
-      end
-    end
-
-    describe '/etc/neutron/plugins/ml2/ml2_conf.ini' do
-      let(:file) { chef_run.template('/etc/neutron/plugins/ml2/ml2_conf.ini') }
-
-      before do
-        node.set['openstack']['network']['interface_driver'] = 'neutron.agent.linux.interface.Ml2InterfaceDriver'
-      end
-
-      it 'creates ml2_conf.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0644
-        )
-      end
-
-      [
-        /^type_drivers = local,flat,vlan,gre,vxlan$/,
-        /^tenant_network_types = local$/,
-        /^mechanism_drivers = openvswitch$/,
-        /^flat_networks = $/,
-        /^network_vlan_ranges = $/,
-        /^tunnel_id_ranges = $/,
-        /^vni_ranges = $/,
-        /^vxlan_group = $/,
-        /^enable_security_group = True$/,
-        /^enable_ipset = True$/
-      ].each do |content|
-        it "has a #{content.source[1...-1]} line" do
-          expect(chef_run).to render_file(file.name).with_content(content)
-        end
-      end
     end
 
     describe 'rootwrap.conf' do
@@ -122,19 +82,13 @@ describe 'openstack-network::server' do
       end
 
       context 'template contents' do
-        it 'shows the custom banner' do
-          node.set['openstack']['network']['custom_template_banner'] = 'banner'
-
-          expect(chef_run).to render_file(file.name).with_content(/^banner$/)
-        end
-
         it 'sets the default attributes' do
           [
-            %r{^filters_path=/etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap$},
-            %r{^exec_dirs=/sbin,/usr/sbin,/bin,/usr/bin$},
-            /^use_syslog=false$/,
-            /^syslog_log_facility=syslog$/,
-            /^syslog_log_level=ERROR$/
+            %r{^filters_path = /etc/neutron/rootwrap.d,/usr/share/neutron/rootwrap$},
+            %r{^exec_dirs = /sbin,/usr/sbin,/bin,/usr/bin$},
+            /^use_syslog = false$/,
+            /^syslog_log_facility = syslog$/,
+            /^syslog_log_level = ERROR$/
           ].each do |line|
             expect(chef_run).to render_file(file.name).with_content(line)
           end

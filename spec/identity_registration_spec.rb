@@ -13,14 +13,6 @@ describe 'openstack-network::identity_registration' do
 
     include_context 'neutron-stubs'
 
-    it 'does not do network service registrations when nova networking' do
-      node.override['openstack']['compute']['network']['service_type'] = 'nova'
-
-      expect(chef_run).not_to create_service_openstack_identity_register(
-        'Register Network API Service'
-      )
-    end
-
     it 'registers network service' do
       expect(chef_run).to create_service_openstack_identity_register(
         'Register Network API Service'
@@ -52,9 +44,10 @@ describe 'openstack-network::identity_registration' do
         general_url = 'http://general.host:456/general_path'
 
         # Set the general endpoint
-        node.set['openstack']['endpoints']['network-api']['uri'] = general_url
+        node.set['openstack']['endpoints']['network']['internal']['uri'] = general_url
+        node.set['openstack']['endpoints']['network']['public']['uri'] = general_url
         # Set the admin endpoint override
-        node.set['openstack']['endpoints']['admin']['network-api']['uri'] = admin_url
+        node.set['openstack']['endpoints']['network']['admin']['uri'] = admin_url
         expect(chef_run).to create_endpoint_openstack_identity_register(
           'Register Network Endpoint'
         ).with(
@@ -73,9 +66,10 @@ describe 'openstack-network::identity_registration' do
         general_url = 'http://general.host:456/general_path'
 
         # Set the general endpoint
-        node.set['openstack']['endpoints']['network-api']['uri'] = general_url
+        node.set['openstack']['endpoints']['network']['internal']['uri'] = general_url
         # Set the public endpoint override
-        node.set['openstack']['endpoints']['public']['network-api']['uri'] = public_url
+        node.set['openstack']['endpoints']['network']['public']['uri'] = public_url
+        node.set['openstack']['endpoints']['network']['admin']['uri'] = general_url
         expect(chef_run).to create_endpoint_openstack_identity_register(
           'Register Network Endpoint'
         ).with(
@@ -94,9 +88,10 @@ describe 'openstack-network::identity_registration' do
         general_url = 'http://general.host:456/general_path'
 
         # Set the general endpoint
-        node.set['openstack']['endpoints']['network-api']['uri'] = general_url
+        node.set['openstack']['endpoints']['network']['admin']['uri'] = general_url
         # Set the internal endpoint override
-        node.set['openstack']['endpoints']['internal']['network-api']['uri'] = internal_url
+        node.set['openstack']['endpoints']['network']['internal']['uri'] = internal_url
+        node.set['openstack']['endpoints']['network']['public']['uri'] = general_url
         expect(chef_run).to create_endpoint_openstack_identity_register(
           'Register Network Endpoint'
         ).with(
@@ -115,9 +110,9 @@ describe 'openstack-network::identity_registration' do
         internal_url = 'http://internal.host:456/internal_path'
         public_url = 'https://public.host:789/public_path'
 
-        node.set['openstack']['endpoints']['internal']['network-api']['uri'] = internal_url
-        node.set['openstack']['endpoints']['public']['network-api']['uri'] = public_url
-        node.set['openstack']['endpoints']['admin']['network-api']['uri'] = admin_url
+        node.set['openstack']['endpoints']['network']['internal']['uri'] = internal_url
+        node.set['openstack']['endpoints']['network']['public']['uri'] = public_url
+        node.set['openstack']['endpoints']['network']['admin']['uri'] = admin_url
 
         expect(chef_run).to create_endpoint_openstack_identity_register(
           'Register Network Endpoint'

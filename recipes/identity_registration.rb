@@ -19,8 +19,6 @@
 # limitations under the License.
 #
 
-['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
-
 require 'uri'
 
 # Make Openstack object available in Chef::Recipe
@@ -28,18 +26,21 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-identity_admin_endpoint = admin_endpoint 'identity-admin'
+identity_admin_endpoint = admin_endpoint 'identity'
 
 bootstrap_token = get_password 'token', 'openstack_identity_bootstrap_token'
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
-admin_api_endpoint = admin_endpoint 'network-api'
-public_api_endpoint = public_endpoint 'network-api'
-internal_api_endpoint = internal_endpoint 'network-api'
+admin_api_endpoint = admin_endpoint 'network'
+public_api_endpoint = public_endpoint 'network'
+internal_api_endpoint = internal_endpoint 'network'
 
 service_pass = get_password 'service', 'openstack-network'
-service_tenant_name = node['openstack']['network']['service_tenant_name']
-service_user = node['openstack']['network']['service_user']
+service_tenant_name =
+  node['openstack']['network']['conf']['keystone_authtoken']['tenant_name']
+
+service_user =
+  node['openstack']['network']['conf']['keystone_authtoken']['username']
 service_role = node['openstack']['network']['service_role']
 
 openstack_identity_register 'Register Network API Service' do

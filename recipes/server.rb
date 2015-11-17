@@ -19,17 +19,25 @@
 # limitations under the License.
 #
 
-['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
+include_recipe 'openstack-network'
 
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
   include ::Openstack
 end
 
-include_recipe 'openstack-network'
+template '/etc/default/neutron-server' do
+  source 'neutron-server.erb'
+  owner 'root'
+  group 'root'
+  mode 00644
+  variables(
+    core_plugin_config: node['openstack']['network']['core_plugin_config_file']
+  )
+  only_if { platform_family?('debian') }
+end
 
 platform_options = node['openstack']['network']['platform']
-core_plugin = node['openstack']['network']['core_plugin']
 
 platform_options['neutron_server_packages'].each do |pkg|
   package pkg do
@@ -38,25 +46,65 @@ platform_options['neutron_server_packages'].each do |pkg|
   end
 end
 
+db_type = node['openstack']['db']['network']['service_type']
+node['openstack']['db']['python_packages'][db_type].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+  end
+end
+
+if node['openstack']['network']['policyfile_url']
+  remote_file '/etc/neutron/policy.json' do
+    source node['openstack']['network']['policyfile_url']
+    owner node['openstack']['network']['platform']['user']
+    group node['openstack']['network']['platform']['group']
+    mode 00644
+  end
+end
+
+if node['openstack']['network_lbaas']['enabled']
+  # neutron-lbaas-agent may not running on network node, but on network node, neutron-server still need neutron_lbaas module
+  # when loading plugin if lbaas is list in service_plugins. In this case, we don't need include balance recipe for network node, but
+  # we need make sure neutron lbaas packages get installed on network ndoe before neutron-server start/restart, when lbaas is enabled.
+  # Otherwise neutron-server will crash for couldn't find lbaas plugin when invoking plugins from service_plugins.
+  platform_options['neutron_lbaas_packages'].each do |pkg|
+    package pkg do
+      options platform_options['package_overrides']
+      action :upgrade
+    end
+  end
+end
+
+if node['openstack']['network_vpnaas']['enabled']
+  # neutron-vpnaas-agent may not running on network node, but on network node, neutron-server still need neutron_vpnaas module
+  # when loading plugin if vpnaas is list in service_plugins. In this case, we don't need include vpn_agent recipe for network node, but
+  # we need make sure neutron vpnaas packages get installed on network node before neutron-server start/restart, when vpnaas is enabled.
+  # Otherwise neutron-server will crash for couldn't find vpnaas plugin when invoking plugins from service_plugins.
+  platform_options['neutron_vpnaas_packages'].each do |pkg|
+    package pkg do
+      options platform_options['package_overrides']
+      action :upgrade
+    end
+  end
+end
+
 # Migrate network database to latest version
 include_recipe 'openstack-network::db_migration'
+plugin_templates = []
+node['openstack']['network']['plugins'].each_value do |plugin|
+  plugin_templates << "template[#{File.join(plugin['path'], plugin['filename'])}"
+end
 
 service 'neutron-server' do
   service_name platform_options['neutron_server_service']
   supports status: true, restart: true
   action [:enable, :start]
+  subscribes :restart, [
+    plugin_templates,
+    'template[/etc/neutron/neutron.conf]',
+    'remote_file[/etc/neutron/policy.json]'
+  ]
 end
 
-# the default SUSE initfile uses this sysconfig file to determine the
-# neutron plugin to use
-template '/etc/sysconfig/neutron' do
-  only_if { platform_family? 'suse' }
-  source 'neutron.sysconfig.erb'
-  owner 'root'
-  group 'root'
-  mode 00644
-  variables(
-    plugin_conf: node['openstack']['network']['plugin_conf_map'][core_plugin.split('.').last.downcase]
-  )
-  notifies :restart, 'service[neutron-server]'
-end
+include_recipe 'openstack-network::identity_registration'

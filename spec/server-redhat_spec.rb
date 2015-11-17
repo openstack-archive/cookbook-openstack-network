@@ -9,14 +9,11 @@ describe 'openstack-network::server' do
       node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
-
-    include_context 'neutron-stubs'
-
-    it 'does not install openstack-neutron when nova networking' do
-      node.override['openstack']['compute']['network']['service_type'] = 'nova'
-
-      expect(chef_run).to_not upgrade_package 'openstack-neutron'
+    before do
+      node.set['openstack']['network']['plugins']['ml2']['path'] = '/etc/neutron/plugins/ml2'
+      node.set['openstack']['network']['plugins']['ml2']['filename'] = 'openvswitch_agent.ini'
     end
+    include_context 'neutron-stubs'
 
     it 'upgrades openstack-neutron packages' do
       expect(chef_run).to upgrade_package 'openstack-neutron'

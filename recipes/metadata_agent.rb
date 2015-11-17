@@ -18,16 +18,13 @@
 # limitations under the License.
 #
 
-['quantum', 'neutron'].include?(node['openstack']['compute']['network']['service_type']) || return
-
 include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 
-identity_endpoint = internal_endpoint 'identity-internal'
-service_pass = get_password 'service', 'openstack-network'
-metadata_secret = get_password 'token', node['openstack']['network']['metadata']['secret_name']
-compute_metadata_api = internal_endpoint 'compute-metadata-api'
+# identity_endpoint = admin_endpoint 'identity'
+metadata_secret = get_password 'token', node['openstack']['network_metadata']['secret_name']
+# compute_metadata_api = internal_endpoint 'compute-metadata-api'
 
 platform_options['neutron_metadata_agent_packages'].each do |pkg|
   package pkg do
@@ -36,25 +33,38 @@ platform_options['neutron_metadata_agent_packages'].each do |pkg|
   end
 end
 
-template '/etc/neutron/metadata_agent.ini' do
-  source 'metadata_agent.ini.erb'
+node.default['openstack']['network_metadata']['conf_secrets'].tap do |conf|
+  conf['DEFAULT']['metadata_proxy_shared_secret'] = metadata_secret
+end
+
+service_config = merge_config_options 'network_metadata'
+template node['openstack']['network_metadata']['config_file'] do
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
   mode 00644
   variables(
-    identity_endpoint: identity_endpoint,
-    metadata_secret: metadata_secret,
-    service_pass: service_pass,
-    compute_metadata_ip: compute_metadata_api.host,
-    compute_metadata_port: compute_metadata_api.port
+    service_config: service_config
   )
-  notifies :restart, 'service[neutron-metadata-agent]', :immediately
   action :create
+end
+
+# delete all secrets saved in the attribute
+# node['openstack']['network_metadata']['conf_secrets'] after creating the neutron.conf
+ruby_block 'delete all attributes in '\
+  "node['openstack']['network_metadata']['conf_secrets']" do
+  block do
+    node.rm(:openstack, :network_metadata, :conf_secrets)
+  end
 end
 
 service 'neutron-metadata-agent' do
   service_name platform_options['neutron_metadata_agent_service']
   supports status: true, restart: true
-  action :enable
-  subscribes :restart, 'template[/etc/neutron/neutron.conf]'
+  action [:enable, :start]
+  subscribes :restart, [
+    'template[/etc/neutron/neutron.conf]',
+    "template[#{node['openstack']['network_metadata']['config_file']}]"
+  ]
 end
