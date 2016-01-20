@@ -485,6 +485,34 @@ when 'nuage'
     notifies :restart, 'service[neutron-server]', :delayed if role_match
   end
 
+when 'contrail'
+  # Workaround to generate a fake contrail plugin config
+  openvswitch_endpoint = endpoint 'network-openvswitch'
+  template_file = '/etc/neutron/plugins/contrail/contrail_plugin.ini'
+  mechanism_drivers = node['openstack']['network']['ml2']['mechanism_drivers']
+  if node['openstack']['network']['l3']['router_distributed'] == 'auto'
+    mechanism_drivers = 'openvswitch,l2population'
+  end
+
+  template template_file do
+    source 'plugins/ml2/ml2_conf.ini.erb'
+    owner node['openstack']['network']['platform']['user']
+    group node['openstack']['network']['platform']['group']
+    mode 00644
+    variables(
+      mechanism_drivers: mechanism_drivers,
+      local_ip: openvswitch_endpoint.host,
+      tunnel_types: tunnel_types,
+      l2_population: l2_population,
+      enable_distributed_routing: enable_distributed_routing
+    )
+
+    notifies :restart, 'service[neutron-server]', :delayed if role_match
+    if node['recipes'].include?('openstack-network::openvswitch')
+      notifies :restart, 'service[neutron-plugin-openvswitch-agent]', :delayed
+    end
+  end
+
 else
   Chef::Log.fatal("Main plugin #{main_plugin}is not supported")
 end
@@ -495,6 +523,7 @@ link '/etc/neutron/plugin.ini' do
   group node['openstack']['network']['platform']['group']
   action :create
   only_if { platform_family? %w(fedora rhel) }
+  not_if { main_plugin == 'contrail' }
 end
 
 node.set['openstack']['network']['plugin_config_file'] = template_file

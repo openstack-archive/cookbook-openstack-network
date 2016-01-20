@@ -28,7 +28,12 @@ shared_examples 'core plugin common configurator' do |plugin_name, file_name, at
         end
 
         it "sets the #{attr} attribute" do
-          node.set['openstack']['network'][plugin_name][attr] = "#{attr}_value"
+          if plugin_name == 'contrail'
+            component_name = 'ml2'
+          else
+            component_name = plugin_name
+          end
+          node.set['openstack']['network'][component_name][attr] = "#{attr}_value"
           expect(chef_run).to render_file(cfg_file.name).with_content(/^#{attr} = #{attr}_value$/)
         end
       end
@@ -371,6 +376,33 @@ describe 'openstack-network' do
             expect(chef_run).to render_config_file(file.name).with_section_content('agent', line)
           end
         end
+      end
+
+      describe 'contrail' do
+        let(:file) { chef_run.template('/etc/neutron/plugins/contrail/contrail_plugin.ini') }
+
+        before do
+          node.set['openstack']['network']['core_plugin'] = 'contrail'
+        end
+
+        it 'sends a notification to the service' do
+          allow_any_instance_of(Chef::Recipe).to receive(:role_included?).with('os-network-server').and_return(true)
+          expect(file).to notify('service[neutron-server]').to(:restart).delayed
+        end
+
+        it_behaves_like 'core plugin common configurator',
+                        'contrail',
+                        PLUGIN_MAP['contrail'],
+                        type_drivers: 'local,flat,vlan,gre,vxlan',
+                        tenant_network_types: 'local',
+                        mechanism_drivers: 'openvswitch',
+                        flat_networks: '',
+                        network_vlan_ranges: '',
+                        tunnel_id_ranges: '',
+                        vni_ranges: '',
+                        vxlan_group: '',
+                        enable_security_group: 'True',
+                        enable_ipset: 'True'
       end
 
       it_behaves_like 'core plugin common configurator',

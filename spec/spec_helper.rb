@@ -65,6 +65,7 @@ PLUGIN_MAP = {
   'nec' => 'nec.ini',
   'nicira' => 'nvp.ini',
   'nuage' => 'nuage_plugin.ini',
+  'contrail' => 'contrail_plugin.ini',
   'openvswitch' => 'ovs_neutron_plugin.ini',
   'plumgrid' => 'plumgrid.ini',
   'ryu' => 'ryu.ini'

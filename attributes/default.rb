@@ -176,7 +176,8 @@ default['openstack']['network']['core_plugin_map'] = {
   'ovsneutronpluginv2' => 'openvswitch',
   'linuxbridgepluginv2' => 'linuxbridge',
   'ml2plugin' => 'ml2',
-  'nuageplugin' => 'nuage'
+  'nuageplugin' => 'nuage',
+  'neutronplugincontrailcorev2' => 'contrail'
 }
 
 # This is used by SUSE to setup the sysconfig neutron initfile
