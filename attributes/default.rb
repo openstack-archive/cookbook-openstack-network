@@ -23,18 +23,15 @@
 # access and use them
 %w(public internal admin).each do |ep_type|
   # openstack identity service endpoints (used by users and services)
-  default['openstack']['endpoints']['network'][ep_type]['host'] = '127.0.0.1'
-  default['openstack']['endpoints']['network'][ep_type]['scheme'] = 'http'
-  default['openstack']['endpoints']['network'][ep_type]['path'] = ''
+  default['openstack']['endpoints'][ep_type]['network']['host'] = '127.0.0.1'
+  default['openstack']['endpoints'][ep_type]['network']['scheme'] = 'http'
+  default['openstack']['endpoints'][ep_type]['network']['path'] = ''
+  default['openstack']['endpoints'][ep_type]['network']['port'] = 9696
   # web-service (e.g. apache) listen address (can be different from openstack
   # network endpoints)
-  default['openstack']['bind_service']['network'][ep_type]['host'] = '127.0.0.1'
 end
-%w(endpoints bind_service).each do |type|
-  default['openstack'][type]['network']['public']['port'] = 9696
-  default['openstack'][type]['network']['internal']['port'] = 9696
-  default['openstack'][type]['network']['admin']['port'] = 9696
-end
+default['openstack']['bind_service']['all']['network']['host'] = '127.0.0.1'
+default['openstack']['bind_service']['all']['network']['port'] = 9696
 
 # trigger the usage of syslog (will include the proper recipe to create a log
 # config)

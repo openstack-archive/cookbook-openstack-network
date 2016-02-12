@@ -93,7 +93,7 @@ auth_url =
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
-public_bind_service = node['openstack']['bind_service']['network']['public']
+bind_service = node['openstack']['bind_service']['all']['network']
 
 # The auth_url in nova section follows auth_plugin
 nova_auth_url = nil
@@ -110,8 +110,8 @@ node.default['openstack']['network']['conf'].tap do |conf|
   if node['openstack']['network']['syslog']['use']
     conf['DEFAULT']['log_config'] = '/etc/openstack/logging.conf'
   end
-  conf['DEFAULT']['bind_host'] = public_bind_service.host
-  conf['DEFAULT']['bind_port'] = public_bind_service.port
+  conf['DEFAULT']['bind_host'] = bind_service.host
+  conf['DEFAULT']['bind_port'] = bind_service.port
   conf['nova']['auth_url'] = nova_auth_url
   conf['keystone_authtoken']['auth_url'] = auth_url
 end
