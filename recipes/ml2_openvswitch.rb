@@ -25,9 +25,10 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
+include_recipe 'openstack-network::ml2_core_plugin'
+
 node.default['openstack']['network']['plugins']['ml2']['conf']['ml2']['mechanism_drivers'] = 'openvswitch'
 
-platform_options = node['openstack']['network']['platform']
 node.default['openstack']['network']['plugins']['openvswitch'].tap do |ovs|
   case node['platform_family']
   when 'fedora', 'rhel'
@@ -42,77 +43,4 @@ node.default['openstack']['network']['plugins']['openvswitch'].tap do |ovs|
       'openvswitch_agent.ini'
   end
   ovs['conf']['DEFAULT']['integration_bridge'] = 'br-int'
-  ovs['conf']['OVS']['tunnel_bridge'] = 'br-tun'
-end
-
-platform_options['neutron_openvswitch_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
-end
-
-plugin_file_path = File.join(
-  node['openstack']['network']['plugins']['openvswitch']['path'],
-  node['openstack']['network']['plugins']['openvswitch']['filename']
-)
-
-platform_options['neutron_openvswitch_agent_packages'].each do |pkg|
-  package pkg do
-    action :upgrade
-    options platform_options['package_overrides']
-  end
-end
-
-int_bridge =
-  node['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('DEFAULT')['integration_bridge']
-tun_bridge =
-  node['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['tunnel_bridge']
-execute 'create internal network bridge' do
-  ignore_failure true
-  command "ovs-vsctl add-br #{int_bridge}"
-  action :run
-  not_if "ovs-vsctl br-exists #{int_bridge}"
-end
-
-include_recipe 'openstack-network::plugin_config'
-
-service 'neutron-openvswitch-switch' do
-  service_name platform_options['neutron_openvswitch_service']
-  supports status: true, restart: true
-  action [:enable, :start]
-  subscribes :restart, "template[#{plugin_file_path}]"
-end
-
-service 'neutron-plugin-openvswitch-agent' do
-  service_name platform_options['neutron_openvswitch_agent_service']
-  supports status: true, restart: true
-  action [:enable, :start]
-  subscribes :restart, [
-    'template[/etc/neutron/neutron.conf]',
-    "template[#{plugin_file_path}]",
-    'execute[create internal network bridge]',
-    'execute[create tunnel network bridge]',
-    'execute[create data network bridge]'
-  ]
-end
-
-execute 'create tunnel network bridge' do
-  ignore_failure true
-  command "ovs-vsctl add-br #{tun_bridge}"
-  action :run
-  not_if "ovs-vsctl br-exists #{tun_bridge}"
-end
-
-if node['openstack']['network']['openvswitch']['bridge_mapping_interface']
-  ext_bridge_mapping = node['openstack']['network']['openvswitch']['bridge_mapping_interface']
-  ext_bridge, ext_bridge_iface = ext_bridge_mapping.split(':')
-  execute 'create data network bridge' do
-    command "ovs-vsctl add-br #{ext_bridge} -- add-port #{ext_bridge} #{ext_bridge_iface}"
-    action :run
-    not_if "ovs-vsctl br-exists #{ext_bridge}"
-    only_if "ip link show #{ext_bridge_iface}"
-  end
 end

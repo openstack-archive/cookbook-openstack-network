@@ -51,23 +51,6 @@ template node['openstack']['network_l3']['config_file'] do
 end
 
 # See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
-if node['openstack']['network_l3']['conf']['DEFAULT']['interface_driver'] ==
-   'neutron.agent.linux.interface.OVSInterfaceDriver'
-  ext_bridge = node['openstack']['network_l3']['conf']['DEFAULT']['external_network_bridge']
-  ext_bridge_iface = node['openstack']['network_l3']['external_network_bridge_interface']
-  if ext_bridge && ext_bridge_iface
-    execute 'create external network bridge' do
-      command "ovs-vsctl add-br #{ext_bridge}"
-      action :run
-      not_if "ovs-vsctl br-exists #{ext_bridge}"
-    end
-    execute 'enable external_network_bridge_interface' do
-      command "ip link set #{ext_bridge_iface} up && ovs-vsctl --may-exist add-port #{ext_bridge} #{ext_bridge_iface}"
-      action :run
-      only_if "ip link show #{ext_bridge_iface}"
-    end
-  end
-end
 
 service 'neutron-l3-agent' do
   service_name platform_options['neutron_l3_agent_service']

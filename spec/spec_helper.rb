@@ -45,18 +45,6 @@ shared_context 'neutron-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'openstack-compute')
       .and_return('nova-pass')
-    # allow_any_instance_of(Chef::Resource::RubyBlock).to receive(:openstack_command_env)
-    #   .with('admin', 'admin')
-    #   .and_return({})
-    stub_command('dpkg -l | grep openvswitch-switch | grep 1.10.2-1').and_return(true)
-    stub_command('ovs-vsctl br-exists br-int').and_return(false)
-    stub_command('ovs-vsctl br-exists br-tun').and_return(false)
-    # stub_command('ovs-vsctl add-br br-ex').and_return(false)
-    stub_command('ip link show eth1').and_return(false)
-    stub_command('ovs-vsctl add-br br-eth1 -- add-port br-eth1 eth1').and_return(true)
-    stub_command('ovs-vsctl br-exists ').and_return(false)
-    stub_command('ovs-vsctl br-exists br-ex').and_return(false)
-    stub_command('ovs-vsctl br-exists eth1').and_return(false)
   end
   shared_examples 'custom template banner displayer' do
     it 'shows the custom banner' do
@@ -82,25 +70,6 @@ shared_context 'neutron-stubs' do
         node.set['openstack']['network_dhcp']['conf']['DEFAULT'][attr] = "network_dhcp_#{attr}_value"
         expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_dhcp_#{attr}_value$/)
       end
-    end
-  end
-  shared_examples 'plugin_config builder' do |plugin|
-    it do
-      expect(chef_run).to create_directory(node['openstack']['network']['plugins'][plugin]['path']).with(
-        recursive: true,
-        owner: 'neutron',
-        group: 'neutron',
-        mode: 00700
-      )
-    end
-    let(:file) { chef_run.template(File.join(node['openstack']['network']['plugins'][plugin]['path'], node['openstack']['network']['plugins'][plugin]['filename'])) }
-
-    it do
-      expect(chef_run).to create_template(file.name).with(
-        user: 'neutron',
-        group: 'neutron',
-        mode: 00644
-      )
     end
   end
 end

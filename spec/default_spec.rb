@@ -68,7 +68,7 @@ describe 'openstack-network' do
       end
     end
 
-    context 'oslo_messaging'do
+    context 'oslo_messaging' do
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
       describe 'has rabbit as default service' do
         before do

@@ -32,7 +32,6 @@ describe 'openstack-network::ml2_linuxbridge' do
     it do
       expect(chef_run).to include_recipe('openstack-network::plugin_config')
     end
-    it_behaves_like 'plugin_config builder', 'linuxbridge'
 
     it do
       %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent).each do |pkg|

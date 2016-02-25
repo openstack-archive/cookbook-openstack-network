@@ -185,7 +185,6 @@ default['openstack']['network_fwaas']['enabled'] = false
 # default['openstack']['network']['fwaas']['driver'] = 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
 # Custom the fwaas config file path
 # default['openstack']['network']['fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
-default['openstack']['network']['openvswitch']['bridge_mapping_interface'] = nil
 # ============================= platform-specific settings ===========
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'
