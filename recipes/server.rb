@@ -66,9 +66,9 @@ end
 if node['openstack']['network_lbaas']['enabled']
   # neutron-lbaas-agent may not running on network node, but on network node, neutron-server still need neutron_lbaas module
   # when loading plugin if lbaas is list in service_plugins. In this case, we don't need include balance recipe for network node, but
-  # we need make sure neutron lbaas packages get installed on network ndoe before neutron-server start/restart, when lbaas is enabled.
+  # we need make sure neutron lbaas python packages get installed on network node before neutron-server start/restart, when lbaas is enabled.
   # Otherwise neutron-server will crash for couldn't find lbaas plugin when invoking plugins from service_plugins.
-  platform_options['neutron_lbaas_packages'].each do |pkg|
+  platform_options['neutron_lbaas_python_dependencies'].each do |pkg|
     package pkg do
       options platform_options['package_overrides']
       action :upgrade
@@ -79,9 +79,9 @@ end
 if node['openstack']['network_vpnaas']['enabled']
   # neutron-vpnaas-agent may not running on network node, but on network node, neutron-server still need neutron_vpnaas module
   # when loading plugin if vpnaas is list in service_plugins. In this case, we don't need include vpn_agent recipe for network node, but
-  # we need make sure neutron vpnaas packages get installed on network node before neutron-server start/restart, when vpnaas is enabled.
+  # we need make sure neutron vpnaas python packages get installed on network node before neutron-server start/restart, when vpnaas is enabled.
   # Otherwise neutron-server will crash for couldn't find vpnaas plugin when invoking plugins from service_plugins.
-  platform_options['neutron_vpnaas_packages'].each do |pkg|
+  platform_options['neutron_vpnaas_python_dependencies'].each do |pkg|
     package pkg do
       options platform_options['package_overrides']
       action :upgrade
