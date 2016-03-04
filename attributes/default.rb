@@ -206,9 +206,9 @@ default['openstack']['network']['platform'].tap do |platform|
   platform['neutron_server_service'] =
     'neutron-server'
   platform['neutron_lbaas_python_dependencies'] =
-    'python-neutron-lbaas'
+    %w(python-neutron-lbaas)
   platform['neutron_vpnaas_python_dependencies'] =
-    'python-neutron-vpnaas'
+    %w(python-neutron-vpnaas)
   case platform_family
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
