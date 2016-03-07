@@ -1,7 +1,7 @@
 # Encoding: utf-8
 require_relative 'spec_helper'
 
-describe 'openstack-network::lbaas' do
+describe 'openstack-network::metering_agent' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
@@ -12,14 +12,14 @@ describe 'openstack-network::lbaas' do
     include_context 'neutron-stubs'
 
     it do
-      %w(python-neutron-lbaas neutron-lbaas-agent haproxy)
+      %w(neutron-metering-agent)
         .each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
     end
 
-    describe 'lbaas.conf' do
-      let(:file) { chef_run.template('/etc/neutron/lbaas_agent.ini') }
+    describe 'metering_agent.ini' do
+      let(:file) { chef_run.template('/etc/neutron/metering_agent.ini') }
       it do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
@@ -30,16 +30,14 @@ describe 'openstack-network::lbaas' do
 
       it do
         [
-          /^periodic_interval = 10$/,
-          /^ovs_use_veth = false$/,
           /^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/,
-          /^device_driver = neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver$/
+          /^driver = neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver$/
         ].each do |line|
           expect(chef_run).to render_file(file.name).with_content(line)
         end
       end
       it do
-        expect(chef_run).to enable_service('neutron-lb-agent')
+        expect(chef_run).to enable_service('neutron-metering-agent')
       end
     end
   end

@@ -135,6 +135,16 @@ default['openstack']['network_metadata']['config_file'] = '/etc/neutron/metadata
 default['openstack']['network_metadata']['secret_name'] = 'neutron_metadata_secret'
 node.default['openstack']['network_metadata']['conf'] = {}
 
+# ============================= Metering Agent Configuration ===============
+
+default['openstack']['network_metering']['config_file'] = '/etc/neutron/metering_agent.ini'
+default['openstack']['network_metering']['conf'].tap do |conf|
+  conf['DEFAULT']['interface_driver'] =
+    'neutron.agent.linux.interface.OVSInterfaceDriver'
+  conf['DEFAULT']['driver'] =
+    'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver'
+end
+
 # ============================= VPN Agent Configuration ====================
 # vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
 # vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is ipsec
@@ -203,6 +213,8 @@ default['openstack']['network']['platform'].tap do |platform|
     'neutron-lbaas-agent'
   platform['neutron_metadata_agent_service'] =
     'neutron-metadata-agent'
+  platform['neutron_metering_agent_service'] =
+    'neutron-metering-agent'
   platform['neutron_server_service'] =
     'neutron-server'
   platform['neutron_lbaas_python_dependencies'] =
@@ -236,6 +248,8 @@ default['openstack']['network']['platform'].tap do |platform|
       %w(neutron-plugin-linuxbridge-agent)
     platform['neutron_metadata_agent_packages'] =
       %w()
+    platform['neutron_metering_agent_packages'] =
+      %w(openstack-neutron-metering-agent)
     platform['neutron_server_packages'] =
       %w()
     platform['neutron_openvswitch_service'] =
@@ -276,6 +290,8 @@ default['openstack']['network']['platform'].tap do |platform|
       'neutron-plugin-linuxbridge-agent'
     platform['neutron_metadata_agent_packages'] =
       %w(neutron-metadata-agent)
+    platform['neutron_metering_agent_packages'] =
+      %w(neutron-metering-agent)
     platform['neutron_server_packages'] =
       %w(neutron-server)
     platform['neutron_openvswitch_service'] =
