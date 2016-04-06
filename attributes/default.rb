@@ -283,7 +283,7 @@ default['openstack']['network']['platform'].tap do |platform|
         python-twisted-conch
       )
     platform['neutron_openvswitch_agent_packages'] =
-      %w(neutron-plugin-openvswitch neutron-plugin-openvswitch-agent)
+      %w(neutron-openvswitch-agent)
     platform['neutron_linuxbridge_agent_packages'] =
       %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent)
     platform['neutron_linuxbridge_agent_service'] =
@@ -297,7 +297,7 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_openvswitch_service'] =
       'openvswitch-switch'
     platform['neutron_openvswitch_agent_service'] =
-      'neutron-plugin-openvswitch-agent'
+      'neutron-openvswitch-agent'
     platform['package_overrides'] =
       "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   end

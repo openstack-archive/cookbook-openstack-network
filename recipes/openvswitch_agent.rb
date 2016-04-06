@@ -39,7 +39,7 @@ execute 'create integration network bridge' do
   action :run
 end
 
-service 'neutron-plugin-openvswitch-agent' do
+service 'neutron-openvswitch-agent' do
   service_name platform_options['neutron_openvswitch_agent_service']
   supports status: true, restart: true
   action [:enable, :start]

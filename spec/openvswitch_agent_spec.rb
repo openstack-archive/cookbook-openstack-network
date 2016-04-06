@@ -14,7 +14,7 @@ describe 'openstack-network::openvswitch_agent' do
     end
 
     it 'upgrades openvswitch agent' do
-      expect(chef_run).to upgrade_package 'neutron-plugin-openvswitch-agent'
+      expect(chef_run).to upgrade_package 'neutron-openvswitch-agent'
     end
 
     describe 'create integration network bridget' do
@@ -27,11 +27,11 @@ describe 'openstack-network::openvswitch_agent' do
     end
 
     it 'sets the openvswitch_agent service to start on boot' do
-      expect(chef_run).to enable_service 'neutron-plugin-openvswitch-agent'
+      expect(chef_run).to enable_service 'neutron-openvswitch-agent'
     end
 
     it 'starts the openvswitch_agent service' do
-      expect(chef_run).to start_service 'neutron-plugin-openvswitch-agent'
+      expect(chef_run).to start_service 'neutron-openvswitch-agent'
     end
   end
 end
