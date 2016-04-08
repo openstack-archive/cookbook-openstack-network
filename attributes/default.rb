@@ -84,11 +84,6 @@ end
 # ============================= dnsmasq Configuration ===================
 # TODO: (jklare) this should be refactored and probably pull in the some dnsmasq
 # cookbook to do the proper configuration
-# Override the default mtu setting given to virtual machines
-# to 1454 to allow for tunnel and other encapsulation overhead.  You
-# can adjust this from 1454 to 1500 if you do not want any lowering
-# of the default guest MTU.
-default['openstack']['network']['dnsmasq']['dhcp-option'] = '26,1454'
 # the version of dnsmasq for centos 6.5 is two revs behind where the dhcp-agent needs
 # to run properly. This is a version that allows and starts the dhcp-agent correctly.
 default['openstack']['network']['dnsmasq']['rpm_version'] = '2.65-1.el6.rfx.x86_64'
