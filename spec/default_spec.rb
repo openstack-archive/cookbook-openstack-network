@@ -117,7 +117,8 @@ describe 'openstack-network' do
         /^tenant_name = service$/,
         /^username = neutron$/,
         %r{^auth_url = http://127\.0\.0\.1:5000/v2\.0$},
-        /^password = neutron-pass$/
+        /^password = neutron-pass$/,
+        /^auth_type = v2password$/
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -125,7 +126,10 @@ describe 'openstack-network' do
         end
       end
       [
-        /^region_name = RegionOne$/
+        /^region_name = RegionOne$/,
+        /^auth_type = v2password$/,
+        /^username = nova$/,
+        /^tenant_name = service$/
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)

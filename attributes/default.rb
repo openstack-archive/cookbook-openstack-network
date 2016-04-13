@@ -37,8 +37,6 @@ default['openstack']['bind_service']['all']['network']['port'] = 9696
 # config)
 default['openstack']['network']['syslog']['use'] = false
 # Name of the plugin to load
-default['openstack']['network']['nova']['auth_plugin'] = 'v2password'
-# Name of the plugin to load
 default['openstack']['network']['identity-api']['auth']['version'] = 'v2.0'
 # Set dbsync command timeout value
 default['openstack']['network']['dbsync_timeout'] = 3600
