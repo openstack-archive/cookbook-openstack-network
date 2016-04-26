@@ -96,9 +96,9 @@ db_pass = get_password 'db', 'neutron'
 bind_service = node['openstack']['bind_service']['all']['network']
 bind_service_address = bind_address bind_service
 
-# The auth_url in nova section follows auth_plugin
+# The auth_url in nova section follows auth_type
 nova_auth_url = nil
-case node['openstack']['network']['conf']['nova']['auth_plugin']
+case node['openstack']['network']['conf']['nova']['auth_type']
 when 'password'
   nova_auth_url = auth_uri
 when 'v2password'
@@ -113,7 +113,7 @@ node.default['openstack']['network']['conf'].tap do |conf|
   end
   conf['DEFAULT']['bind_host'] = bind_service_address
   conf['DEFAULT']['bind_port'] = bind_service.port
-  conf['nova']['auth_url'] = nova_auth_url
+  conf['nova']['auth_url'] = nova_auth_url if nova_auth_url
   conf['keystone_authtoken']['auth_url'] = auth_url
 end
 

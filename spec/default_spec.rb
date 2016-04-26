@@ -128,6 +128,7 @@ describe 'openstack-network' do
       [
         /^region_name = RegionOne$/,
         /^auth_type = v2password$/,
+        %r{^auth_url = http://127\.0\.0\.1:5000/v2\.0$},
         /^username = nova$/,
         /^tenant_name = service$/
       ].each do |line|
