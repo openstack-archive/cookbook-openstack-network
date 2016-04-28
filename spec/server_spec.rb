@@ -37,6 +37,19 @@ describe 'openstack-network::server' do
         expect(chef_run).to start_service 'neutron-server'
       end
 
+      let(:neutron_service) { chef_run.service('neutron-server') }
+
+      it do
+        expect(neutron_service)
+          .to subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed
+      end
+
+      it do
+        node.set['openstack']['network']['policyfile_url'] = 'http://www.someurl.com'
+        expect(neutron_service)
+          .to subscribe_to('remote_file[/etc/neutron/policy.json]').on(:restart).delayed
+      end
+
       it 'allows overriding service names' do
         node.set['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
 

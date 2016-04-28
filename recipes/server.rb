@@ -93,7 +93,7 @@ end
 include_recipe 'openstack-network::db_migration'
 plugin_templates = []
 node['openstack']['network']['plugins'].each_value do |plugin|
-  plugin_templates << "template[#{File.join(plugin['path'], plugin['filename'])}"
+  plugin_templates << "template[#{File.join(plugin['path'], plugin['filename'])}]"
 end
 
 service 'neutron-server' do
@@ -104,7 +104,7 @@ service 'neutron-server' do
     plugin_templates,
     'template[/etc/neutron/neutron.conf]',
     'remote_file[/etc/neutron/policy.json]'
-  ]
+  ].flatten
 end
 
 include_recipe 'openstack-network::identity_registration'
