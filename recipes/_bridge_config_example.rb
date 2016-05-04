@@ -29,6 +29,11 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
+# set and get name for tun interface (can be overwritten in the environment,
+# like shown for the multi-node scenario in the openstack-chef-repo)
+node.default['openstack']['network']['tun_network_bridge_interface'] = 'eth-tun'
+tun_interface = node['openstack']['network']['tun_network_bridge_interface']
+
 # Helper for creating dummy interfaces for ovs bridges on jenkins test nodes and
 # in testing vagrant boxes.
 # The created interfaces do not work for real network traffic, but are needed to
@@ -47,11 +52,11 @@ execute 'create eth-vlan dummy interface' do
   not_if 'ip link show | grep eth-vlan'
 end.run_action(:run)
 
-execute 'create eth-tun dummy interface' do
-  command 'ip link add eth-tun type dummy;'\
-    'ip link set dev eth-tun up;'\
-    'ip addr add 10.0.0.201/24 dev eth-tun'
-  not_if 'ip link show | grep eth-tun'
+execute "create #{tun_interface} dummy interface" do
+  command "ip link add #{tun_interface} type dummy;"\
+    "ip link set dev #{tun_interface} up;"\
+    "ip addr add 10.0.0.201/24 dev #{tun_interface}"
+  not_if "ip link show | grep #{tun_interface}"
 end.run_action(:run)
 
 # reload node attributes to get configuration for newly created dummy interfaces
@@ -67,12 +72,11 @@ node.default['openstack']['network']['plugins']['openvswitch']['conf']
 node.default['openstack']['network_l3']['external_network_bridge_interface'] = 'eth-ext'
 
 # tunnel bridge
-node.default['openstack']['network']['tun_network_bridge_interface'] = 'eth-tun'
 node.default['openstack']['network']['plugins']['openvswitch']['conf']
 .[]('OVS')['tunnel_bridge'] = 'br-tun'
 node.default['openstack']['network']['plugins']['openvswitch']['conf']
 .[]('OVS')['local_ip'] =
-  address_for(node.default['openstack']['network']['tun_network_bridge_interface'])
+  address_for(tun_interface)
 node.default['openstack']['network']['plugins']['openvswitch']['conf']
 .[]('AGENT')['tunnel_types'] = 'gre,vxlan'
 
