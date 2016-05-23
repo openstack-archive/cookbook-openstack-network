@@ -238,7 +238,7 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_linuxbridge_agent_packages'] =
       %w(openstack-neutron-linuxbridge iproute)
     platform['neutron_linuxbridge_agent_service'] =
-      %w(neutron-plugin-linuxbridge-agent)
+      'neutron-plugin-linuxbridge-agent'
     platform['neutron_metadata_agent_packages'] =
       %w()
     platform['neutron_metering_agent_packages'] =
