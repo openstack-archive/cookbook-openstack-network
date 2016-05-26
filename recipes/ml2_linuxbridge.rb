@@ -40,6 +40,8 @@ node.default['openstack']['network']['plugins']['linuxbridge'].tap do |lb|
     '/etc/neutron/plugins/linuxbridge'
   lb['filename'] =
     'linuxbridge_conf.ini'
+  lb['conf']['securitygroup']['firewall_driver'] =
+    'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver'
 end
 
 include_recipe 'openstack-network::plugin_config'
