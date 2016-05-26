@@ -6,11 +6,10 @@
 require_relative 'spec_helper'
 
 describe 'openstack-network::ml2_linuxbridge' do
-  describe 'ubuntu' do
-    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
+  describe 'redhat' do
+    let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
 
@@ -48,16 +47,16 @@ describe 'openstack-network::ml2_linuxbridge' do
     end
 
     it do
-      %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent).each do |pkg|
+      %w(openstack-neutron-linuxbridge iproute).each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
     end
 
     it do
-      expect(chef_run).to enable_service('neutron-plugin-linuxbridge-agent')
+      expect(chef_run).to enable_service('neutron-linuxbridge-agent')
     end
     it do
-      service = chef_run.service('neutron-plugin-linuxbridge-agent')
+      service = chef_run.service('neutron-linuxbridge-agent')
       expect(service).to(subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed) && subscribe_to('template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]').on(:restart).delayed
     end
   end
