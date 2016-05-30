@@ -33,7 +33,7 @@ end
 bash 'migrate vpnaas database' do
   only_if { node['openstack']['network_vpnaas']['enabled'] }
   timeout timeout
-  migrate_command = "neutron-db-manage --service vpnaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  migrate_command = "neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
@@ -43,7 +43,7 @@ end
 bash 'migrate fwaas database' do
   only_if { node['openstack']['network_fwaas']['enabled'] }
   timeout timeout
-  migrate_command = "neutron-db-manage --service fwaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  migrate_command = "neutron-db-manage --subproject neutron-fwaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
@@ -53,7 +53,7 @@ end
 bash 'migrate lbaas database' do
   only_if { node['openstack']['network_lbaas']['enabled'] }
   timeout timeout
-  migrate_command = "neutron-db-manage --service lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
+  migrate_command = "neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
