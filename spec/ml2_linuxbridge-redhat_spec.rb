@@ -17,12 +17,12 @@ describe 'openstack-network::ml2_linuxbridge' do
 
     before do
       node.set['openstack']['network']['plugins']['linuxbridge']['path'] =
-        '/etc/neutron/plugins/linuxbridge'
+        '/etc/neutron/plugins/ml2'
       node.set['openstack']['network']['plugins']['linuxbridge']['filename'] =
-        'linuxbridge_conf.ini'
+        'linuxbridge_agent.ini'
     end
-    it 'creates the /etc/neutron/plugins/linuxbridge agent directory' do
-      expect(chef_run).to create_directory('/etc/neutron/plugins/linuxbridge').with(
+    it 'creates the /etc/neutron/plugins/ml2 agent directory' do
+      expect(chef_run).to create_directory('/etc/neutron/plugins/ml2').with(
         owner: 'neutron',
         group: 'neutron',
         mode: 0700
@@ -32,9 +32,9 @@ describe 'openstack-network::ml2_linuxbridge' do
       expect(chef_run).to include_recipe('openstack-network::plugin_config')
     end
 
-    describe '/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini' do
+    describe '/etc/neutron/plugins/ml2/linuxbridge_agent.ini' do
       let(:file) do
-        chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini')
+        chef_run.template('/etc/neutron/plugins/ml2/linuxbridge_agent.ini')
       end
       [
         /^firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver$/
@@ -57,7 +57,7 @@ describe 'openstack-network::ml2_linuxbridge' do
     end
     it do
       service = chef_run.service('neutron-linuxbridge-agent')
-      expect(service).to(subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed) && subscribe_to('template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]').on(:restart).delayed
+      expect(service).to(subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed) && subscribe_to('template[/etc/neutron/plugins/ml2/linuxbridge_agent.ini]').on(:restart).delayed
     end
   end
 end
