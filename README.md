@@ -18,8 +18,8 @@ Requirements
 ============
 
 - Chef 12 or higher
-- chefdk 0.9.0 for testing (also includes berkshelf for cookbook dependency
-  resolution)
+- chefdk 0.9.0 or higher for testing (also includes berkshelf for cookbook
+  dependency resolution)
 
 Platform
 ========
@@ -33,8 +33,8 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-- 'openstack-common', '>= 13.0.0'
-- 'openstack-identity', '>= 13.0.0'
+- 'openstack-common', '>= 14.0.0'
+- 'openstack-identity', '>= 14.0.0'
 
 Attributes
 ==========
