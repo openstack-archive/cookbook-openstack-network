@@ -11,12 +11,12 @@ describe 'openstack-network::vpnaas' do
     end
 
     include_context 'neutron-stubs'
-    it 'include the recipe openstack-network::l3_agent' do
-      expect(chef_run).to include_recipe('openstack-network::l3_agent')
+    it 'include the recipe openstack-network::default' do
+      expect(chef_run).to include_recipe('openstack-network::default')
     end
 
     it 'upgrades vpn device driver packages' do
-      expect(chef_run).to upgrade_package('openswan')
+      expect(chef_run).to upgrade_package('strongswan')
     end
 
     it 'upgrades neutron vpn packages' do
@@ -24,8 +24,8 @@ describe 'openstack-network::vpnaas' do
       expect(chef_run).to upgrade_package('python-neutron-vpnaas')
     end
 
-    it 'starts ipsec on boot' do
-      expect(chef_run).to enable_service('ipsec')
+    it 'starts strongswan on boot' do
+      expect(chef_run).to enable_service('strongswan')
     end
 
     it 'starts the vpn agent on boot' do
@@ -49,7 +49,7 @@ describe 'openstack-network::vpnaas' do
 
       describe 'vpn_device_driver' do
         it 'renders one vpn_device_driver entry in vpn_agent.ini for default vpn_device_driver' do
-          [/^vpn_device_driver = neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver$/].each do |line|
+          [/^vpn_device_driver = neutron_vpnaas.services.vpn.device_drivers.strongswan_ipsec.StrongSwanDriver$/].each do |line|
             expect(chef_run).to render_config_file(file.name).with_section_content('vpnagent', line)
           end
         end

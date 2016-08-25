@@ -18,8 +18,7 @@
 # limitations under the License.
 #
 
-# VPN agent is based on L3 agent
-include_recipe 'openstack-network::l3_agent'
+include_recipe 'openstack-network'
 
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe

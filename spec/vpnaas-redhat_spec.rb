@@ -15,7 +15,7 @@ describe 'openstack-network::vpnaas' do
     include_context 'neutron-stubs'
 
     it 'upgrades neutron vpn packages' do
-      %w(iproute openstack-neutron-vpnaas openswan).each do |pkg|
+      %w(iproute openstack-neutron-vpnaas strongswan).each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
     end

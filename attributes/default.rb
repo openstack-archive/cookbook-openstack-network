@@ -139,16 +139,18 @@ default['openstack']['network_metering']['conf'].tap do |conf|
 end
 
 # ============================= VPN Agent Configuration ====================
-# vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is openswan
-# vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is ipsec
+# vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is strongswan
+# vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is strongswan
 # Set to true to enable vpnaas
 default['openstack']['network_vpnaas']['enabled'] = false
 # Custom the vpnaas config file path
 default['openstack']['network_vpnaas']['config_file'] = '/etc/neutron/vpn_agent.ini'
 default['openstack']['network_vpnaas']['conf'].tap do |conf|
   # VPN device drivers which vpn agent will use
-  conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
-  conf['vpnagent']['vpn_device_driver'] = 'neutron_vpnaas.services.vpn.device_drivers.ipsec.OpenSwanDriver'
+  conf['DEFAULT']['interface_driver'] =
+    'neutron.agent.linux.interface.OVSInterfaceDriver'
+  conf['vpnagent']['vpn_device_driver'] =
+    'neutron_vpnaas.services.vpn.device_drivers.strongswan_ipsec.StrongSwanDriver'
   # Status check interval for ipsec vpn
   conf['ipsec']['ipsec_status_check_interval'] = 60
   # default_config_area settings is used to set the area where default StrongSwan configuration files are located
@@ -193,7 +195,7 @@ default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'
   platform['group'] = 'neutron'
   platform['vpn_device_driver_packages'] =
-    %w(openswan)
+    %w(strongswan)
   platform['neutron_dhcp_agent_service'] =
     'neutron-dhcp-agent'
   platform['neutron_l3_agent_service'] =
@@ -201,7 +203,7 @@ default['openstack']['network']['platform'].tap do |platform|
   platform['neutron_vpn_agent_service'] =
     'neutron-vpn-agent'
   platform['vpn_device_driver_services'] =
-    %w(ipsec)
+    %w(strongswan)
   platform['neutron_lb_agent_service'] =
     'neutron-lbaas-agent'
   platform['neutron_metadata_agent_service'] =
