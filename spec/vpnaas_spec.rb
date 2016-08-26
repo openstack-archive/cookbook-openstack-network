@@ -36,6 +36,10 @@ describe 'openstack-network::vpnaas' do
       expect(chef_run.service('neutron-vpn-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
     end
 
+    it 'subscribes the vpn agent service to vpn_agent.ini' do
+      expect(chef_run.service('neutron-vpn-agent')).to subscribe_to('template[/etc/neutron/vpn_agent.ini]').delayed
+    end
+
     describe 'vpn_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/vpn_agent.ini') }
 

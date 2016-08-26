@@ -68,6 +68,7 @@ service 'neutron-vpn-agent' do
   action [:enable, :start]
   subscribes :restart, [
     'template[/etc/neutron/neutron.conf]',
-    "template[#{node['openstack']['network_vpnaas']['config_file']}]"
+    "template[#{node['openstack']['network_vpnaas']['config_file']}]",
+    "template[#{node['openstack']['network_fwaas']['config_file']}]"
   ]
 end

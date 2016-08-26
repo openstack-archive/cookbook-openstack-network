@@ -141,6 +141,8 @@ end
 # ============================= VPN Agent Configuration ====================
 # vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is strongswan
 # vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is strongswan
+# To enable 'vpnaas' as service_plugin, you need to add it to neutron.conf
+# ['Default']['service_plugins']
 # Set to true to enable vpnaas
 default['openstack']['network_vpnaas']['enabled'] = false
 # Custom the vpnaas config file path
@@ -163,6 +165,8 @@ default['openstack']['network_vpnaas']['conf'].tap do |conf|
 end
 
 # ============================= LBaaS Agent Configuration ==================
+# To enable 'lbaas' as service_plugin, you need to add it to neutron.conf
+# ['Default']['service_plugins']
 # Set to true to enable lbaas
 default['openstack']['network_lbaas']['enabled'] = false
 # Custom the lbaas config file path
@@ -181,15 +185,17 @@ default['openstack']['network_lbaas']['conf'].tap do |conf|
 end
 
 # ============================= FWaaS Configuration ==================
-# TODO(jklare) : check why the package is installed and if the configuration
-# works at all (if so, this needs refactoring parallel to the lbaas and vpnaas
-# recipes and attributes)
+# To enable 'firewall' as service_plugin, you need to add it to neutron.conf
+# ['Default']['service_plugins']
 # Set to True to enable firewall service
 default['openstack']['network_fwaas']['enabled'] = false
 # Firewall service driver with linux iptables
-# default['openstack']['network']['fwaas']['driver'] = 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
+default['openstack']['network_fwaas']['conf'].tap do |conf|
+  conf['fwaas']['driver'] =
+    'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
+end
 # Custom the fwaas config file path
-# default['openstack']['network']['fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
+default['openstack']['network_fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
 # ============================= platform-specific settings ===========
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'

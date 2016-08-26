@@ -19,6 +19,7 @@ describe 'openstack-network::l3_agent' do
       it 'subscribes the l3 agent service to neutron.conf' do
         expect(chef_run.service('neutron-l3-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
       end
+
       %w(neutron-l3-agent radvd keepalived).each do |pkg|
         it "upgrades #{pkg} package" do
           expect(chef_run).to upgrade_package(pkg)
