@@ -1,24 +1,40 @@
-# TODO(jklare) : check why the package is installed and if the configuration
-# works at all (if so, this needs refactoring parallel to the lbaas and vpnaas
-# recipes and attributes)
-# ---- moved from templates/default/services/neutron-fwaas/fwaas_driver.ini.erb----
-# <%= node["openstack"]["network"]["custom_template_banner"] %>
-# [fwaas]
-# driver = <%= node['openstack']['network']['fwaas']['driver'] %>
-# enabled = <%= node['openstack']['network']['fwaas']['enabled'] %>
-# ---- moved from templates/default/services/neutron-fwaas/fwaas_driver.ini.erb----
-# ---- moved from recipes/l3_agent----
+# Encoding: utf-8
+#
+# Cookbook Name:: openstack-network
+# Recipe:: fwaas
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+include_recipe 'openstack-network'
+
+# Make Openstack object available in Chef::Recipe
+class ::Chef::Recipe
+  include ::Openstack
+end
+
+node.default['openstack']['network_fwaas']['conf'].tap do |conf|
+  conf['fwaas']['enabled'] = true
+end
+
 # As the fwaas package will be installed anyway, configure its config-file attributes following environment.
-# template node['openstack']['network']['fwaas']['config_file'] do
-#  source 'services/neutron-fwaas/fwaas_driver.ini.erb'
-#  user node['openstack']['network']['platform']['user']
-#  group node['openstack']['network']['platform']['group']
-#  mode 00640
-#  # Only restart vpn agent to avoid synchronization problem, when vpn agent is enabled.
-#  if node['openstack']['network']['enable_vpn']
-#    notifies :restart, 'service[neutron-vpn-agent]', :delayed
-#  else
-#    notifies :restart, 'service[neutron-l3-agent]', :immediately
-#  end
-# end
-# ---- moved from recipes/l3_agent----
+service_conf = merge_config_options 'network_fwaas'
+template node['openstack']['network_fwaas']['config_file'] do
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode 00640
+  variables(
+    service_config: service_conf
+  )
+end

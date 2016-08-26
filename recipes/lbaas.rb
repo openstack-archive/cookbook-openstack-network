@@ -1,7 +1,7 @@
 # Encoding: utf-8
 #
 # Cookbook Name:: openstack-network
-# Recipe:: balancer
+# Recipe:: lbaas
 #
 # Copyright 2013, Mirantis IT
 #
