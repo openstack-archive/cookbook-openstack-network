@@ -35,6 +35,7 @@ The following cookbooks are dependencies:
 
 - 'openstack-common', '>= 14.0.0'
 - 'openstack-identity', '>= 14.0.0'
+- 'openstackclient', '>= 0.1.0'
 
 Attributes
 ==========

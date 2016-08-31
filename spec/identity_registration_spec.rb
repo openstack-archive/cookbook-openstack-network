@@ -13,160 +13,85 @@ describe 'openstack-network::identity_registration' do
 
     include_context 'neutron-stubs'
 
-    it 'registers network service' do
-      expect(chef_run).to create_service_openstack_identity_register(
-        'Register Network API Service'
+    connection_params = {
+      openstack_auth_url: 'http://127.0.0.1:35357/v3/auth/tokens',
+      openstack_username: 'admin',
+      openstack_api_key: 'admin-pass',
+      openstack_project_name: 'admin',
+      openstack_domain_name: 'default'
+    }
+    service_name = 'neutron'
+    service_type = 'network'
+    service_user = 'neutron'
+    url = 'http://127.0.0.1:9696'
+    region = 'RegionOne'
+    project_name = 'service'
+    role_name = 'admin'
+    password = 'neutron-pass'
+    domain_name = 'Default'
+
+    it "registers #{project_name} Project" do
+      expect(chef_run).to create_openstack_project(
+        project_name
       ).with(
-        auth_uri: 'http://127.0.0.1:35357/v2.0',
-        bootstrap_token: 'bootstrap-token',
-        service_type: 'network',
-        service_description: 'OpenStack Network Service'
+        connection_params: connection_params
       )
     end
 
-    context 'registers network endpoint' do
-      it 'with default values' do
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(
-          auth_uri: 'http://127.0.0.1:35357/v2.0',
-          bootstrap_token: 'bootstrap-token',
-          service_type: 'network',
-          endpoint_region: 'RegionOne',
-          endpoint_adminurl: 'http://127.0.0.1:9696',
-          endpoint_internalurl: 'http://127.0.0.1:9696',
-          endpoint_publicurl: 'http://127.0.0.1:9696'
-        )
-      end
-
-      it 'with different admin url values' do
-        admin_url = 'https://admin.host:123/admin_path'
-        general_url = 'http://general.host:456/general_path'
-
-        # Set the general endpoint
-        node.set['openstack']['endpoints']['internal']['network']['uri'] = general_url
-        node.set['openstack']['endpoints']['public']['network']['uri'] = general_url
-        # Set the admin endpoint override
-        node.set['openstack']['endpoints']['admin']['network']['uri'] = admin_url
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(
-          auth_uri: 'http://127.0.0.1:35357/v2.0',
-          bootstrap_token: 'bootstrap-token',
-          service_type: 'network',
-          endpoint_region: 'RegionOne',
-          endpoint_adminurl: admin_url,
-          endpoint_internalurl: general_url,
-          endpoint_publicurl: general_url
-        )
-      end
-
-      it 'with different public url values' do
-        public_url = 'https://public.host:789/public_path'
-        general_url = 'http://general.host:456/general_path'
-
-        # Set the general endpoint
-        node.set['openstack']['endpoints']['internal']['network']['uri'] = general_url
-        # Set the public endpoint override
-        node.set['openstack']['endpoints']['public']['network']['uri'] = public_url
-        node.set['openstack']['endpoints']['admin']['network']['uri'] = general_url
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(
-          auth_uri: 'http://127.0.0.1:35357/v2.0',
-          bootstrap_token: 'bootstrap-token',
-          service_type: 'network',
-          endpoint_region: 'RegionOne',
-          endpoint_adminurl: general_url,
-          endpoint_internalurl: general_url,
-          endpoint_publicurl: public_url
-        )
-      end
-
-      it 'with different internal url values' do
-        internal_url = 'http://internal.host:456/internal_path'
-        general_url = 'http://general.host:456/general_path'
-
-        # Set the general endpoint
-        node.set['openstack']['endpoints']['admin']['network']['uri'] = general_url
-        # Set the internal endpoint override
-        node.set['openstack']['endpoints']['internal']['network']['uri'] = internal_url
-        node.set['openstack']['endpoints']['public']['network']['uri'] = general_url
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(
-          auth_uri: 'http://127.0.0.1:35357/v2.0',
-          bootstrap_token: 'bootstrap-token',
-          service_type: 'network',
-          endpoint_region: 'RegionOne',
-          endpoint_adminurl: general_url,
-          endpoint_internalurl: internal_url,
-          endpoint_publicurl: general_url
-        )
-      end
-
-      it 'with different internal,public, and admin url values' do
-        admin_url = 'https://admin.host:123/admin_path'
-        internal_url = 'http://internal.host:456/internal_path'
-        public_url = 'https://public.host:789/public_path'
-
-        node.set['openstack']['endpoints']['internal']['network']['uri'] = internal_url
-        node.set['openstack']['endpoints']['public']['network']['uri'] = public_url
-        node.set['openstack']['endpoints']['admin']['network']['uri'] = admin_url
-
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(
-          auth_uri: 'http://127.0.0.1:35357/v2.0',
-          bootstrap_token: 'bootstrap-token',
-          service_type: 'network',
-          endpoint_region: 'RegionOne',
-          endpoint_adminurl: admin_url,
-          endpoint_internalurl: internal_url,
-          endpoint_publicurl: public_url
-        )
-      end
-      it 'with custom region override' do
-        node.set['openstack']['network']['region'] = 'netRegion'
-
-        expect(chef_run).to create_endpoint_openstack_identity_register(
-          'Register Network Endpoint'
-        ).with(endpoint_region: 'netRegion')
-      end
+    it "registers #{service_name} service" do
+      expect(chef_run).to create_openstack_service(
+        service_name
+      ).with(
+        connection_params: connection_params,
+        type: service_type
+      )
     end
 
-    it 'registers service tenant' do
-      expect(chef_run).to create_tenant_openstack_identity_register(
-        'Register Service Tenant'
-      ).with(
-        auth_uri: 'http://127.0.0.1:35357/v2.0',
-        bootstrap_token: 'bootstrap-token',
-        tenant_name: 'service',
-        tenant_description: 'Service Tenant'
-      )
+    context "registers #{service_name} endpoint" do
+      %w(admin internal public).each do |interface|
+        it "#{interface} endpoint with default values" do
+          expect(chef_run).to create_openstack_endpoint(
+            service_type
+          ).with(
+            service_name: service_name,
+            # interface: interface,
+            url: url,
+            region: region,
+            connection_params: connection_params
+          )
+        end
+      end
     end
 
     it 'registers service user' do
-      expect(chef_run).to create_user_openstack_identity_register(
-        'Register neutron User'
+      expect(chef_run).to create_openstack_user(
+        service_user
       ).with(
-        auth_uri: 'http://127.0.0.1:35357/v2.0',
-        bootstrap_token: 'bootstrap-token',
-        tenant_name: 'service',
-        user_name: 'neutron',
-        user_pass: 'neutron-pass'
+        project_name: project_name,
+        role_name: role_name,
+        password: password,
+        connection_params: connection_params
       )
     end
 
-    it 'grants admin role to service user for service tenant' do
-      expect(chef_run).to grant_role_openstack_identity_register(
-        "Grant 'admin' Role to neutron User for service Tenant"
+    it do
+      expect(chef_run).to grant_domain_openstack_user(
+        service_user
       ).with(
-        auth_uri: 'http://127.0.0.1:35357/v2.0',
-        bootstrap_token: 'bootstrap-token',
-        tenant_name: 'service',
-        role_name: 'admin',
-        user_name: 'neutron'
+        domain_name: domain_name,
+        role_name: role_name,
+        connection_params: connection_params
+      )
+    end
+
+    it do
+      expect(chef_run).to grant_role_openstack_user(
+        service_user
+      ).with(
+        project_name: project_name,
+        role_name: role_name,
+        password: password,
+        connection_params: connection_params
       )
     end
   end

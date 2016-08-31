@@ -15,7 +15,7 @@ describe 'openstack-network' do
       expect(chef_run).to include_recipe('openstack-network::client')
     end
 
-    %w(neutron-common python-pyparsing python-cliff python-mysqldb).each do |package|
+    %w(neutron-common python-pyparsing  python-mysqldb).each do |package|
       it do
         expect(chef_run).to upgrade_package(package)
       end
@@ -114,11 +114,13 @@ describe 'openstack-network' do
         end
       end
       [
-        /^tenant_name = service$/,
+        /^project_name = service$/,
         /^username = neutron$/,
-        %r{^auth_url = http://127\.0\.0\.1:5000/v2\.0$},
+        /^user_domain_name = Default/,
+        /^project_domain_name = Default/,
+        %r{^auth_url = http://127\.0\.0\.1:5000/v3$},
         /^password = neutron-pass$/,
-        /^auth_type = v2password$/
+        /^auth_type = v3password$/
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -127,10 +129,12 @@ describe 'openstack-network' do
       end
       [
         /^region_name = RegionOne$/,
-        /^auth_type = v2password$/,
-        %r{^auth_url = http://127\.0\.0\.1:5000/v2\.0$},
+        /^auth_type = v3password$/,
+        %r{^auth_url = http://127\.0\.0\.1:5000/v3$},
         /^username = nova$/,
-        /^tenant_name = service$/
+        /^user_domain_name = Default/,
+        /^project_domain_name = Default/,
+        /^project_name = service$/
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
