@@ -30,17 +30,9 @@ include_recipe 'openstack-network::ml2_core_plugin'
 node.default['openstack']['network']['plugins']['ml2']['conf']['ml2']['mechanism_drivers'] = 'openvswitch'
 
 node.default['openstack']['network']['plugins']['openvswitch'].tap do |ovs|
-  case node['platform_family']
-  when 'fedora', 'rhel'
-    ovs['path'] =
-      '/etc/neutron/plugins/openvswitch'
-    ovs['filename'] =
-      'ovs_neutron_plugin.ini'
-  when 'debian'
-    ovs['path'] =
-      '/etc/neutron/plugins/ml2'
-    ovs['filename'] =
-      'openvswitch_agent.ini'
-  end
+  ovs['path'] =
+    '/etc/neutron/plugins/ml2'
+  ovs['filename'] =
+    'openvswitch_agent.ini'
   ovs['conf']['DEFAULT']['integration_bridge'] = 'br-int'
 end
