@@ -13,10 +13,6 @@ describe 'openstack-network::openvswitch' do
       expect(chef_run).to upgrade_package 'openvswitch-switch'
     end
 
-    it 'upgrades openvswitch datapath dkms' do
-      expect(chef_run).to upgrade_package 'openvswitch-datapath-dkms'
-    end
-
     it 'upgrades linux bridge utils' do
       expect(chef_run).to upgrade_package 'bridge-utils'
     end

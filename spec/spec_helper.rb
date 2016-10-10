@@ -45,6 +45,9 @@ shared_context 'neutron-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'openstack-compute')
       .and_return('nova-pass')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('user', 'admin')
+      .and_return('admin-pass')
   end
   shared_examples 'custom template banner displayer' do
     it 'shows the custom banner' do

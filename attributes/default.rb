@@ -37,7 +37,7 @@ default['openstack']['bind_service']['all']['network']['port'] = 9696
 # config)
 default['openstack']['network']['syslog']['use'] = false
 # Name of the plugin to load
-default['openstack']['network']['identity-api']['auth']['version'] = 'v2.0'
+default['openstack']['network']['identity-api']['auth']['version'] = 'v3'
 # Set dbsync command timeout value
 default['openstack']['network']['dbsync_timeout'] = 3600
 # Specify policy.json remote filwe to import
@@ -261,7 +261,7 @@ default['openstack']['network']['platform'].tap do |platform|
       ''
   when 'debian'
     platform['neutron_packages'] =
-      %w(neutron-common python-pyparsing python-cliff)
+      %w(neutron-common)
     platform['neutron_client_packages'] =
       %w(python-neutronclient python-pyparsing)
     platform['neutron_dhcp_packages'] =
@@ -274,7 +274,7 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_lbaas_packages'] =
       %w(python-neutron-lbaas neutron-lbaas-agent haproxy)
     platform['neutron_openvswitch_packages'] =
-      %w(openvswitch-switch openvswitch-datapath-dkms bridge-utils)
+      %w(openvswitch-switch bridge-utils)
     platform['neutron_openvswitch_build_packages'] =
       %w(
         build-essential pkg-config fakeroot

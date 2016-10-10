@@ -28,68 +28,80 @@ end
 
 identity_admin_endpoint = admin_endpoint 'identity'
 
-bootstrap_token = get_password 'token', 'openstack_identity_bootstrap_token'
-auth_uri = ::URI.decode identity_admin_endpoint.to_s
+auth_url = ::URI.decode identity_admin_endpoint.to_s
 
-admin_api_endpoint = admin_endpoint 'network'
-public_api_endpoint = public_endpoint 'network'
-internal_api_endpoint = internal_endpoint 'network'
+interfaces = {
+  public: { url: public_endpoint('network') },
+  internal: { url: internal_endpoint('network') },
+  admin: { url: admin_endpoint('network') }
+}
 
 service_pass = get_password 'service', 'openstack-network'
 service_tenant_name =
-  node['openstack']['network']['conf']['keystone_authtoken']['tenant_name']
+  node['openstack']['network']['conf']['keystone_authtoken']['project_name']
 
 service_user =
   node['openstack']['network']['conf']['keystone_authtoken']['username']
 service_role = node['openstack']['network']['service_role']
+service_domain_name = node['openstack']['network']['conf']['keystone_authtoken']['user_domain_name']
+admin_user = node['openstack']['identity']['admin_user']
+admin_pass = get_password 'user', node['openstack']['identity']['admin_user']
+admin_project = node['openstack']['identity']['admin_project']
+admin_domain = node['openstack']['identity']['admin_domain_name']
+region = node['openstack']['region']
 
-openstack_identity_register 'Register Network API Service' do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  service_name node['openstack']['network']['service_name']
-  service_type node['openstack']['network']['service_type']
-  service_description 'OpenStack Network Service'
+# Do not configure a service/endpoint in keystone for heat-api-cloudwatch(Bug #1167927),
+# See discussions on https://bugs.launchpad.net/heat/+bug/1167927
 
-  action :create_service
+connection_params = {
+  openstack_auth_url:     "#{auth_url}/auth/tokens",
+  openstack_username:     admin_user,
+  openstack_api_key:      admin_pass,
+  openstack_project_name: admin_project,
+  openstack_domain_name:    admin_domain
+}
+
+# Register Network Service
+openstack_service 'neutron' do
+  type 'network'
+  connection_params connection_params
 end
 
-openstack_identity_register 'Register Network Endpoint' do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  service_type node['openstack']['network']['service_type']
-  endpoint_region node['openstack']['network']['region']
-  endpoint_adminurl admin_api_endpoint.to_s
-  endpoint_internalurl internal_api_endpoint.to_s
-  endpoint_publicurl public_api_endpoint.to_s
-
-  action :create_endpoint
+# Register Network Public-Endpoint
+interfaces.each do |interface, res|
+  # Register network Endpoints
+  openstack_endpoint 'network' do
+    service_name 'neutron'
+    interface interface.to_s
+    url res[:url].to_s
+    region region
+    connection_params connection_params
+  end
+end
+# Register Service Tenant
+openstack_project service_tenant_name do
+  connection_params connection_params
 end
 
-openstack_identity_register 'Register Service Tenant' do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name service_tenant_name
-  tenant_description 'Service Tenant'
-
-  action :create_tenant
-end
-
-openstack_identity_register "Register #{service_user} User" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name service_tenant_name
-  user_name service_user
-  user_pass service_pass
-
-  action :create_user
-end
-
-openstack_identity_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name service_tenant_name
-  user_name service_user
+# Register Service User
+openstack_user service_user do
+  project_name service_tenant_name
   role_name service_role
+  password service_pass
+  connection_params connection_params
+end
 
+## Grant Service role to Service User for Service Tenant ##
+openstack_user service_user do
+  role_name service_role
+  project_name service_tenant_name
+  connection_params connection_params
   action :grant_role
+end
+
+openstack_user service_user do
+  domain_name service_domain_name
+  role_name service_role
+  connection_params connection_params
+  action :grant_domain
 end

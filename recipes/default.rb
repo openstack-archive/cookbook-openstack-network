@@ -85,11 +85,7 @@ if node['openstack']['network']['conf']['DEFAULT']['rpc_backend'] == 'rabbit'
 end
 
 identity_public_endpoint = public_endpoint 'identity'
-auth_url =
-  auth_uri_transform(
-    identity_public_endpoint.to_s,
-    node['openstack']['network']['identity-api']['auth']['version']
-  )
+auth_url = identity_public_endpoint.to_s
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
