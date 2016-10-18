@@ -20,8 +20,6 @@
 # limitations under the License.
 #
 
-include_recipe 'openstack-network::client'
-
 require 'uri'
 
 # Make Openstack object available in Chef::Recipe

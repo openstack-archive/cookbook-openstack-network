@@ -11,11 +11,7 @@ describe 'openstack-network' do
 
     include_context 'neutron-stubs'
 
-    it do
-      expect(chef_run).to include_recipe('openstack-network::client')
-    end
-
-    %w(neutron-common python-pyparsing  python-mysqldb).each do |package|
+    %w(neutron-common python-mysqldb).each do |package|
       it do
         expect(chef_run).to upgrade_package(package)
       end
@@ -79,7 +75,7 @@ describe 'openstack-network' do
             .with_section_content('oslo_messaging_rabbit', /^rabbit_password = mq-pass/)
         end
       end
-      describe 'has no rabbit values if rpc_backend is not default' do
+      describe 'has no rabbit value if rpc_backend is not default' do
         before do
           node.set['openstack']['network']['conf']['DEFAULT']['rpc_backend'] = 'not_rabbit'
         end
@@ -94,9 +90,9 @@ describe 'openstack-network' do
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
       [
         %r{^log_dir = /var/log/neutron$},
+        /^rpc_backend = rabbit$/,
         /^control_exchange = neutron$/,
         /^core_plugin = ml2$/,
-        /^rpc_backend = rabbit$/,
         /^bind_host = 127\.0\.0\.1$/,
         /^bind_port = 9696$/
       ].each do |line|

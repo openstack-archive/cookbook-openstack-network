@@ -6,7 +6,7 @@ describe 'openstack-network::l3_agent' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['network_l3']['external_network_bridge_interface'] = 'eth1'
+      node.set['openstack']['network_l3']['external_network_bridge_interface'] = 'enp0s8'
       runner.converge(described_recipe)
     end
     describe 'recipe' do

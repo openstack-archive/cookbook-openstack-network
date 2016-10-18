@@ -82,10 +82,6 @@ end
 # ============================= dnsmasq Configuration ===================
 # TODO: (jklare) this should be refactored and probably pull in the some dnsmasq
 # cookbook to do the proper configuration
-# the version of dnsmasq for centos 6.5 is two revs behind where the dhcp-agent needs
-# to run properly. This is a version that allows and starts the dhcp-agent correctly.
-default['openstack']['network']['dnsmasq']['rpm_version'] = '2.65-1.el6.rfx.x86_64'
-default['openstack']['network']['dnsmasq']['rpm_source'] = "http://pkgs.repoforge.org/dnsmasq/dnsmasq-#{node['openstack']['network']['dnsmasq']['rpm_version']}.rpm"
 # Upstream resolver to use
 # This will be used by dnsmasq to resolve recursively
 # but will not be used if the tenant specifies a dns
@@ -108,7 +104,7 @@ default['openstack']['network_dhcp']['conf'].tap do |conf|
 end
 
 # ============================= L3 Agent Configuration =====================
-default['openstack']['network_l3']['external_network_bridge_interface'] = 'eth1'
+default['openstack']['network_l3']['external_network_bridge_interface'] = 'enp0s8'
 
 # Customize the l3 config file path
 default['openstack']['network_l3']['config_file'] = '/etc/neutron/l3_agent.ini'
@@ -226,8 +222,6 @@ default['openstack']['network']['platform'].tap do |platform|
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
       %w(openstack-neutron openstack-neutron-ml2 iproute)
-    platform['neutron_client_packages'] =
-      %w(python-neutronclient)
     platform['neutron_dhcp_packages'] =
       %w(openstack-neutron iproute)
     platform['neutron_l3_packages'] =
@@ -262,8 +256,6 @@ default['openstack']['network']['platform'].tap do |platform|
   when 'debian'
     platform['neutron_packages'] =
       %w(neutron-common)
-    platform['neutron_client_packages'] =
-      %w(python-neutronclient python-pyparsing)
     platform['neutron_dhcp_packages'] =
       %w(neutron-dhcp-agent)
     platform['neutron_l3_packages'] =

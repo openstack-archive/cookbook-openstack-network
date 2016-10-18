@@ -54,17 +54,8 @@ end
 # cookbook to do the proper configuration
 case node['platform']
 when 'centos'
-  if node['platform_version'].to_f < 7.1
-    dnsmasq_file = "#{Chef::Config[:file_cache_path]}/#{node['openstack']['network']['dnsmasq']['rpm_version']}"
-    remote_file dnsmasq_file do
-      source node['openstack']['network']['dnsmasq']['rpm_source']
-      not_if { ::File.exist?(dnsmasq_file) || node['openstack']['network']['dnsmasq']['rpm_version'].to_s.empty? }
-    end
-    rpm_package 'dnsmasq' do
-      source dnsmasq_file
-      action :install
-      not_if { node['openstack']['network']['dnsmasq']['rpm_version'].to_s.empty? }
-    end
+  rpm_package 'dnsmasq' do
+    action :upgrade
   end
 end
 

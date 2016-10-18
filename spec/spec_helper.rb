@@ -15,12 +15,12 @@ REDHAT_OPTS = {
 }.freeze
 UBUNTU_OPTS = {
   platform: 'ubuntu',
-  version: '14.04',
+  version: '16.04',
   log_level: LOG_LEVEL
 }.freeze
 CENTOS_OPTS = {
   platform: 'centos',
-  version: '6.5',
+  version: '7.2.1511',
   log_level: LOG_LEVEL
 }.freeze
 
