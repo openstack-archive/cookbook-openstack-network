@@ -12,7 +12,7 @@ describe 'openstack-network::lbaas' do
     include_context 'neutron-stubs'
 
     it do
-      %w(python-neutron-lbaas neutron-lbaas-agent haproxy)
+      %w(python-neutron-lbaas neutron-lbaasv2-agent haproxy)
         .each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
@@ -33,7 +33,7 @@ describe 'openstack-network::lbaas' do
           /^periodic_interval = 10$/,
           /^ovs_use_veth = false$/,
           /^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/,
-          /^device_driver = neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver$/
+          /^device_driver = neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver$/
         ].each do |line|
           expect(chef_run).to render_file(file.name).with_content(line)
         end

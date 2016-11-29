@@ -175,7 +175,7 @@ default['openstack']['network_lbaas']['conf'].tap do |conf|
   conf['DEFAULT']['periodic_interval'] = 10
   conf['DEFAULT']['ovs_use_veth'] = false
   conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
-  conf['DEFAULT']['device_driver'] = 'neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver'
+  conf['DEFAULT']['device_driver'] = 'neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver'
   case platform_family
   when 'fedora', 'rhel'
     conf['haproxy']['user_group'] = 'nobody'
@@ -211,7 +211,7 @@ default['openstack']['network']['platform'].tap do |platform|
   platform['vpn_device_driver_services'] =
     %w(strongswan)
   platform['neutron_lb_agent_service'] =
-    'neutron-lbaas-agent'
+    'neutron-lbaasv2-agent'
   platform['neutron_metadata_agent_service'] =
     'neutron-metadata-agent'
   platform['neutron_metering_agent_service'] =
@@ -272,7 +272,7 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_vpnaas_packages'] =
       %w(python-neutron-vpnaas neutron-vpn-agent)
     platform['neutron_lbaas_packages'] =
-      %w(python-neutron-lbaas neutron-lbaas-agent haproxy)
+      %w(python-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
     platform['neutron_openvswitch_packages'] =
       %w(openvswitch-switch bridge-utils)
     platform['neutron_openvswitch_build_packages'] =
