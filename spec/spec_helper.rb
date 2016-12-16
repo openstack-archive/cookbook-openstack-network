@@ -48,6 +48,9 @@ shared_context 'neutron-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('user', 'admin')
       .and_return('admin-pass')
+    allow_any_instance_of(Chef::Recipe).to receive(:rabbit_transport_url)
+      .with('network')
+      .and_return('rabbit://guest:mypass@127.0.0.1:5672')
   end
   shared_examples 'custom template banner displayer' do
     it 'shows the custom banner' do

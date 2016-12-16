@@ -11,7 +11,6 @@ default['openstack']['network']['conf'].tap do |conf|
   end
   conf['DEFAULT']['control_exchange'] = node['openstack']['mq']['network']['control_exchange']
   conf['DEFAULT']['core_plugin'] = 'ml2'
-  conf['DEFAULT']['rpc_backend'] = node['openstack']['mq']['service_type']
 
   # [agent] section
   if node['openstack']['network']['use_rootwrap']

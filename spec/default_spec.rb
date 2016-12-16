@@ -64,35 +64,13 @@ describe 'openstack-network' do
       end
     end
 
-    context 'oslo_messaging' do
-      let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
-      describe 'has rabbit as default service' do
-        before do
-          node.set['openstack']['network']['conf']['DEFAULT']['rpc_backend'] = 'rabbit'
-        end
-        it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('oslo_messaging_rabbit', /^rabbit_password = mq-pass/)
-        end
-      end
-      describe 'has no rabbit value if rpc_backend is not default' do
-        before do
-          node.set['openstack']['network']['conf']['DEFAULT']['rpc_backend'] = 'not_rabbit'
-        end
-        it do
-          expect(chef_run).not_to render_config_file(file.name)
-            .with_section_content('oslo_messaging_rabbit', /^rabbit_password =.*$/)
-        end
-      end
-    end
-
     describe '/etc/neutron/neutron.conf' do
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
       [
         %r{^log_dir = /var/log/neutron$},
-        /^rpc_backend = rabbit$/,
         /^control_exchange = neutron$/,
         /^core_plugin = ml2$/,
+        %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
         /^bind_host = 127\.0\.0\.1$/,
         /^bind_port = 9696$/
       ].each do |line|
