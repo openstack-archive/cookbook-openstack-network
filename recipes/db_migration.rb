@@ -27,6 +27,7 @@ bash 'migrate network database' do
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
+  only_if { node['openstack']['db']['network']['migrate'] == true }
 end
 
 # Only if the vpnaas is enabled, migrate the database.
@@ -37,6 +38,7 @@ bash 'migrate vpnaas database' do
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
+  only_if { node['openstack']['db']['network']['migrate'] == true }
 end
 
 # Only if the fwaas is enabled, migrate the database.
@@ -47,6 +49,7 @@ bash 'migrate fwaas database' do
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
+  only_if { node['openstack']['db']['network']['migrate'] == true }
 end
 
 # Only if the lbaas is enabled, migrate the database.
@@ -57,4 +60,5 @@ bash 'migrate lbaas database' do
   code <<-EOF
 #{migrate_command} upgrade head
 EOF
+  only_if { node['openstack']['db']['network']['migrate'] == true }
 end
