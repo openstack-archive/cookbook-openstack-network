@@ -295,3 +295,5 @@ default['openstack']['network']['platform'].tap do |platform|
       "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   end
 end
+# Enable identity registration
+default['openstack']['identity']['network']['register'] = true

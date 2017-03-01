@@ -107,4 +107,6 @@ service 'neutron-server' do
   ].flatten
 end
 
-include_recipe 'openstack-network::identity_registration'
+if node['openstack']['identity']['network']['register'] == true
+  include_recipe 'openstack-network::identity_registration'
+end
