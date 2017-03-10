@@ -88,13 +88,14 @@ end
 # server in their subnet
 #
 # Defaults are spread out across multiple, presumably
-# reliable, upstream providers
+# reliable, upstream providers. Deployers should replace these with their local
+# resolvers when possible.
 #
 # 8.8.8.8 is Google
-# 209.244.0.3 is Level3
+# 208.67.222.222 is OpenDNS
 #
 # May be a comma separated list of servers
-default['openstack']['network']['dnsmasq']['upstream_dns_servers'] = %w(8.8.8.8 209.244.0.3)
+default['openstack']['network']['dnsmasq']['upstream_dns_servers'] = %w(8.8.8.8 208.67.222.222)
 
 # ============================= DHCP Agent Configuration ===================
 default['openstack']['network_dhcp']['config_file'] = '/etc/neutron/dhcp_agent.ini'
