@@ -100,7 +100,7 @@ default['openstack']['network']['dnsmasq']['upstream_dns_servers'] = %w(8.8.8.8 
 # ============================= DHCP Agent Configuration ===================
 default['openstack']['network_dhcp']['config_file'] = '/etc/neutron/dhcp_agent.ini'
 default['openstack']['network_dhcp']['conf'].tap do |conf|
-  conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
+  conf['DEFAULT']['interface_driver'] = 'openvswitch'
   conf['DEFAULT']['dnsmasq_config_file '] = '/etc/neutron/dnsmasq.conf'
 end
 
