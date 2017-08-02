@@ -51,14 +51,14 @@ end
 directory '/var/cache/neutron' do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00700
+  mode 0o0700
   action :create
 end
 
 directory node['openstack']['network']['api']['auth']['cache_dir'] do
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00700
+  mode 0o0700
   only_if { node['openstack']['auth']['strategy'] == 'pki' }
 end
 
@@ -67,7 +67,7 @@ template '/etc/neutron/rootwrap.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00644
+  mode 0o0644
   variables(
     service_config: node['openstack']['network']['rootwrap']['conf']
   )
@@ -124,7 +124,7 @@ template '/etc/neutron/neutron.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: neutron_conf_options
   )

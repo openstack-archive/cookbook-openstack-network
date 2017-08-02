@@ -54,7 +54,8 @@ describe 'openstack-network::server' do
         node.set['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
 
         expect(chef_run).to enable_service('neutron-server').with(
-          service_name: 'my-neutron-server')
+          service_name: 'my-neutron-server'
+        )
       end
 
       it 'allows overriding package options' do
@@ -78,7 +79,7 @@ describe 'openstack-network::server' do
         expect(chef_run).to create_template(file.name).with(
           user: 'root',
           group: 'root',
-          mode: 0644
+          mode: 0o644
         )
       end
     end
@@ -90,7 +91,7 @@ describe 'openstack-network::server' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
-          mode: 0644
+          mode: 0o644
         )
       end
 

@@ -42,7 +42,7 @@ describe 'openstack-network::dhcp_agent' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
-          mode: 0644
+          mode: 0o644
         )
       end
     end
@@ -54,7 +54,7 @@ describe 'openstack-network::dhcp_agent' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
-          mode: 0644
+          mode: 0o644
         )
       end
     end

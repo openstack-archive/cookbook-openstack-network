@@ -33,7 +33,7 @@ template node['openstack']['network_fwaas']['config_file'] do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: service_conf
   )

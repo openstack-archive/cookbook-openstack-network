@@ -22,7 +22,7 @@ node['openstack']['network']['plugins'].each_value do |plugin|
     recursive true
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 00700
+    mode 0o0700
   end
 
   template File.join(plugin['path'], plugin['filename']) do
@@ -30,7 +30,7 @@ node['openstack']['network']['plugins'].each_value do |plugin|
     cookbook 'openstack-common'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 00644
+    mode 0o0644
     variables(
       service_config: plugin['conf']
     )

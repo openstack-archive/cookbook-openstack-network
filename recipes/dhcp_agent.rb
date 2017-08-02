@@ -35,7 +35,7 @@ template '/etc/neutron/dnsmasq.conf' do
   source 'dnsmasq.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00644
+  mode 0o0644
 end
 
 service_config = merge_config_options 'network_dhcp'
@@ -44,7 +44,7 @@ template node['openstack']['network_dhcp']['config_file'] do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 00644
+  mode 0o0644
   variables(
     service_config: service_config
   )

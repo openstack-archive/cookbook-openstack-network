@@ -30,7 +30,7 @@ template '/etc/default/neutron-server' do
   source 'neutron-server.erb'
   owner 'root'
   group 'root'
-  mode 00644
+  mode 0o0644
   variables(
     core_plugin_config: node['openstack']['network']['core_plugin_config_file']
   )
@@ -59,7 +59,7 @@ if node['openstack']['network']['policyfile_url']
     source node['openstack']['network']['policyfile_url']
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 00644
+    mode 0o0644
   end
 end
 
@@ -92,7 +92,7 @@ end
 # Migrate network database to latest version
 include_recipe 'openstack-network::db_migration'
 plugin_templates = []
-node['openstack']['network']['plugins'].each_value do |plugin|
+node['openstack']['network']['plugins'].each_value.to_s do |plugin|
   plugin_templates << "template[#{File.join(plugin['path'], plugin['filename'])}]"
 end
 

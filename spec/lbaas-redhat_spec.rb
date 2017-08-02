@@ -20,7 +20,7 @@ describe 'openstack-network::lbaas' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
-          mode: 0640
+          mode: 0o640
         )
       end
 

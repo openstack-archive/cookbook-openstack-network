@@ -21,7 +21,7 @@ describe 'openstack-network' do
       expect(chef_run).to create_directory('/var/cache/neutron')
         .with(owner: 'neutron',
               group: 'neutron',
-              mode: 00700)
+              mode: 0o0700)
     end
 
     describe '/var/cache/neutron/api with pki set' do
@@ -32,7 +32,7 @@ describe 'openstack-network' do
         expect(chef_run).to create_directory('/var/cache/neutron/api')
           .with(owner: 'neutron',
                 group: 'neutron',
-                mode: 00700)
+                mode: 0o0700)
       end
     end
 
@@ -44,7 +44,7 @@ describe 'openstack-network' do
         expect(chef_run).not_to create_directory('/var/cache/neutron/api')
           .with(owner: 'neutron',
                 group: 'neutron',
-                mode: 00700)
+                mode: 0o0700)
       end
     end
 
@@ -116,7 +116,7 @@ describe 'openstack-network' do
         end
       end
       [
-        %r{^connection = mysql://neutron:neutron@127\.0\.0\.1:3306/neutron\?charset=utf8$}
+        %(connection = mysql+pymysql://neutron:neutron@127.0.0.1:3306/neutron?charset=utf8)
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)

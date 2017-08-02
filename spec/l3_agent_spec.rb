@@ -33,7 +33,7 @@ describe 'openstack-network::l3_agent' do
           expect(chef_run).to create_template(file.name).with(
             user: 'neutron',
             group: 'neutron',
-            mode: 0640
+            mode: 0o640
           )
         end
 
