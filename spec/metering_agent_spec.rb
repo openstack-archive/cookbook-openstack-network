@@ -24,7 +24,7 @@ describe 'openstack-network::metering_agent' do
         expect(chef_run).to create_template(file.name).with(
           user: 'neutron',
           group: 'neutron',
-          mode: 00640
+          mode: 0o0640
         )
       end
 

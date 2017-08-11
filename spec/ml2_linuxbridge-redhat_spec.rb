@@ -25,7 +25,7 @@ describe 'openstack-network::ml2_linuxbridge' do
       expect(chef_run).to create_directory('/etc/neutron/plugins/ml2').with(
         owner: 'neutron',
         group: 'neutron',
-        mode: 0700
+        mode: 0o700
       )
     end
     it do

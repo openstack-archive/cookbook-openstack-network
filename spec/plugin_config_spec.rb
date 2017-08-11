@@ -30,7 +30,7 @@ describe 'openstack-network::plugin_config' do
             recursive: true,
             owner: 'neutron',
             group: 'neutron',
-            mode: 00700
+            mode: 0o0700
           )
       end
 
