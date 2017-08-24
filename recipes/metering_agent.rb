@@ -46,6 +46,6 @@ service 'neutron-metering-agent' do
   action [:enable, :start]
   subscribes :restart, [
     'template[/etc/neutron/neutron.conf]',
-    "template[#{node['openstack']['network_metering']['config_file']}]"
+    "template[#{node['openstack']['network_metering']['config_file']}]",
   ]
 end

@@ -33,7 +33,7 @@ auth_url = ::URI.decode identity_admin_endpoint.to_s
 interfaces = {
   public: { url: public_endpoint('network') },
   internal: { url: internal_endpoint('network') },
-  admin: { url: admin_endpoint('network') }
+  admin: { url: admin_endpoint('network') },
 }
 
 service_pass = get_password 'service', 'openstack-network'
@@ -58,7 +58,7 @@ connection_params = {
   openstack_username:     admin_user,
   openstack_api_key:      admin_pass,
   openstack_project_name: admin_project,
-  openstack_domain_name:    admin_domain
+  openstack_domain_name:    admin_domain,
 }
 
 # Register Network Service

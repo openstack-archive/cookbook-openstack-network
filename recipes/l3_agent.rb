@@ -64,7 +64,7 @@ service 'neutron-l3-agent' do
     action [:enable, :start]
     subscribes :restart, [
       'template[/etc/neutron/neutron.conf]',
-      "template[#{node['openstack']['network_fwaas']['config_file']}]"
+      "template[#{node['openstack']['network_fwaas']['config_file']}]",
     ]
   end
 end

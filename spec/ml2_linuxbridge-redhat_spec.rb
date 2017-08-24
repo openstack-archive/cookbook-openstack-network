@@ -37,7 +37,7 @@ describe 'openstack-network::ml2_linuxbridge' do
         chef_run.template('/etc/neutron/plugins/ml2/linuxbridge_agent.ini')
       end
       [
-        /^firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver$/
+        /^firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)

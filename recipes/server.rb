@@ -103,7 +103,7 @@ service 'neutron-server' do
   subscribes :restart, [
     plugin_templates,
     'template[/etc/neutron/neutron.conf]',
-    'remote_file[/etc/neutron/policy.json]'
+    'remote_file[/etc/neutron/policy.json]',
   ].flatten
 end
 

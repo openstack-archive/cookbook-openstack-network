@@ -55,7 +55,7 @@ describe 'openstack-network' do
         %r{^exec_dirs = /sbin,/usr/sbin,/bin,/usr/bin$},
         /^use_syslog = false$/,
         /^syslog_log_facility = syslog$/,
-        /^syslog_log_level = ERROR$/
+        /^syslog_log_level = ERROR$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -72,7 +72,7 @@ describe 'openstack-network' do
         /^core_plugin = ml2$/,
         %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
         /^bind_host = 127\.0\.0\.1$/,
-        /^bind_port = 9696$/
+        /^bind_port = 9696$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -80,7 +80,7 @@ describe 'openstack-network' do
         end
       end
       [
-        %r{^root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf$}
+        %r{^root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf$},
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -94,7 +94,7 @@ describe 'openstack-network' do
         /^project_domain_name = Default/,
         %r{^auth_url = http://127\.0\.0\.1:5000/v3$},
         /^password = neutron-pass$/,
-        /^auth_type = v3password$/
+        /^auth_type = v3password$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -108,7 +108,7 @@ describe 'openstack-network' do
         /^username = nova$/,
         /^user_domain_name = Default/,
         /^project_domain_name = Default/,
-        /^project_name = service$/
+        /^project_name = service$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -116,7 +116,7 @@ describe 'openstack-network' do
         end
       end
       [
-        %(connection = mysql+pymysql://neutron:neutron@127.0.0.1:3306/neutron?charset=utf8)
+        %(connection = mysql+pymysql://neutron:neutron@127.0.0.1:3306/neutron?charset=utf8),
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)

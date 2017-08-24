@@ -45,6 +45,6 @@ service 'neutron-openvswitch-agent' do
   action [:enable, :start]
   subscribes :restart, [
     'template[/etc/neutron/neutron.conf]',
-    "template[#{plugin_file_path}]"
+    "template[#{plugin_file_path}]",
   ]
 end

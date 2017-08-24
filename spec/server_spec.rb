@@ -102,7 +102,7 @@ describe 'openstack-network::server' do
             %r{^exec_dirs = /sbin,/usr/sbin,/bin,/usr/bin$},
             /^use_syslog = false$/,
             /^syslog_log_facility = syslog$/,
-            /^syslog_log_level = ERROR$/
+            /^syslog_log_level = ERROR$/,
           ].each do |line|
             expect(chef_run).to render_file(file.name).with_content(line)
           end

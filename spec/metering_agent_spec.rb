@@ -31,7 +31,7 @@ describe 'openstack-network::metering_agent' do
       it do
         [
           /^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/,
-          /^driver = neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver$/
+          /^driver = neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver$/,
         ].each do |line|
           expect(chef_run).to render_file(file.name).with_content(line)
         end

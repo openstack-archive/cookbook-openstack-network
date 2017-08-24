@@ -67,6 +67,6 @@ service 'neutron-dhcp-agent' do
     'template[/etc/neutron/neutron.conf]',
     'template [/etc/neutron/dnsmasq.conf]',
     "template[#{node['openstack']['network_dhcp']['config_file']}]",
-    'rpm_package[dnsmasq]'
+    'rpm_package[dnsmasq]',
   ]
 end
