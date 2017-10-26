@@ -9,7 +9,7 @@ default['openstack']['network']['conf'].tap do |conf|
   else
     conf['DEFAULT']['log_dir'] = '/var/log/neutron'
   end
-  conf['DEFAULT']['control_exchange'] = node['openstack']['mq']['network']['control_exchange']
+  conf['DEFAULT']['control_exchange'] = 'neutron'
   conf['DEFAULT']['core_plugin'] = 'ml2'
 
   # [agent] section
