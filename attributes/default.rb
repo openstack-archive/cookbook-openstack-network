@@ -153,7 +153,7 @@ default['openstack']['network_vpnaas']['conf'].tap do |conf|
   # Status check interval for ipsec vpn
   conf['ipsec']['ipsec_status_check_interval'] = 60
   # default_config_area settings is used to set the area where default StrongSwan configuration files are located
-  case platform_family
+  case node['platform_family']
   when 'fedora', 'rhel'
     conf['strongswan']['default_config_area'] = '/usr/share/strongswan/templates/config/strongswan.d'
   when 'debian'
@@ -173,7 +173,7 @@ default['openstack']['network_lbaas']['conf'].tap do |conf|
   conf['DEFAULT']['ovs_use_veth'] = false
   conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
   conf['DEFAULT']['device_driver'] = 'neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver'
-  case platform_family
+  case node['platform_family']
   when 'fedora', 'rhel'
     conf['haproxy']['user_group'] = 'nobody'
   when 'debian'
@@ -219,7 +219,7 @@ default['openstack']['network']['platform'].tap do |platform|
     %w(python-neutron-lbaas)
   platform['neutron_vpnaas_python_dependencies'] =
     %w(python-neutron-vpnaas)
-  case platform_family
+  case node['platform_family']
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
       %w(openstack-neutron openstack-neutron-ml2 iproute)
