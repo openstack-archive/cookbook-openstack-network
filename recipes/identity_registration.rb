@@ -86,6 +86,7 @@ end
 # Register Service User
 openstack_user service_user do
   project_name service_tenant_name
+  domain_name service_domain_name
   password service_pass
   connection_params connection_params
 end
@@ -96,11 +97,4 @@ openstack_user service_user do
   project_name service_tenant_name
   connection_params connection_params
   action :grant_role
-end
-
-openstack_user service_user do
-  domain_name service_domain_name
-  role_name service_role
-  connection_params connection_params
-  action :grant_domain
 end

@@ -67,18 +67,9 @@ describe 'openstack-network::identity_registration' do
       expect(chef_run).to create_openstack_user(
         service_user
       ).with(
+        domain_name: domain_name,
         project_name: project_name,
         password: password,
-        connection_params: connection_params
-      )
-    end
-
-    it do
-      expect(chef_run).to grant_domain_openstack_user(
-        service_user
-      ).with(
-        domain_name: domain_name,
-        role_name: role_name,
         connection_params: connection_params
       )
     end
