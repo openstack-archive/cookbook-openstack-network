@@ -1,7 +1,7 @@
 name             'openstack-network'
 maintainer       'openstack-chef'
 maintainer_email 'openstack-dev@lists.openstack.org'
-license          'Apache 2.0'
+license          'Apache-2.0'
 description      'Installs and configures the OpenStack Network API Service and various agents and plugins'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '16.0.0'

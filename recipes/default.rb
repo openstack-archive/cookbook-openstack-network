@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-require 'uri'
+require 'addressable'
 
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
@@ -101,7 +101,7 @@ node.default['openstack']['network']['conf'].tap do |conf|
     conf['DEFAULT']['log_config'] = '/etc/openstack/logging.conf'
   end
   conf['DEFAULT']['bind_host'] = bind_service_address
-  conf['DEFAULT']['bind_port'] = bind_service.port
+  conf['DEFAULT']['bind_port'] = bind_service['port']
   conf['nova']['auth_url'] = nova_auth_url if nova_auth_url
   conf['keystone_authtoken']['auth_url'] = auth_url
 end

@@ -85,16 +85,10 @@ end
 
 # Register Service User
 openstack_user service_user do
+  role_name service_role
   project_name service_tenant_name
   domain_name service_domain_name
   password service_pass
   connection_params connection_params
-end
-
-## Grant Service role to Service User for Service Tenant ##
-openstack_user service_user do
-  role_name service_role
-  project_name service_tenant_name
-  connection_params connection_params
-  action :grant_role
+  action [:create, :grant_role]
 end

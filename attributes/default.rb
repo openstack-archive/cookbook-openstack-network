@@ -293,6 +293,6 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_openvswitch_agent_service'] =
       'neutron-openvswitch-agent'
     platform['package_overrides'] =
-      "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
+      ''
   end
 end

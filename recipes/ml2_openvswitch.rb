@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-require 'uri'
+require 'addressable'
 
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
