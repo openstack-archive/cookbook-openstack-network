@@ -25,7 +25,7 @@ bash 'migrate network database' do
   timeout timeout
   migrate_command = 'neutron-db-manage --config-file /etc/neutron/neutron.conf'
   code <<-EOF
-#{migrate_command} upgrade heads
+#{migrate_command} upgrade head
 EOF
 end
 
@@ -35,7 +35,7 @@ bash 'migrate vpnaas database' do
   timeout timeout
   migrate_command = "neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
-#{migrate_command} upgrade heads
+#{migrate_command} upgrade head
 EOF
 end
 
@@ -45,7 +45,7 @@ bash 'migrate fwaas database' do
   timeout timeout
   migrate_command = "neutron-db-manage --subproject neutron-fwaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
-#{migrate_command} upgrade heads
+#{migrate_command} upgrade head
 EOF
 end
 
@@ -55,6 +55,6 @@ bash 'migrate lbaas database' do
   timeout timeout
   migrate_command = "neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
   code <<-EOF
-#{migrate_command} upgrade heads
+#{migrate_command} upgrade head
 EOF
 end
