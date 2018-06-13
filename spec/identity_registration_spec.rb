@@ -14,7 +14,7 @@ describe 'openstack-network::identity_registration' do
     include_context 'neutron-stubs'
 
     connection_params = {
-      openstack_auth_url: 'http://127.0.0.1:35357/v3/auth/tokens',
+      openstack_auth_url: 'http://127.0.0.1:5000/v3/auth/tokens',
       openstack_username: 'admin',
       openstack_api_key: 'admin-pass',
       openstack_project_name: 'admin',

@@ -92,7 +92,6 @@ describe 'openstack-network' do
         /^username = neutron$/,
         /^user_domain_name = Default/,
         /^project_domain_name = Default/,
-        %r{^auth_url = http://127\.0\.0\.1:5000/v3$},
         /^password = neutron-pass$/,
         /^auth_type = v3password$/,
       ].each do |line|
@@ -104,7 +103,6 @@ describe 'openstack-network' do
       [
         /^region_name = RegionOne$/,
         /^auth_type = v3password$/,
-        %r{^auth_url = http://127\.0\.0\.1:5000/v3$},
         /^username = nova$/,
         /^user_domain_name = Default/,
         /^project_domain_name = Default/,

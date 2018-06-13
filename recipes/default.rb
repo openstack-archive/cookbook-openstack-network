@@ -77,8 +77,8 @@ if node['openstack']['mq']['service_type'] == 'rabbit'
   node.default['openstack']['network']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'network'
 end
 
-identity_public_endpoint = public_endpoint 'identity'
-auth_url = identity_public_endpoint.to_s
+identity_endpoint = public_endpoint 'identity'
+auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
@@ -88,12 +88,8 @@ bind_service_address = bind_address bind_service
 # The auth_url in nova section follows auth_type
 nova_auth_url = nil
 case node['openstack']['network']['conf']['nova']['auth_type']
-when 'password'
-  nova_auth_url = auth_uri
-when 'v2password'
-  nova_auth_url = auth_uri_transform(identity_public_endpoint.to_s, 'v2.0')
 when 'v3password'
-  nova_auth_url = auth_uri_transform(identity_public_endpoint.to_s, 'v3.0')
+  nova_auth_url = auth_url
 end
 
 node.default['openstack']['network']['conf'].tap do |conf|
