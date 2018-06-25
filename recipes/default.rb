@@ -73,6 +73,15 @@ template '/etc/neutron/rootwrap.conf' do
   )
 end
 
+cookbook_file '/usr/bin/neutron-enable-bridge-firewall.sh' do
+  source 'neutron-enable-bridge-firewall.sh'
+  owner 'root'
+  group 'wheel'
+  mode '0755'
+  action :create
+  only_if { node['platform_family'] == 'redhat' }
+end
+
 if node['openstack']['mq']['service_type'] == 'rabbit'
   node.default['openstack']['network']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'network'
 end
