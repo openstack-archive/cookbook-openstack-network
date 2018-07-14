@@ -79,7 +79,7 @@ cookbook_file '/usr/bin/neutron-enable-bridge-firewall.sh' do
   group 'wheel'
   mode '0755'
   action :create
-  only_if { node['platform_family'] == 'redhat' }
+  only_if { node['platform_family'] == 'rhel' }
 end
 
 if node['openstack']['mq']['service_type'] == 'rabbit'
