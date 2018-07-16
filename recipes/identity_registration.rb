@@ -26,8 +26,8 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-identity_endpoint = public_endpoint 'identity'
-auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+identity_endpoint = internal_endpoint 'identity'
+auth_url = ::URI.decode identity_endpoint.to_s
 
 interfaces = {
   public: { url: public_endpoint('network') },

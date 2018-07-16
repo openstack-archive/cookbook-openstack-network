@@ -86,8 +86,8 @@ if node['openstack']['mq']['service_type'] == 'rabbit'
   node.default['openstack']['network']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'network'
 end
 
-identity_endpoint = public_endpoint 'identity'
-auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+identity_endpoint = internal_endpoint 'identity'
+auth_url = ::URI.decode identity_endpoint.to_s
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
