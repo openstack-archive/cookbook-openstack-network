@@ -6,8 +6,8 @@ describe 'openstack-network::lbaas' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
-      node.set['openstack']['network']['lbaas']['enabled'] = 'True'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['network']['lbaas']['enabled'] = 'True'
       runner.converge(described_recipe)
     end
 

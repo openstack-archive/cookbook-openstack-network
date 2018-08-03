@@ -6,7 +6,7 @@ describe 'openstack-network::l3_agent' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       stub_command('ovs-vsctl br-exists br-ex').and_return(false)
       runner.converge(described_recipe)
     end

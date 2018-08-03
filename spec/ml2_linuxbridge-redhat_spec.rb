@@ -16,9 +16,9 @@ describe 'openstack-network::ml2_linuxbridge' do
     include_context 'neutron-stubs'
 
     before do
-      node.set['openstack']['network']['plugins']['linuxbridge']['path'] =
+      node.override['openstack']['network']['plugins']['linuxbridge']['path'] =
         '/etc/neutron/plugins/ml2'
-      node.set['openstack']['network']['plugins']['linuxbridge']['filename'] =
+      node.override['openstack']['network']['plugins']['linuxbridge']['filename'] =
         'linuxbridge_agent.ini'
     end
     it 'creates the /etc/neutron/plugins/ml2 agent directory' do

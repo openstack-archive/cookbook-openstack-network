@@ -6,7 +6,7 @@ describe 'openstack-network::vpnaas' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
 
@@ -59,7 +59,7 @@ describe 'openstack-network::vpnaas' do
         end
 
         it 'renders no setted vpn_device_driver entry in vpn_agent.ini, when no vpn_device_driver set' do
-          chef_run.node.set['openstack']['network_vpnaas']['conf']['vpnagent']['vpn_device_driver'] = ''
+          chef_run.node.override['openstack']['network_vpnaas']['conf']['vpnagent']['vpn_device_driver'] = ''
           chef_run.converge(described_recipe)
           expect(chef_run).to render_config_file(file.name).with_section_content('vpnagent', /^vpn_device_driver = $/)
         end

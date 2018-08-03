@@ -6,7 +6,7 @@ describe 'openstack-network::dhcp_agent' do
     let(:runner) { ChefSpec::SoloRunner.new(CENTOS_OPTS) }
     let(:node) { runner.node }
     cached(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
 

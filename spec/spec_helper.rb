@@ -56,13 +56,13 @@ shared_context 'neutron-stubs' do
   end
   shared_examples 'custom template banner displayer' do
     it 'shows the custom banner' do
-      node.set['openstack']['network']['custom_template_banner'] = 'custom_template_banner_value'
+      node.override['openstack']['network']['custom_template_banner'] = 'custom_template_banner_value'
       expect(chef_run).to render_file(file_name).with_content(/^custom_template_banner_value$/)
     end
   end
   shared_examples 'common network attributes displayer' do |plugin|
     it 'displays the interface_driver common attribute' do
-      node.set['openstack']["network_#{plugin}"]['conf']['DEFAULT']['interface_driver'] = 'network_interface_driver_value'
+      node.override['openstack']["network_#{plugin}"]['conf']['DEFAULT']['interface_driver'] = 'network_interface_driver_value'
       expect(chef_run).to render_file(file_name).with_content(/^interface_driver = network_interface_driver_value$/)
     end
   end
@@ -75,7 +75,7 @@ shared_context 'neutron-stubs' do
     %w(resync_interval ovs_use_veth enable_isolated_metadata
        enable_metadata_network dnsmasq_lease_max dhcp_delete_namespaces).each do |attr|
       it "displays the #{attr} dhcp attribute" do
-        node.set['openstack']['network_dhcp']['conf']['DEFAULT'][attr] = "network_dhcp_#{attr}_value"
+        node.override['openstack']['network_dhcp']['conf']['DEFAULT'][attr] = "network_dhcp_#{attr}_value"
         expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_dhcp_#{attr}_value$/)
       end
     end

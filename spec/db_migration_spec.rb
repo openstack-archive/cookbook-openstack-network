@@ -6,7 +6,7 @@ describe 'openstack-network::db_migration' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
 
@@ -18,7 +18,7 @@ describe 'openstack-network::db_migration' do
     end
 
     it 'uses db upgrade head with timeout override for neutron-server' do
-      node.set['openstack']['network']['dbsync_timeout'] = 1234
+      node.override['openstack']['network']['dbsync_timeout'] = 1234
       expect(chef_run).to run_bash('migrate network database').with(
         code: /upgrade head/,
         timeout: 1234
@@ -26,10 +26,10 @@ describe 'openstack-network::db_migration' do
     end
     describe 'run db-migration when services are enabled' do
       before do
-        node.set['openstack']['network_vpnaas']['enabled'] = true
-        node.set['openstack']['network_fwaas']['enabled'] = true
-        node.set['openstack']['network_lbaas']['enabled'] = true
-        node.set['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
+        node.override['openstack']['network_vpnaas']['enabled'] = true
+        node.override['openstack']['network_fwaas']['enabled'] = true
+        node.override['openstack']['network_lbaas']['enabled'] = true
+        node.override['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
       end
       it 'uses db upgrade head when vpnaas is enabled' do
         migrate_cmd = %r{neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf|
@@ -58,7 +58,7 @@ describe 'openstack-network::db_migration' do
     end
     describe 'run db-migration when services are enabled' do
       before do
-        node.set['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
+        node.override['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
       end
 
       it 'does not use db upgrade head when vpnaas is not enabled' do

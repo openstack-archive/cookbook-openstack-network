@@ -6,7 +6,7 @@ describe 'openstack-network::openvswitch_agent' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
+      node.override['openstack']['network']['openvswitch']['integration_bridge'] = 'br-int'
       runner.converge(described_recipe)
     end
     before do

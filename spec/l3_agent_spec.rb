@@ -6,7 +6,7 @@ describe 'openstack-network::l3_agent' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['network_l3']['external_network_bridge_interface'] = 'enp0s8'
+      node.override['openstack']['network_l3']['external_network_bridge_interface'] = 'enp0s8'
       runner.converge(described_recipe)
     end
     describe 'recipe' do
@@ -43,7 +43,7 @@ describe 'openstack-network::l3_agent' do
           end
 
           it 'displays the external_network_bridge l3 attribute' do
-            node.set['openstack']['network_l3']['conf']['DEFAULT']['external_network_bridge'] = 'network_l3_external_network_bridge_value'
+            node.override['openstack']['network_l3']['conf']['DEFAULT']['external_network_bridge'] = 'network_l3_external_network_bridge_value'
             stub_command('ovs-vsctl br-exists network_l3_external_network_bridge_value').and_return(false)
             expect(chef_run).to render_file(file.name).with_content(/^external_network_bridge = network_l3_external_network_bridge_value$/)
           end

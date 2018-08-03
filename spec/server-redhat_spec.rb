@@ -6,12 +6,12 @@ describe 'openstack-network::server' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['compute']['network']['service_type'] = 'neutron'
+      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end
     before do
-      node.set['openstack']['network']['plugins']['ml2']['path'] = '/etc/neutron/plugins/ml2'
-      node.set['openstack']['network']['plugins']['ml2']['filename'] = 'openvswitch_agent.ini'
+      node.override['openstack']['network']['plugins']['ml2']['path'] = '/etc/neutron/plugins/ml2'
+      node.override['openstack']['network']['plugins']['ml2']['filename'] = 'openvswitch_agent.ini'
     end
     include_context 'neutron-stubs'
 

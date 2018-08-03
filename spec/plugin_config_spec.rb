@@ -6,14 +6,14 @@ describe 'openstack-network::plugin_config' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set['openstack']['network']['plugins']['ml2'].tap do |ml2|
+      node.override['openstack']['network']['plugins']['ml2'].tap do |ml2|
         ml2['path'] = '/etc/neutron/more_plugins'
         ml2['filename'] = 'ml2_conf.ini'
         ml2['conf'].tap do |conf|
           conf['section']['key'] = 'value'
         end
       end
-      node.set['openstack']['network']['plugins']['openvswitch'].tap do |ovs|
+      node.override['openstack']['network']['plugins']['openvswitch'].tap do |ovs|
         ovs['path'] = '/etc/neutron/plugins/'
         ovs['filename'] = 'openvswitch_conf.ini'
         ovs['conf'].tap do |conf|
