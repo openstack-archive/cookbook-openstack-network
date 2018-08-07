@@ -30,7 +30,7 @@ class ::Chef::Recipe
 end
 
 # set and get name for tun interface (can be overwritten in the environment,
-# like shown for the multi-node scenario in the openstack-chef-repo)
+# like shown for the multi-node scenario in the openstack-chef)
 node.default['openstack']['network']['tun_network_bridge_interface'] = 'eth-tun'
 tun_interface = node['openstack']['network']['tun_network_bridge_interface']
 
