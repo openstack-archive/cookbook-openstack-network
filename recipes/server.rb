@@ -76,19 +76,6 @@ if node['openstack']['network_lbaas']['enabled']
   end
 end
 
-if node['openstack']['network_vpnaas']['enabled']
-  # neutron-vpnaas-agent may not running on network node, but on network node, neutron-server still need neutron_vpnaas module
-  # when loading plugin if vpnaas is list in service_plugins. In this case, we don't need include vpn_agent recipe for network node, but
-  # we need make sure neutron vpnaas python packages get installed on network node before neutron-server start/restart, when vpnaas is enabled.
-  # Otherwise neutron-server will crash for couldn't find vpnaas plugin when invoking plugins from service_plugins.
-  platform_options['neutron_vpnaas_python_dependencies'].each do |pkg|
-    package pkg do
-      options platform_options['package_overrides']
-      action :upgrade
-    end
-  end
-end
-
 # Migrate network database to latest version
 include_recipe 'openstack-network::db_migration'
 plugin_templates = []

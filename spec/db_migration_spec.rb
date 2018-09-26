@@ -26,18 +26,9 @@ describe 'openstack-network::db_migration' do
     end
     describe 'run db-migration when services are enabled' do
       before do
-        node.override['openstack']['network_vpnaas']['enabled'] = true
         node.override['openstack']['network_fwaas']['enabled'] = true
         node.override['openstack']['network_lbaas']['enabled'] = true
         node.override['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
-      end
-      it 'uses db upgrade head when vpnaas is enabled' do
-        migrate_cmd = %r{neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf|
-          --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
-        expect(chef_run).to run_bash('migrate vpnaas database').with(
-          code: migrate_cmd,
-          timeout: 3600
-        )
       end
       it 'uses db upgrade head when lbaas is enabled' do
         migrate_cmd = %r{neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf|
@@ -59,15 +50,6 @@ describe 'openstack-network::db_migration' do
     describe 'run db-migration when services are enabled' do
       before do
         node.override['openstack']['network']['core_plugin_config_file'] = '/etc/neutron/plugins/ml2/ml2_conf.ini'
-      end
-
-      it 'does not use db upgrade head when vpnaas is not enabled' do
-        migrate_cmd = %r{neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf|
-          --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head}
-        expect(chef_run).not_to run_bash('migrate vpnaas database').with(
-          code: migrate_cmd,
-          timeout: 3600
-        )
       end
 
       it 'does not use db upgrade head when fwaas is not enabled' do

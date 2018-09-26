@@ -29,16 +29,6 @@ bash 'migrate network database' do
 EOF
 end
 
-# Only if the vpnaas is enabled, migrate the database.
-bash 'migrate vpnaas database' do
-  only_if { node['openstack']['network_vpnaas']['enabled'] }
-  timeout timeout
-  migrate_command = "neutron-db-manage --subproject neutron-vpnaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
-end
-
 # Only if the fwaas is enabled, migrate the database.
 bash 'migrate fwaas database' do
   only_if { node['openstack']['network_fwaas']['enabled'] }
