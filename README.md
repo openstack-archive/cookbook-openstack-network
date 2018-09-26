@@ -169,14 +169,14 @@ this attributes.
 - Installs the openstack-network API server (currently aka neutron-server)
 
 ## openstack-network::vpnaas
-- Installs the VPN as a Service
-
-The configuration for neutron-vpn-agent is generated from the attributes in
-using the same template as for the neutron.conf
-
-```
-node['openstack']['network_vpnaas']['conf']
-```
+This recipe has been removed since it was unmaintained since the pike release
+and the vpnaas module got completely removed/refactored during the queens
+release. For rocky there seems to be some kind of vpnaas implementation
+directly in the l3 agent
+(https://docs.openstack.org/neutron/rocky/admin/vpnaas-scenario.html), but
+since the documentation about it is quite sparse right now, there is no recipe
+for that. If you want to add vpnaas back to this cookbook, please feel free to
+push a pull request.
 
 License and Author
 ==================

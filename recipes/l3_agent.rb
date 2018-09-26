@@ -44,27 +44,15 @@ template node['openstack']['network_l3']['config_file'] do
   variables(
     service_config: service_config
   )
-  # Not restart l3 agent to avoid synchronization problem, when vpn agent is enabled.
-  unless node['openstack']['network_vpnaas']['enabled']
-    notifies :restart, 'service[neutron-l3-agent]'
-  end
+  notifies :restart, 'service[neutron-l3-agent]'
 end
-
-# See http://docs.openstack.org/admin-guide-cloud/content/section_adv_cfg_l3_agent.html
 
 service 'neutron-l3-agent' do
   service_name platform_options['neutron_l3_agent_service']
   supports status: true, restart: true
-  # As l3 and vpn agents are both working based on l3 bisic strategy, and there will be
-  # potential synchronization problems when vpn and l3 agents both running in network node.
-  # So if the vpn agent is enabled, we should stop and disable the l3 agent.
-  if node['openstack']['network_vpnaas']['enabled']
-    action [:stop, :disable]
-  else
-    action [:enable, :start]
-    subscribes :restart, [
-      'template[/etc/neutron/neutron.conf]',
-      "template[#{node['openstack']['network_fwaas']['config_file']}]",
-    ]
-  end
+  action [:enable, :start]
+  subscribes :restart, [
+    'template[/etc/neutron/neutron.conf]',
+    "template[#{node['openstack']['network_fwaas']['config_file']}]",
+  ]
 end

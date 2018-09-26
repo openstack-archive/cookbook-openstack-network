@@ -135,32 +135,6 @@ default['openstack']['network_metering']['conf'].tap do |conf|
     'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver'
 end
 
-# ============================= VPN Agent Configuration ====================
-# vpn_device_driver_packages in platform-specific settings is used to get driver dependencies installed, default is strongswan
-# vpn_device_driver_services in platform-specific settings is used to enable services required by vpn drivers, default is strongswan
-# To enable 'vpnaas' as service_plugin, you need to add it to neutron.conf
-# ['Default']['service_plugins']
-# Set to true to enable vpnaas
-default['openstack']['network_vpnaas']['enabled'] = false
-# Custom the vpnaas config file path
-default['openstack']['network_vpnaas']['config_file'] = '/etc/neutron/vpn_agent.ini'
-default['openstack']['network_vpnaas']['conf'].tap do |conf|
-  # VPN device drivers which vpn agent will use
-  conf['DEFAULT']['interface_driver'] =
-    'neutron.agent.linux.interface.OVSInterfaceDriver'
-  conf['vpnagent']['vpn_device_driver'] =
-    'neutron_vpnaas.services.vpn.device_drivers.strongswan_ipsec.StrongSwanDriver'
-  # Status check interval for ipsec vpn
-  conf['ipsec']['ipsec_status_check_interval'] = 60
-  # default_config_area settings is used to set the area where default StrongSwan configuration files are located
-  case node['platform_family']
-  when 'fedora', 'rhel'
-    conf['strongswan']['default_config_area'] = '/usr/share/strongswan/templates/config/strongswan.d'
-  when 'debian'
-    conf['strongswan']['default_config_area'] = '/etc/strongswan.d'
-  end
-end
-
 # ============================= LBaaS Agent Configuration ==================
 # To enable 'lbaas' as service_plugin, you need to add it to neutron.conf
 # ['Default']['service_plugins']
@@ -197,16 +171,10 @@ default['openstack']['network_fwaas']['config_file'] = '/etc/neutron/fwaas_drive
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'
   platform['group'] = 'neutron'
-  platform['vpn_device_driver_packages'] =
-    %w(strongswan)
   platform['neutron_dhcp_agent_service'] =
     'neutron-dhcp-agent'
   platform['neutron_l3_agent_service'] =
     'neutron-l3-agent'
-  platform['neutron_vpn_agent_service'] =
-    'neutron-vpn-agent'
-  platform['vpn_device_driver_services'] =
-    %w(strongswan)
   platform['neutron_lb_agent_service'] =
     'neutron-lbaasv2-agent'
   platform['neutron_metadata_agent_service'] =
@@ -217,8 +185,6 @@ default['openstack']['network']['platform'].tap do |platform|
     'neutron-server'
   platform['neutron_lbaas_python_dependencies'] =
     %w(python-neutron-lbaas)
-  platform['neutron_vpnaas_python_dependencies'] =
-    %w(python-neutron-vpnaas)
   case node['platform_family']
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
@@ -230,8 +196,6 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_plugin_package'] =
       'neutron-plugin-ml2'
     # openstack-neutron-fwaas
-    platform['neutron_vpnaas_packages'] =
-      %w(openstack-neutron-vpnaas iproute)
     platform['neutron_lbaas_packages'] =
       %w(openstack-neutron-lbaas haproxy iproute)
     platform['neutron_openvswitch_packages'] =
@@ -262,8 +226,6 @@ default['openstack']['network']['platform'].tap do |platform|
     platform['neutron_l3_packages'] =
       %w(neutron-l3-agent radvd keepalived)
     # python-neutron-fwaas
-    platform['neutron_vpnaas_packages'] =
-      %w(python-neutron-vpnaas neutron-vpn-agent)
     platform['neutron_lbaas_packages'] =
       %w(python-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
     platform['neutron_openvswitch_packages'] =
