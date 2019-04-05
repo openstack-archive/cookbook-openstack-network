@@ -1,3 +1,6 @@
 <% node['openstack']['network']['dnsmasq']['upstream_dns_servers'].each do |dns_server| -%>
 server=<%= dns_server %>
 <% end -%>
+<% node['openstack']['network']['dnsmasq']['override_dns_address'].each do |address_record| -%>
+address=<%= address_record %>
+<% end -%>

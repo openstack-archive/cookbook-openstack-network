@@ -4,7 +4,7 @@ maintainer_email 'openstack-dev@lists.openstack.org'
 license          'Apache-2.0'
 description      'Installs and configures the OpenStack Network API Service and various agents and plugins'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '17.1.0'
+version          '17.2.0'
 
 %w(ubuntu redhat centos).each do |os|
   supports os
