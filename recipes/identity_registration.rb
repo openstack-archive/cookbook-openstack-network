@@ -32,7 +32,6 @@ auth_url = ::URI.decode identity_endpoint.to_s
 interfaces = {
   public: { url: public_endpoint('network') },
   internal: { url: internal_endpoint('network') },
-  admin: { url: admin_endpoint('network') },
 }
 
 service_pass = get_password 'service', 'openstack-network'
@@ -48,16 +47,15 @@ admin_pass = get_password 'user', node['openstack']['identity']['admin_user']
 admin_project = node['openstack']['identity']['admin_project']
 admin_domain = node['openstack']['identity']['admin_domain_name']
 region = node['openstack']['region']
-
-# Do not configure a service/endpoint in keystone for heat-api-cloudwatch(Bug #1167927),
-# See discussions on https://bugs.launchpad.net/heat/+bug/1167927
+endpoint_type = node['openstack']['identity']['endpoint_type']
 
 connection_params = {
-  openstack_auth_url:     "#{auth_url}/auth/tokens",
-  openstack_username:     admin_user,
-  openstack_api_key:      admin_pass,
-  openstack_project_name: admin_project,
-  openstack_domain_name:    admin_domain,
+  openstack_auth_url:      "#{auth_url}/auth/tokens",
+  openstack_username:      admin_user,
+  openstack_api_key:       admin_pass,
+  openstack_project_name:  admin_project,
+  openstack_domain_name:   admin_domain,
+  openstack_endpoint_type: endpoint_type,
 }
 
 # Register Network Service
@@ -77,6 +75,7 @@ interfaces.each do |interface, res|
     connection_params connection_params
   end
 end
+
 # Register Service Tenant
 openstack_project service_tenant_name do
   connection_params connection_params

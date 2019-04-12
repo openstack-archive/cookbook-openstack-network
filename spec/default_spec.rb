@@ -17,37 +17,6 @@ describe 'openstack-network' do
       end
     end
 
-    it do
-      expect(chef_run).to create_directory('/var/cache/neutron')
-        .with(owner: 'neutron',
-              group: 'neutron',
-              mode: 0o0700)
-    end
-
-    describe '/var/cache/neutron/api with pki set' do
-      before do
-        node.override['openstack']['auth']['strategy'] = 'pki'
-      end
-      it do
-        expect(chef_run).to create_directory('/var/cache/neutron/api')
-          .with(owner: 'neutron',
-                group: 'neutron',
-                mode: 0o0700)
-      end
-    end
-
-    describe '/var/cache/neutron/api with pki set' do
-      before do
-        node.override['openstack']['auth']['strategy'] = 'not_pki'
-      end
-      it do
-        expect(chef_run).not_to create_directory('/var/cache/neutron/api')
-          .with(owner: 'neutron',
-                group: 'neutron',
-                mode: 0o0700)
-      end
-    end
-
     describe '/etc/neutron/rootwrap.conf' do
       let(:file) { chef_run.template('/etc/neutron/rootwrap.conf') }
       [

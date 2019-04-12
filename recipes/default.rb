@@ -48,20 +48,6 @@ node['openstack']['db']['python_packages'][db_type].each do |pkg|
   end
 end
 
-directory '/var/cache/neutron' do
-  owner node['openstack']['network']['platform']['user']
-  group node['openstack']['network']['platform']['group']
-  mode 0o0700
-  action :create
-end
-
-directory node['openstack']['network']['api']['auth']['cache_dir'] do
-  owner node['openstack']['network']['platform']['user']
-  group node['openstack']['network']['platform']['group']
-  mode 0o0700
-  only_if { node['openstack']['auth']['strategy'] == 'pki' }
-end
-
 template '/etc/neutron/rootwrap.conf' do
   source 'openstack-service.conf.erb'
   cookbook 'openstack-common'
