@@ -21,7 +21,7 @@
 
 # Set the endpoints for the network service to allow all other cookbooks to
 # access and use them
-%w(public internal admin).each do |ep_type|
+%w(public internal).each do |ep_type|
   # openstack identity service endpoints (used by users and services)
   default['openstack']['endpoints'][ep_type]['network']['host'] = '127.0.0.1'
   default['openstack']['endpoints'][ep_type]['network']['scheme'] = 'http'
@@ -49,8 +49,6 @@ default['openstack']['network']['service_name'] = 'neutron'
 default['openstack']['network']['service_type'] = 'network'
 default['openstack']['network']['description'] = 'OpenStack Networking service'
 default['openstack']['network']['rabbit_server_chef_role'] = 'rabbitmq-server'
-# Keystone PKI signing directory.
-default['openstack']['network']['api']['auth']['cache_dir'] = '/var/cache/neutron/api'
 # The bridging interface driver.
 # This is used by the L3, DHCP and LBaaS agents.
 # Options are:
