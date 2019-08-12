@@ -198,7 +198,8 @@ default['openstack']['network']['platform'].tap do |platform|
       %w(openstack-neutron iproute radvd keepalived)
     platform['neutron_plugin_package'] =
       'neutron-plugin-ml2'
-    # openstack-neutron-fwaas
+    platform['neutron_fwaas_packages'] =
+      %w()
     platform['neutron_lbaas_packages'] =
       %w(openstack-neutron-lbaas haproxy iproute)
     platform['neutron_openvswitch_packages'] =
@@ -228,7 +229,8 @@ default['openstack']['network']['platform'].tap do |platform|
       %w(neutron-dhcp-agent)
     platform['neutron_l3_packages'] =
       %w(neutron-l3-agent radvd keepalived)
-    # python-neutron-fwaas
+    platform['neutron_fwaas_packages'] =
+      %w(python-neutron-fwaas)
     platform['neutron_lbaas_packages'] =
       %w(python-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
     platform['neutron_openvswitch_packages'] =

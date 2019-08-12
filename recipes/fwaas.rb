@@ -22,6 +22,15 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
+platform_options = node['openstack']['network']['platform']
+
+platform_options['neutron_fwaas_packages'].each do |pkg|
+  package pkg do
+    options platform_options['package_overrides']
+    action :upgrade
+  end
+end
+
 node.default['openstack']['network_fwaas']['conf'].tap do |conf|
   conf['fwaas']['enabled'] = true
 end
