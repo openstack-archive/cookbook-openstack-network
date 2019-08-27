@@ -114,11 +114,6 @@ default['openstack']['network_l3']['external_network_bridge_interface'] = 'enp0s
 default['openstack']['network_l3']['config_file'] = '/etc/neutron/l3_agent.ini'
 default['openstack']['network_l3']['conf'].tap do |conf|
   conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
-  # Name of bridge used for external network traffic. This should be set to
-  # empty value for the linux bridge. When external_network_bridge is empty or nil,
-  # creation of external bridge will be skipped in the recipe.
-  # Interface to use for external bridge.
-  conf['DEFAULT']['external_network_bridge'] = 'br-ex'
 end
 
 # ============================= Metadata Agent Configuration ===============
@@ -140,7 +135,7 @@ end
 
 # ============================= LBaaS Agent Configuration ==================
 # To enable 'lbaas' as service_plugin, you need to add it to neutron.conf
-# ['Default']['service_plugins']
+# ['default']['service_plugins']
 # Set to true to enable lbaas
 default['openstack']['network_lbaas']['enabled'] = false
 # Custom the lbaas config file path
@@ -160,16 +155,17 @@ end
 
 # ============================= FWaaS Configuration ==================
 # To enable 'firewall' as service_plugin, you need to add it to neutron.conf
-# ['Default']['service_plugins']
+# ['default']['service_plugins']
 # Set to True to enable firewall service
 default['openstack']['network_fwaas']['enabled'] = false
 # Firewall service driver with linux iptables
 default['openstack']['network_fwaas']['conf'].tap do |conf|
-  conf['fwaas']['driver'] =
-    'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
+  conf['fwaas']['agent_version'] = 'v2'
+  conf['fwaas']['driver'] = 'neutron_fwaas.services.firewall.service_drivers.agents.drivers.linux.iptables_fwaas_v2.IptablesFwaasDriver'
 end
-# Custom the fwaas config file path
+# Customize the fwaas config file path
 default['openstack']['network_fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
+
 # ============================= platform-specific settings ===========
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'

@@ -32,7 +32,16 @@ platform_options['neutron_fwaas_packages'].each do |pkg|
 end
 
 node.default['openstack']['network_fwaas']['conf'].tap do |conf|
-  conf['fwaas']['enabled'] = true
+  conf['fwaas']['enabled'] = 'True'
+end
+
+# Note(jh): Need node.normal here in order to take effect even if this
+# recipe is included after the l3-agent recipe
+node.normal['openstack']['network_l3']['conf'].tap do |conf|
+  conf['AGENT']['extensions'] = 'fwaas_v2'
+  conf['fwaas']['driver'] = 'iptables_v2'
+  conf['fwaas']['agent_version'] = 'v2'
+  conf['fwaas']['enabled'] = 'True'
 end
 
 # As the fwaas package will be installed anyway, configure its config-file attributes following environment.
