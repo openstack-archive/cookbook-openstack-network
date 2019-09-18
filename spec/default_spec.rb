@@ -11,7 +11,7 @@ describe 'openstack-network' do
 
     include_context 'neutron-stubs'
 
-    %w(neutron-common python-mysqldb).each do |package|
+    %w(neutron-common python3-mysqldb).each do |package|
       it do
         expect(chef_run).to upgrade_package(package)
       end

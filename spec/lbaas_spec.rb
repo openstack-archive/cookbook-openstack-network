@@ -12,7 +12,7 @@ describe 'openstack-network::lbaas' do
     include_context 'neutron-stubs'
 
     it do
-      %w(python-neutron-lbaas neutron-lbaasv2-agent haproxy)
+      %w(python3-neutron-lbaas neutron-lbaasv2-agent haproxy)
         .each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
