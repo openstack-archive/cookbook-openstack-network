@@ -182,8 +182,8 @@ default['openstack']['network']['platform'].tap do |platform|
     'neutron-metering-agent'
   platform['neutron_server_service'] =
     'neutron-server'
-  platform['neutron_lbaas_python_dependencies'] =
-    %w(python-neutron-lbaas)
+  platform['neutron_rpc_server_service'] =
+    'neutron-rpc-server'
   case node['platform_family']
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
@@ -198,6 +198,8 @@ default['openstack']['network']['platform'].tap do |platform|
       %w()
     platform['neutron_lbaas_packages'] =
       %w(openstack-neutron-lbaas haproxy iproute)
+    platform['neutron_lbaas_python_dependencies'] =
+      %w(python-neutron-lbaas)
     platform['neutron_openvswitch_packages'] =
       %w(openvswitch)
     platform['neutron_openvswitch_agent_packages'] =
@@ -220,15 +222,17 @@ default['openstack']['network']['platform'].tap do |platform|
       ''
   when 'debian'
     platform['neutron_packages'] =
-      %w(neutron-common)
+      %w(neutron-common python3-neutron)
     platform['neutron_dhcp_packages'] =
       %w(neutron-dhcp-agent)
     platform['neutron_l3_packages'] =
-      %w(neutron-l3-agent radvd keepalived)
+      %w(python3-neutron-fwaas neutron-l3-agent radvd keepalived)
     platform['neutron_fwaas_packages'] =
-      %w(python-neutron-fwaas)
+      %w(python3-neutron-fwaas)
     platform['neutron_lbaas_packages'] =
-      %w(python-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
+      %w(python3-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
+    platform['neutron_lbaas_python_dependencies'] =
+      %w(python3-neutron-lbaas)
     platform['neutron_openvswitch_packages'] =
       %w(openvswitch-switch bridge-utils)
     platform['neutron_openvswitch_build_packages'] =
