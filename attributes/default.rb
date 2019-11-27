@@ -160,8 +160,7 @@ end
 default['openstack']['network_fwaas']['enabled'] = false
 # Firewall service driver with linux iptables
 default['openstack']['network_fwaas']['conf'].tap do |conf|
-  conf['fwaas']['agent_version'] = 'v2'
-  conf['fwaas']['driver'] = 'neutron_fwaas.services.firewall.service_drivers.agents.drivers.linux.iptables_fwaas_v2.IptablesFwaasDriver'
+  conf['fwaas']['driver'] = 'neutron_fwaas.services.firewall.service_drivers.agents.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
 end
 # Customize the fwaas config file path
 default['openstack']['network_fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
