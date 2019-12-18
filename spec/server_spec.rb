@@ -5,13 +5,8 @@ describe 'openstack-network::server' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
-      node.override['openstack']['compute']['network']['service_type'] = 'neutron'
-      runner.converge(described_recipe)
-    end
-    before do
-      node.override['openstack']['network']['plugins']['ml2']['path'] = '/etc/neutron/plugins/ml2'
-      node.override['openstack']['network']['plugins']['ml2']['filename'] = 'ml2_conf.ini'
+    cached(:chef_run) do
+      runner.converge('openstack-network::ml2_core_plugin', described_recipe)
     end
     include_context 'neutron-stubs'
 
@@ -20,12 +15,16 @@ describe 'openstack-network::server' do
         expect(chef_run).to upgrade_package 'neutron-server'
       end
 
-      it 'allows overriding package names' do
-        cust_pkgs = ['my-neutron', 'my-other-neutron']
-        node.override['openstack']['network']['platform']['neutron_server_packages'] = cust_pkgs
-
-        cust_pkgs.each do |pkg|
-          expect(chef_run).to upgrade_package(pkg)
+      context 'allows overriding package names' do
+        cust_pkgs = %w(my-neutron my-other-neutron)
+        cached(:chef_run) do
+          node.override['openstack']['network']['platform']['neutron_server_packages'] = cust_pkgs
+          runner.converge('openstack-network::ml2_core_plugin', described_recipe)
+        end
+        it do
+          cust_pkgs.each do |pkg|
+            expect(chef_run).to upgrade_package(pkg)
+          end
         end
       end
 
@@ -44,25 +43,38 @@ describe 'openstack-network::server' do
           .to subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed
       end
 
-      it do
-        node.override['openstack']['network']['policyfile_url'] = 'http://www.someurl.com'
-        expect(neutron_service)
-          .to subscribe_to('remote_file[/etc/neutron/policy.json]').on(:restart).delayed
+      context 'set policyfile_url' do
+        cached(:chef_run) do
+          node.override['openstack']['network']['policyfile_url'] = 'http://www.someurl.com'
+          runner.converge('openstack-network::ml2_core_plugin', described_recipe)
+        end
+        it do
+          expect(neutron_service)
+            .to subscribe_to('remote_file[/etc/neutron/policy.json]').on(:restart).delayed
+        end
       end
 
-      it 'allows overriding service names' do
-        node.override['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
-
-        expect(chef_run).to enable_service('neutron-server').with(
-          service_name: 'my-neutron-server'
-        )
+      context 'allows overriding service names' do
+        cached(:chef_run) do
+          node.override['openstack']['network']['platform']['neutron_server_service'] = 'my-neutron-server'
+          runner.converge('openstack-network::ml2_core_plugin', described_recipe)
+        end
+        it do
+          expect(chef_run).to enable_service('neutron-server').with(
+            service_name: 'my-neutron-server'
+          )
+        end
       end
 
-      it 'allows overriding package options' do
+      context 'allows overriding package options' do
         cust_opts = ['-o', 'Dpkg::Options::=--force-confold', '-o', 'Dpkg::Options::=--force-confdef', '--force-yes']
-        node.override['openstack']['network']['platform']['package_overrides'] = cust_opts
-
-        expect(chef_run).to upgrade_package('neutron-server').with(options: cust_opts)
+        cached(:chef_run) do
+          node.override['openstack']['network']['platform']['package_overrides'] = cust_opts
+          runner.converge('openstack-network::ml2_core_plugin', described_recipe)
+        end
+        it do
+          expect(chef_run).to upgrade_package('neutron-server').with(options: cust_opts)
+        end
       end
 
       it 'does not upgrade openvswitch package or the agent' do

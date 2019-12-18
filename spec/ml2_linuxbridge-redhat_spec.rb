@@ -9,18 +9,14 @@ describe 'openstack-network::ml2_linuxbridge' do
   describe 'redhat' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
+      node.override['openstack']['network']['plugins']['linuxbridge']['path'] = '/etc/neutron/plugins/ml2'
+      node.override['openstack']['network']['plugins']['linuxbridge']['filename'] = 'linuxbridge_agent.ini'
       runner.converge(described_recipe)
     end
 
     include_context 'neutron-stubs'
 
-    before do
-      node.override['openstack']['network']['plugins']['linuxbridge']['path'] =
-        '/etc/neutron/plugins/ml2'
-      node.override['openstack']['network']['plugins']['linuxbridge']['filename'] =
-        'linuxbridge_agent.ini'
-    end
     it 'creates the /etc/neutron/plugins/ml2 agent directory' do
       expect(chef_run).to create_directory('/etc/neutron/plugins/ml2').with(
         owner: 'neutron',

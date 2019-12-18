@@ -5,7 +5,7 @@ describe 'openstack-network::plugin_config' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
       node.override['openstack']['network']['plugins']['ml2'].tap do |ml2|
         ml2['path'] = '/etc/neutron/more_plugins'
         ml2['filename'] = 'ml2_conf.ini'

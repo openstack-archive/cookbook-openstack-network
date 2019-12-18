@@ -2,28 +2,25 @@
 require 'chefspec'
 require 'pry'
 require 'chefspec/berkshelf'
-
-ChefSpec::Coverage.start! { add_filter 'openstack-network' }
-
 require 'chef/application'
 
 RSpec.configure do |config|
   config.color = true
   config.formatter = :documentation
-  config.log_level = :fatal
+  config.log_level = :warn
 end
 
 REDHAT_OPTS = {
   platform: 'redhat',
-  version: '7.4',
+  version: '7',
 }.freeze
 UBUNTU_OPTS = {
   platform: 'ubuntu',
-  version: '16.04',
+  version: '18.04',
 }.freeze
 CENTOS_OPTS = {
   platform: 'centos',
-  version: '7.4.1708',
+  version: '7',
 }.freeze
 
 shared_context 'neutron-stubs' do
@@ -54,30 +51,14 @@ shared_context 'neutron-stubs' do
       .with('network')
       .and_return('rabbit://guest:mypass@127.0.0.1:5672')
   end
-  shared_examples 'custom template banner displayer' do
-    it 'shows the custom banner' do
-      node.override['openstack']['network']['custom_template_banner'] = 'custom_template_banner_value'
-      expect(chef_run).to render_file(file_name).with_content(/^custom_template_banner_value$/)
-    end
-  end
+
   shared_examples 'common network attributes displayer' do |plugin|
-    it 'displays the interface_driver common attribute' do
+    cached(:chef_run) do
       node.override['openstack']["network_#{plugin}"]['conf']['DEFAULT']['interface_driver'] = 'network_interface_driver_value'
-      expect(chef_run).to render_file(file_name).with_content(/^interface_driver = network_interface_driver_value$/)
+      runner.converge(described_recipe)
     end
-  end
-
-  shared_examples 'dhcp agent template configurator' do
-    it_behaves_like 'custom template banner displayer'
-
-    it_behaves_like 'common network attributes displayer', 'dhcp'
-
-    %w(resync_interval ovs_use_veth enable_isolated_metadata
-       enable_metadata_network dnsmasq_lease_max dhcp_delete_namespaces).each do |attr|
-      it "displays the #{attr} dhcp attribute" do
-        node.override['openstack']['network_dhcp']['conf']['DEFAULT'][attr] = "network_dhcp_#{attr}_value"
-        expect(chef_run).to render_file(file_name).with_content(/^#{attr} = network_dhcp_#{attr}_value$/)
-      end
+    it 'displays the interface_driver common attribute' do
+      expect(chef_run).to render_file(file_name).with_content(/^interface_driver = network_interface_driver_value$/)
     end
   end
 end

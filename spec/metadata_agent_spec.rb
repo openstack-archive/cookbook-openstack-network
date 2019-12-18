@@ -5,7 +5,7 @@ describe 'openstack-network::metadata_agent' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
       node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       runner.converge(described_recipe)
     end

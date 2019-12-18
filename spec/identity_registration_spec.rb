@@ -5,9 +5,8 @@ describe 'openstack-network::identity_registration' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
       node.override['openstack']['compute']['network']['service_type'] = 'neutron'
-
       runner.converge(described_recipe)
     end
 

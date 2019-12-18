@@ -5,7 +5,7 @@ describe 'openstack-network' do
   describe 'redhat' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
       runner.converge(described_recipe)
     end
 
