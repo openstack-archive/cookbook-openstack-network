@@ -1,11 +1,12 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: default
 #
-# Copyright 2013, AT&T
-# Copyright 2013-2014, SUSE Linux GmbH
-# Copyright 2013-2014, IBM Corp.
+# Copyright:: 2013, AT&T
+# Copyright:: 2013-2014, SUSE Linux GmbH
+# Copyright:: 2013-2014, IBM Corp.
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,19 +34,16 @@ if node['openstack']['network']['syslog']['use']
   include_recipe 'openstack-common::logging'
 end
 
-platform_options['neutron_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package platform_options['neutron_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 db_type = node['openstack']['db']['network']['service_type']
-node['openstack']['db']['python_packages'][db_type].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+
+package node['openstack']['db']['python_packages'][db_type] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 template '/etc/neutron/rootwrap.conf' do
@@ -53,7 +51,7 @@ template '/etc/neutron/rootwrap.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0644
+  mode '644'
   variables(
     service_config: node['openstack']['network']['rootwrap']['conf']
   )
@@ -64,8 +62,7 @@ cookbook_file '/usr/bin/neutron-enable-bridge-firewall.sh' do
   owner 'root'
   group 'wheel'
   mode '0755'
-  action :create
-  only_if { node['platform_family'] == 'rhel' }
+  only_if { platform_family?('rhel') }
 end
 
 if node['openstack']['mq']['service_type'] == 'rabbit'
@@ -80,31 +77,21 @@ db_pass = get_password 'db', 'neutron'
 bind_service = node['openstack']['bind_service']['all']['network']
 bind_service_address = bind_address bind_service
 
-# The auth_url in nova section follows auth_type
-nova_auth_url = nil
-case node['openstack']['network']['conf']['nova']['auth_type']
-when 'v3password'
-  nova_auth_url = auth_url
-end
-
 node.default['openstack']['network']['conf'].tap do |conf|
   if node['openstack']['network']['syslog']['use']
     conf['DEFAULT']['log_config'] = '/etc/openstack/logging.conf'
   end
   conf['DEFAULT']['bind_host'] = bind_service_address
   conf['DEFAULT']['bind_port'] = bind_service['port']
-  conf['nova']['auth_url'] = nova_auth_url if nova_auth_url
+  conf['nova']['auth_url'] = auth_url
   conf['keystone_authtoken']['auth_url'] = auth_url
 end
 
 # define secrets that are needed in the neutron.conf.erb
 node.default['openstack']['network']['conf_secrets'].tap do |conf_secrets|
-  conf_secrets['database']['connection'] =
-    db_uri('network', db_user, db_pass)
-  conf_secrets['nova']['password'] =
-    get_password 'service', 'openstack-compute'
-  conf_secrets['keystone_authtoken']['password'] =
-    get_password 'service', 'openstack-network'
+  conf_secrets['database']['connection'] = db_uri('network', db_user, db_pass)
+  conf_secrets['nova']['password'] = get_password 'service', 'openstack-compute'
+  conf_secrets['keystone_authtoken']['password'] = get_password 'service', 'openstack-network'
 end
 
 # merge all config options and secrets to be used in the neutron.conf.erb
@@ -115,7 +102,8 @@ template '/etc/neutron/neutron.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0640
+  mode '640'
+  sensitive true
   variables(
     service_config: neutron_conf_options
   )

@@ -12,14 +12,28 @@ describe 'openstack-network::metadata_agent' do
 
     include_context 'neutron-stubs'
 
-    it 'upgrades neutron metadata agent' do
+    it do
       expect(chef_run).to upgrade_package 'neutron-metadata-agent'
     end
+
     it do
-      expect(chef_run).to enable_service('neutron-metadata-agent')
+      expect(chef_run).to enable_service('neutron-metadata-agent').with(
+        service_name: 'neutron-metadata-agent',
+        supports: {
+          status: true,
+          restart: true,
+        }
+      )
     end
-    it 'subscribes the metadata agent service to neutron.conf' do
-      expect(chef_run.service('neutron-metadata-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+
+    it do
+      expect(chef_run).to start_service('neutron-metadata-agent')
+    end
+
+    %w(template[/etc/neutron/neutron.conf] template[/etc/neutron/metadata_agent.ini]).each do |resource|
+      it do
+        expect(chef_run.service('neutron-metadata-agent')).to subscribe_to(resource).delayed
+      end
     end
 
     describe 'metadata_agent.ini' do
@@ -27,20 +41,23 @@ describe 'openstack-network::metadata_agent' do
 
       it 'creates metadata_agent.ini' do
         expect(chef_run).to create_template(file.name).with(
+          source: 'openstack-service.conf.erb',
+          cookbook: 'openstack-common',
           user: 'neutron',
           group: 'neutron',
-          mode: 0o644
+          mode: '644',
+          sensitive: true
         )
       end
 
       context 'template contents' do
-        it 'sets the metadata_proxy_shared_secret attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^metadata_proxy_shared_secret = metadata-secret$/)
+        [
+          /^metadata_proxy_shared_secret = metadata-secret$/,
+        ].each do |line|
+          it do
+            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', line)
+          end
         end
-      end
-
-      it 'notifies the metadata agent service' do
-        expect(file).to notify('service[neutron-metadata-agent]').to(:restart).delayed
       end
     end
     it do

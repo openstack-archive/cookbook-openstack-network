@@ -1,7 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: metering_agent
+#
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,11 +22,9 @@ include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 
-platform_options['neutron_metering_agent_packages'].each do |pkg|
-  package pkg do
-    action :upgrade
-    options platform_options['package_overrides']
-  end
+package platform_options['neutron_metering_agent_packages'] do
+  action :upgrade
+  options platform_options['package_overrides']
 end
 
 service_config = merge_config_options 'network_metering'
@@ -33,11 +33,10 @@ template node['openstack']['network_metering']['config_file'] do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0640
+  mode '640'
   variables(
     service_config: service_config
   )
-  action :create
 end
 
 service 'neutron-metering-agent' do

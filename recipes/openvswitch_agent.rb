@@ -1,7 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: openvswitch_agent
+#
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +18,7 @@
 # limitations under the License.
 #
 
+include_recipe 'openstack-network'
 include_recipe 'openstack-network::ml2_openvswitch'
 
 plugin_file_path = File.join(
@@ -24,19 +27,14 @@ plugin_file_path = File.join(
 )
 
 platform_options = node['openstack']['network']['platform']
-platform_options['neutron_openvswitch_agent_packages'].each do |pkg|
-  package pkg do
-    action :upgrade
-    options platform_options['package_overrides']
-  end
+package platform_options['neutron_openvswitch_agent_packages'] do
+  action :upgrade
+  options platform_options['package_overrides']
 end
 
-int_bridge =
-  node['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('DEFAULT')['integration_bridge']
+int_bridge = node['openstack']['network']['plugins']['openvswitch']['conf'].[]('DEFAULT')['integration_bridge']
 execute 'create integration network bridge' do
   command "ovs-vsctl --may-exist add-br #{int_bridge}"
-  action :run
 end
 
 service 'neutron-openvswitch-agent' do

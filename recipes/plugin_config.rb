@@ -1,7 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: plugin_config
+#
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +24,7 @@ node['openstack']['network']['plugins'].each_value do |plugin|
     recursive true
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 0o0700
+    mode '700'
   end
 
   template File.join(plugin['path'], plugin['filename']) do
@@ -30,7 +32,7 @@ node['openstack']['network']['plugins'].each_value do |plugin|
     cookbook 'openstack-common'
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 0o0644
+    mode '644'
     variables(
       service_config: plugin['conf']
     )

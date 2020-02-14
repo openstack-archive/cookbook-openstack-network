@@ -11,6 +11,17 @@ default['openstack']['network']['conf'].tap do |conf|
   end
   conf['DEFAULT']['control_exchange'] = 'neutron'
   conf['DEFAULT']['core_plugin'] = 'ml2'
+  if node['openstack']['network_lbaas']['enabled']
+    conf['DEFAULT']['service_plugins'] =
+      if conf['DEFAULT']['service_plugins'].empty?
+        'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2'
+      else
+        [
+          'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2',
+          conf['DEFAULT']['service_plugins'],
+        ].flatten.sort.join(',')
+      end
+  end
 
   # [agent] section
   if node['openstack']['network']['use_rootwrap']
@@ -18,7 +29,7 @@ default['openstack']['network']['conf'].tap do |conf|
   end
 
   # [keystone_authtoken] section
-  conf['keystone_authtoken']['auth_type'] = 'v3password'
+  conf['keystone_authtoken']['auth_type'] = 'password'
   conf['keystone_authtoken']['region_name'] = node['openstack']['region']
   conf['keystone_authtoken']['username'] = 'neutron'
   conf['keystone_authtoken']['user_domain_name'] = 'Default'
@@ -26,7 +37,7 @@ default['openstack']['network']['conf'].tap do |conf|
   conf['keystone_authtoken']['project_name'] = 'service'
   conf['keystone_authtoken']['auth_version'] = 'v3'
   # [nova] section
-  conf['nova']['auth_type'] = 'v3password'
+  conf['nova']['auth_type'] = 'password'
   conf['nova']['region_name'] = node['openstack']['region']
   conf['nova']['username'] = 'nova'
   conf['nova']['user_domain_name'] = 'Default'

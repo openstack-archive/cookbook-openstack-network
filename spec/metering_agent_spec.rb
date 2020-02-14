@@ -12,19 +12,18 @@ describe 'openstack-network::metering_agent' do
     include_context 'neutron-stubs'
 
     it do
-      %w(neutron-metering-agent)
-        .each do |pkg|
-        expect(chef_run).to upgrade_package(pkg)
-      end
+      expect(chef_run).to upgrade_package('neutron-metering-agent')
     end
 
     describe 'metering_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/metering_agent.ini') }
       it do
         expect(chef_run).to create_template(file.name).with(
+          source: 'openstack-service.conf.erb',
+          cookbook: 'openstack-common',
           user: 'neutron',
           group: 'neutron',
-          mode: 0o0640
+          mode: '640'
         )
       end
 
@@ -33,11 +32,25 @@ describe 'openstack-network::metering_agent' do
           /^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/,
           /^driver = neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver$/,
         ].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', line)
         end
       end
+    end
+    it do
+      expect(chef_run).to enable_service('neutron-metering-agent').with(
+        service_name: 'neutron-metering-agent',
+        supports: {
+          status: true,
+          restart: true,
+        }
+      )
+    end
+    it do
+      expect(chef_run).to start_service('neutron-metering-agent')
+    end
+    %w(template[/etc/neutron/neutron.conf] template[/etc/neutron/metering_agent.ini]).each do |resource|
       it do
-        expect(chef_run).to enable_service('neutron-metering-agent')
+        expect(chef_run.service('neutron-metering-agent')).to subscribe_to(resource).delayed
       end
     end
   end

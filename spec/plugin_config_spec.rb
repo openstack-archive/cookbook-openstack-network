@@ -30,15 +30,14 @@ describe 'openstack-network::plugin_config' do
             recursive: true,
             owner: 'neutron',
             group: 'neutron',
-            mode: 0o0700
+            mode: '700'
           )
       end
 
       %w(ml2_conf.ini openvswitch_conf.ini).each do |conf|
         let(:file) { chef_run.template(File.join(dir, conf)) }
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('section', 'key = value')
+          expect(chef_run).to render_config_file(file.name).with_section_content('section', 'key = value')
         end
       end
     end

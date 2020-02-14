@@ -25,9 +25,9 @@ handle L2 and L3 networking for various hardware vendors and standards.
 Requirements
 ============
 
-- Chef 14 or higher
-- ChefDK 3.2.30 for testing (also includes Berkshelf for cookbook
-  dependency resolution)
+- Chef 15 or higher
+- Chef Workstation 0.15.18 for testing (also includes Berkshelf for
+  cookbook dependency resolution)
 
 Platform
 ========
@@ -42,8 +42,8 @@ Cookbooks
 The following cookbooks are dependencies:
 
 - 'openstackclient'
-- 'openstack-common', '>= 18.0.0'
-- 'openstack-identity', '>= 18.0.0'
+- 'openstack-common', '>= 19.0.0'
+- 'openstack-identity', '>= 19.0.0'
 
 Attributes
 ==========
@@ -86,13 +86,6 @@ attributes in using the same template as for the ``neutron.conf``
 .. code-block:: ruby
 
     node['openstack']['network_dhcp']['conf']
-
-openstack-network::fwaas
-------------------------
-
-**This is a 'work in progress' recipe and is currently not tested**
-
-- Installs the Firewall as a Service
 
 openstack-network::identity_registration
 ----------------------------------------
@@ -244,7 +237,7 @@ License and Author
 +-----------------+--------------------------------------------------+
 | **Copyright**   | Copyright (c) 2016, cloudbau GmbH                |
 +-----------------+--------------------------------------------------+
-| **Copyright**   | Copyright (c) 2016-2019, Oregon State University |
+| **Copyright**   | Copyright (c) 2016-2020, Oregon State University |
 +-----------------+--------------------------------------------------+
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may

@@ -1,7 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: _bridge_config_example
+#
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,21 +43,27 @@ tun_interface = node['openstack']['network']['tun_network_bridge_interface']
 # This needs to be done during compile time to ensure that the address_for
 # method used lateron works
 execute 'create eth-ext dummy interface' do
-  command 'ip link add eth-ext type dummy;'\
-    'ip link set dev eth-ext up'
+  command <<-EOF
+    ip link add eth-ext type dummy
+    ip link set dev eth-ext up
+  EOF
   not_if 'ip link show | grep eth-ext'
 end.run_action(:run)
 
 execute 'create eth-vlan dummy interface' do
-  command 'ip link add eth-vlan type dummy;'\
-    'ip link set dev eth-vlan up'
+  command <<-EOF
+    ip link add eth-vlan type dummy
+    ip link set dev eth-vlan up
+  EOF
   not_if 'ip link show | grep eth-vlan'
 end.run_action(:run)
 
 execute "create #{tun_interface} dummy interface" do
-  command "ip link add #{tun_interface} type dummy;"\
-    "ip link set dev #{tun_interface} up;"\
-    "ip addr add 10.0.0.201/24 dev #{tun_interface}"
+  command <<-EOF
+    ip link add #{tun_interface} type dummy
+    ip link set dev #{tun_interface} up
+    ip addr add 10.0.0.201/24 dev #{tun_interface}
+  EOF
   not_if "ip link show | grep #{tun_interface}"
 end.run_action(:run)
 
@@ -65,59 +73,48 @@ ohai('reload').run_action(:reload)
 # set all the needed attributes according to the dummy interfaces added above
 # vlan bridge
 node.default['openstack']['network']['vlan_network_bridge_interface'] = 'eth-vlan'
-node.default['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['bridge_mappings'] = 'vlan:br-vlan,external:br-ex'
+node.default['openstack']['network']['plugins']['openvswitch']['conf'].[]('OVS')['bridge_mappings'] =
+  'vlan:br-vlan,external:br-ex'
 
 # external bridge
 node.default['openstack']['network_l3']['external_network_bridge_interface'] = 'eth-ext'
 
 # tunnel bridge
-node.default['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['tunnel_bridge'] = 'br-tun'
-node.default['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['local_ip'] =
+node.default['openstack']['network']['plugins']['openvswitch']['conf'].[]('OVS')['tunnel_bridge'] = 'br-tun'
+node.default['openstack']['network']['plugins']['openvswitch']['conf'].[]('OVS')['local_ip'] =
   address_for(tun_interface)
-node.default['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('AGENT')['tunnel_types'] = 'gre,vxlan'
+node.default['openstack']['network']['plugins']['openvswitch']['conf'].[]('AGENT')['tunnel_types'] = 'gre,vxlan'
 
 # ovs security groups
-node.default['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('SECURITYGROUP')['firewall_driver'] =
+node.default['openstack']['network']['plugins']['openvswitch']['conf'].[]('SECURITYGROUP')['firewall_driver'] =
   'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 
 # define variables for bridge definitions below
 ex_bridge_iface = node['openstack']['network_l3']['external_network_bridge_interface']
 vlan_bridge_iface = node['openstack']['network']['vlan_network_bridge_interface']
-tun_bridge = node['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['tunnel_bridge']
+tun_bridge = node['openstack']['network']['plugins']['openvswitch']['conf'].[]('OVS')['tunnel_bridge']
 
 # get the bridge names from the ovs bridge_mappings
-mappings = node['openstack']['network']['plugins']['openvswitch']['conf']
-.[]('OVS')['bridge_mappings'].split(',')
+mappings = node['openstack']['network']['plugins']['openvswitch']['conf'].[]('OVS')['bridge_mappings'].split(',')
 vlan_bridge = mappings.find { |mapping| mapping.split(':').first == 'vlan' }.split(':').last
 ex_bridge = mappings.find { |mapping| mapping.split(':').first == 'external' }.split(':').last
 
 execute 'create external network bridge' do
   command "ovs-vsctl --may-exist add-br #{ex_bridge}"
-  action :run
 end
 
 execute 'create external network bridge port' do
   command "ovs-vsctl --may-exist add-port #{ex_bridge} #{ex_bridge_iface}"
-  action :run
 end
 
 execute 'create vlan network bridge' do
   command "ovs-vsctl --may-exist add-br #{vlan_bridge}"
-  action :run
 end
 
 execute 'create vlan network bridge port' do
   command "ovs-vsctl --may-exist add-port #{vlan_bridge} #{vlan_bridge_iface}"
-  action :run
 end
 
 execute 'create tunnel network bridge' do
   command "ovs-vsctl --may-exist add-br #{tun_bridge}"
-  action :run
 end

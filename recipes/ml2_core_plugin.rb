@@ -1,6 +1,6 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: ml2_core_plugin
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

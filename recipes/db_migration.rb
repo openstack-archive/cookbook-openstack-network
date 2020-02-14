@@ -1,9 +1,10 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: db_migration
 #
-# Copyright 2015, IBM Corp.
+# Copyright:: 2015, IBM Corp.
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,30 +22,18 @@
 plugin_config_file = node['openstack']['network']['core_plugin_config_file']
 timeout = node['openstack']['network']['dbsync_timeout']
 # The node['openstack']['network']['plugin_config_file'] attribute is set in the default.rb recipe
-bash 'migrate network database' do
+execute 'migrate network database' do
   timeout timeout
-  migrate_command = 'neutron-db-manage --config-file /etc/neutron/neutron.conf'
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
-end
-
-# Only if the fwaas is enabled, migrate the database.
-bash 'migrate fwaas database' do
-  only_if { node['openstack']['network_fwaas']['enabled'] }
-  timeout timeout
-  migrate_command = "neutron-db-manage --subproject neutron-fwaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
+  command <<-EOF.gsub(/^ {4}/, '')
+    neutron-db-manage --config-file /etc/neutron/neutron.conf upgrade head
+  EOF
 end
 
 # Only if the lbaas is enabled, migrate the database.
-bash 'migrate lbaas database' do
-  only_if { node['openstack']['network_lbaas']['enabled'] }
+execute 'migrate lbaas database' do
   timeout timeout
-  migrate_command = "neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file}"
-  code <<-EOF
-#{migrate_command} upgrade head
-EOF
+  command <<-EOF.gsub(/^ {4}/, '')
+    neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file} upgrade head
+  EOF
+  only_if { node['openstack']['network_lbaas']['enabled'] }
 end

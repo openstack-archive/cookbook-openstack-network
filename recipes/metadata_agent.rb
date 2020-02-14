@@ -1,9 +1,10 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: metadata_agent
 #
-# Copyright 2013, AT&T
+# Copyright:: 2013, AT&T
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,11 +27,9 @@ platform_options = node['openstack']['network']['platform']
 metadata_secret = get_password 'token', node['openstack']['network_metadata']['secret_name']
 # compute_metadata_api = internal_endpoint 'compute-metadata-api'
 
-platform_options['neutron_metadata_agent_packages'].each do |pkg|
-  package pkg do
-    action :upgrade
-    options platform_options['package_overrides']
-  end
+package platform_options['neutron_metadata_agent_packages'] do
+  action :upgrade
+  options platform_options['package_overrides']
 end
 
 node.default['openstack']['network_metadata']['conf_secrets'].tap do |conf|
@@ -43,11 +42,11 @@ template node['openstack']['network_metadata']['config_file'] do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0644
+  mode '644'
+  sensitive true
   variables(
     service_config: service_config
   )
-  action :create
 end
 
 # delete all secrets saved in the attribute

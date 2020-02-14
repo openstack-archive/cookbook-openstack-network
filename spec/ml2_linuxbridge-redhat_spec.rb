@@ -21,7 +21,7 @@ describe 'openstack-network::ml2_linuxbridge' do
       expect(chef_run).to create_directory('/etc/neutron/plugins/ml2').with(
         owner: 'neutron',
         group: 'neutron',
-        mode: 0o700
+        mode: '700'
       )
     end
     it do
@@ -43,9 +43,7 @@ describe 'openstack-network::ml2_linuxbridge' do
     end
 
     it do
-      %w(openstack-neutron-linuxbridge iproute).each do |pkg|
-        expect(chef_run).to upgrade_package(pkg)
-      end
+      expect(chef_run).to upgrade_package(%w(openstack-neutron-linuxbridge iproute))
     end
 
     it do

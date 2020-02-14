@@ -1,7 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: opensvswitch
+#
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,11 +26,9 @@ plugin_file_path = File.join(
 )
 
 platform_options = node['openstack']['network']['platform']
-platform_options['neutron_openvswitch_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package platform_options['neutron_openvswitch_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 service 'neutron-openvswitch-switch' do

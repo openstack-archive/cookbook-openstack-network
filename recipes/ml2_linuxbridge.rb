@@ -1,9 +1,10 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: ml2_linuxbridge
 #
-# Copyright 2013, AT&T
+# Copyright:: 2013, AT&T
+# Copyright:: 2016-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,28 +31,22 @@ node.default['openstack']['network']['plugins']['ml2']['conf']['ml2']['mechanism
 node.default['openstack']['network']['plugins']['ml2']['conf']['ml2_type_vxlan']['vni_ranges'] = 'VNI_START:VNI_END'
 
 platform_options = node['openstack']['network']['platform']
-platform_options['neutron_linuxbridge_agent_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+
+package platform_options['neutron_linuxbridge_agent_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 node.default['openstack']['network']['plugins']['linuxbridge'].tap do |lb|
   case node['platform_family']
   when 'fedora', 'rhel'
-    lb['path'] =
-      '/etc/neutron/plugins/ml2'
-    lb['filename'] =
-      'linuxbridge_agent.ini'
+    lb['path'] = '/etc/neutron/plugins/ml2'
+    lb['filename'] = 'linuxbridge_agent.ini'
   when 'debian'
-    lb['path'] =
-      '/etc/neutron/plugins/linuxbridge'
-    lb['filename'] =
-      'linuxbridge_conf.ini'
+    lb['path'] = '/etc/neutron/plugins/linuxbridge'
+    lb['filename'] = 'linuxbridge_conf.ini'
   end
-  lb['conf']['securitygroup']['firewall_driver'] =
-    'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver'
+  lb['conf']['securitygroup']['firewall_driver'] = 'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver'
 end
 
 include_recipe 'openstack-network::plugin_config'
@@ -60,6 +55,9 @@ service 'neutron-plugin-linuxbridge-agent' do
   service_name platform_options['neutron_linuxbridge_agent_service']
   supports status: true, restart: true
   action [:enable, :start]
-  subscribes :restart, ['template[/etc/neutron/neutron.conf]',
-                        'template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]']
+  subscribes :restart,
+    [
+      'template[/etc/neutron/neutron.conf]',
+      'template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]',
+    ]
 end

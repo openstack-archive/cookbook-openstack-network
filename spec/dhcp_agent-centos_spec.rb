@@ -14,49 +14,12 @@ describe 'openstack-network::dhcp_agent' do
 
     include_context 'neutron-stubs'
 
-    it 'upgrades neutron dhcp package' do
-      expect(chef_run).to upgrade_package('openstack-neutron')
+    it do
+      expect(chef_run).to upgrade_package(%w(openstack-neutron iproute))
     end
 
-    it 'upgrades plugin packages' do
-      expect(chef_run).not_to upgrade_package(/openvswitch/)
-      expect(chef_run).not_to upgrade_package(/plugin/)
-    end
-
-    it 'starts the dhcp agent on boot' do
-      expect(chef_run).to enable_service('neutron-dhcp-agent')
-    end
-
-    it 'should install the dnsmasq rpm' do
+    it do
       expect(chef_run).to upgrade_rpm_package('dnsmasq')
-    end
-
-    it 'should notify dhcp agent to restart immediately' do
-      expect(chef_run.rpm_package('dnsmasq')).to notify('service[neutron-dhcp-agent]').to(:restart).delayed
-    end
-
-    describe '/etc/neutron/dhcp_agent.ini' do
-      let(:file) { chef_run.template('/etc/neutron/dhcp_agent.ini') }
-
-      it 'creates dhcp_agent.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0o644
-        )
-      end
-    end
-
-    describe '/etc/neutron/dnsmasq.conf' do
-      let(:file) { chef_run.template('/etc/neutron/dnsmasq.conf') }
-
-      it 'creates dnsmasq.conf' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0o644
-        )
-      end
     end
   end
 end

@@ -1,9 +1,10 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: lbaas
 #
-# Copyright 2013, Mirantis IT
+# Copyright:: 2013, Mirantis IT
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 # This recipe should be placed in the run_list of the node that
 # runs the network server or network controller server.
 include_recipe 'openstack-network'
@@ -28,23 +28,39 @@ class ::Chef::Recipe
 end
 
 platform_options = node['openstack']['network']['platform']
-platform_options['neutron_lbaas_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package platform_options['neutron_lbaas_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
-service_config = merge_config_options 'network_lbaas'
+neutron_config = merge_config_options 'network_lbaas'
+agent_config = merge_config_options 'network_lbaas_agent'
+
+directory '/etc/neutron/conf.d/neutron-server' do
+  recursive true
+  only_if { platform_family?('debian') }
+end
 
 template node['openstack']['network_lbaas']['config_file'] do
   source 'openstack-service.conf.erb'
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0640
+  mode '640'
   variables(
-    service_config: service_config
+    service_config: neutron_config
+  )
+  notifies :restart, 'service[neutron-server]', :delayed
+end
+
+template node['openstack']['network_lbaas_agent']['config_file'] do
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
+  owner node['openstack']['network']['platform']['user']
+  group node['openstack']['network']['platform']['group']
+  mode '640'
+  variables(
+    service_config: agent_config
   )
   notifies :restart, 'service[neutron-lb-agent]', :delayed
 end
@@ -54,4 +70,5 @@ service 'neutron-lb-agent' do
   supports status: true, restart: true
   action :enable
   subscribes :restart, 'template[/etc/neutron/neutron.conf]', :delayed
+  subscribes :restart, "template[#{node['openstack']['network_lbaas']['config_file']}]", :delayed
 end

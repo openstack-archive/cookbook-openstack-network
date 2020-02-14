@@ -8,35 +8,41 @@ describe 'openstack-network::lbaas' do
     cached(:chef_run) do
       node.override['openstack']['compute']['network']['service_type'] = 'neutron'
       node.override['openstack']['network']['lbaas']['enabled'] = 'True'
-      runner.converge(described_recipe)
+      runner.converge(described_recipe, 'openstack-network::ml2_core_plugin', 'openstack-network::server')
     end
 
     include_context 'neutron-stubs'
 
+    it do
+      expect(chef_run).to_not create_directory('/etc/neutron/conf.d/neutron-server')
+    end
+
     describe 'lbaas_agent.ini' do
       let(:file) { chef_run.template('/etc/neutron/lbaas_agent.ini') }
 
-      it 'creates lbaas_agent.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'neutron',
-          group: 'neutron',
-          mode: 0o640
-        )
-      end
-
-      it 'displays user_group as nobody' do
-        expect(chef_run).to render_file(file.name).with_content(/^user_group = nobody$/)
+      it do
+        expect(chef_run).to render_config_file(file.name).with_section_content('haproxy', /^user_group = nobody$/)
       end
     end
 
-    ['haproxy', 'openstack-neutron-lbaas'].each do |pack|
-      it "upgrades #{pack} package" do
-        expect(chef_run).to upgrade_package(pack)
-      end
+    pkgs =
+      %w(
+        haproxy
+        iproute
+        openstack-neutron-lbaas
+      )
+    it do
+      expect(chef_run).to upgrade_package(pkgs)
     end
 
-    it 'enables agent service' do
-      expect(chef_run).to enable_service('neutron-lb-agent')
+    it do
+      expect(chef_run).to enable_service('neutron-lb-agent').with(
+        service_name: 'neutron-lbaasv2-agent',
+        supports: {
+          status: true,
+          restart: true,
+        }
+      )
     end
   end
 end

@@ -1,10 +1,11 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Attributes:: default
 #
-# Copyright 2013, AT&T
-# Copyright 2014, IBM Corp.
+# Copyright:: 2013, AT&T
+# Copyright:: 2014, IBM Corp.
+# Copyright:: 2016-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -127,10 +128,8 @@ node.default['openstack']['network_metadata']['conf'] = {}
 
 default['openstack']['network_metering']['config_file'] = '/etc/neutron/metering_agent.ini'
 default['openstack']['network_metering']['conf'].tap do |conf|
-  conf['DEFAULT']['interface_driver'] =
-    'neutron.agent.linux.interface.OVSInterfaceDriver'
-  conf['DEFAULT']['driver'] =
-    'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver'
+  conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
+  conf['DEFAULT']['driver'] = 'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver'
 end
 
 # ============================= LBaaS Agent Configuration ==================
@@ -138,12 +137,22 @@ end
 # ['default']['service_plugins']
 # Set to true to enable lbaas
 default['openstack']['network_lbaas']['enabled'] = false
-# Custom the lbaas config file path
-default['openstack']['network_lbaas']['config_file'] = '/etc/neutron/lbaas_agent.ini'
+# Custom the lbaas neutron config file path
+default['openstack']['network_lbaas']['config_file'] =
+  case node['platform_family']
+  when 'rhel'
+    '/etc/neutron/neutron_lbaas.conf'
+  when 'debian'
+    '/etc/neutron/conf.d/neutron-server/neutron_lbaas.conf'
+  end
 default['openstack']['network_lbaas']['conf'].tap do |conf|
-  conf['DEFAULT']['periodic_interval'] = 10
-  conf['DEFAULT']['ovs_use_veth'] = false
-  conf['DEFAULT']['interface_driver'] = 'neutron.agent.linux.interface.OVSInterfaceDriver'
+  conf['service_providers']['service_provider'] =
+    'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'
+end
+# Custom the lbaas agent config file path
+default['openstack']['network_lbaas_agent']['config_file'] = '/etc/neutron/lbaas_agent.ini'
+default['openstack']['network_lbaas_agent']['conf'].tap do |conf|
+  conf['DEFAULT']['interface_driver'] = 'openvswitch'
   conf['DEFAULT']['device_driver'] = 'neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver'
   case node['platform_family']
   when 'fedora', 'rhel'
@@ -153,112 +162,93 @@ default['openstack']['network_lbaas']['conf'].tap do |conf|
   end
 end
 
-# ============================= FWaaS Configuration ==================
-# To enable 'firewall' as service_plugin, you need to add it to neutron.conf
-# ['default']['service_plugins']
-# Set to True to enable firewall service
-default['openstack']['network_fwaas']['enabled'] = false
-# Firewall service driver with linux iptables
-default['openstack']['network_fwaas']['conf'].tap do |conf|
-  conf['fwaas']['driver'] = 'neutron_fwaas.services.firewall.service_drivers.agents.drivers.linux.iptables_fwaas.IptablesFwaasDriver'
-end
-# Customize the fwaas config file path
-default['openstack']['network_fwaas']['config_file'] = '/etc/neutron/fwaas_driver.ini'
-
 # ============================= platform-specific settings ===========
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'
   platform['group'] = 'neutron'
-  platform['neutron_dhcp_agent_service'] =
-    'neutron-dhcp-agent'
-  platform['neutron_l3_agent_service'] =
-    'neutron-l3-agent'
-  platform['neutron_lb_agent_service'] =
-    'neutron-lbaasv2-agent'
-  platform['neutron_metadata_agent_service'] =
-    'neutron-metadata-agent'
-  platform['neutron_metering_agent_service'] =
-    'neutron-metering-agent'
-  platform['neutron_server_service'] =
-    'neutron-server'
-  platform['neutron_rpc_server_service'] =
-    'neutron-rpc-server'
+  platform['neutron_dhcp_agent_service'] = 'neutron-dhcp-agent'
+  platform['neutron_l3_agent_service'] = 'neutron-l3-agent'
+  platform['neutron_lb_agent_service'] = 'neutron-lbaasv2-agent'
+  platform['neutron_metadata_agent_service'] = 'neutron-metadata-agent'
+  platform['neutron_metering_agent_service'] = 'neutron-metering-agent'
+  platform['neutron_server_service'] = 'neutron-server'
+  platform['neutron_rpc_server_service'] = 'neutron-rpc-server'
   case node['platform_family']
   when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     platform['neutron_packages'] =
-      %w(openstack-neutron openstack-neutron-ml2 iproute)
-    platform['neutron_dhcp_packages'] =
-      %w(openstack-neutron iproute)
+      %w(
+        ebtables
+        iproute
+        openstack-neutron
+        openstack-neutron-ml2
+      )
+    platform['neutron_dhcp_packages'] = %w(openstack-neutron iproute)
     platform['neutron_l3_packages'] =
-      %w(openstack-neutron iproute radvd keepalived)
-    platform['neutron_plugin_package'] =
-      'neutron-plugin-ml2'
-    platform['neutron_fwaas_packages'] =
-      %w()
+      %w(
+        iproute
+        keepalived
+        openstack-neutron
+        radvd
+      )
+    platform['neutron_plugin_package'] = 'neutron-plugin-ml2'
     platform['neutron_lbaas_packages'] =
-      %w(openstack-neutron-lbaas haproxy iproute)
-    platform['neutron_lbaas_python_dependencies'] =
-      %w(python-neutron-lbaas)
-    platform['neutron_openvswitch_packages'] =
-      %w(openvswitch)
-    platform['neutron_openvswitch_agent_packages'] =
-      %w(openstack-neutron-openvswitch iproute)
-    platform['neutron_linuxbridge_agent_packages'] =
-      %w(openstack-neutron-linuxbridge iproute)
-    platform['neutron_linuxbridge_agent_service'] =
-      'neutron-linuxbridge-agent'
-    platform['neutron_metadata_agent_packages'] =
-      %w()
-    platform['neutron_metering_agent_packages'] =
-      %w(openstack-neutron-metering-agent)
-    platform['neutron_server_packages'] =
-      %w()
-    platform['neutron_openvswitch_service'] =
-      'openvswitch'
-    platform['neutron_openvswitch_agent_service'] =
-      'neutron-openvswitch-agent'
-    platform['package_overrides'] =
-      ''
+      %w(
+        haproxy
+        iproute
+        openstack-neutron-lbaas
+      )
+    platform['neutron_lbaas_python_dependencies'] = %w(python-neutron-lbaas)
+    platform['neutron_openvswitch_packages'] = %w(openvswitch)
+    platform['neutron_openvswitch_agent_packages'] = %w(openstack-neutron-openvswitch iproute)
+    platform['neutron_linuxbridge_agent_packages'] = %w(openstack-neutron-linuxbridge iproute)
+    platform['neutron_linuxbridge_agent_service'] = 'neutron-linuxbridge-agent'
+    platform['neutron_metadata_agent_packages'] = []
+    platform['neutron_metering_agent_packages'] = %w(openstack-neutron-metering-agent)
+    platform['neutron_server_packages'] = []
+    platform['neutron_openvswitch_service'] = 'openvswitch'
+    platform['neutron_openvswitch_agent_service'] = 'neutron-openvswitch-agent'
+    platform['package_overrides'] = ''
   when 'debian'
-    platform['neutron_packages'] =
-      %w(neutron-common python3-neutron)
-    platform['neutron_dhcp_packages'] =
-      %w(neutron-dhcp-agent)
+    platform['neutron_packages'] = %w(neutron-common python3-neutron)
+    platform['neutron_dhcp_packages'] = %w(neutron-dhcp-agent)
     platform['neutron_l3_packages'] =
-      %w(python3-neutron-fwaas neutron-l3-agent radvd keepalived)
-    platform['neutron_fwaas_packages'] =
-      %w(python3-neutron-fwaas)
+      %w(
+        keepalived
+        neutron-l3-agent
+        radvd
+      )
     platform['neutron_lbaas_packages'] =
-      %w(python3-neutron-lbaas neutron-lbaas-common neutron-lbaasv2-agent haproxy)
-    platform['neutron_lbaas_python_dependencies'] =
-      %w(python3-neutron-lbaas)
-    platform['neutron_openvswitch_packages'] =
-      %w(openvswitch-switch bridge-utils)
+      %w(
+        haproxy
+        neutron-lbaas-common
+        neutron-lbaasv2-agent
+        python3-neutron-lbaas
+      )
+    platform['neutron_lbaas_python_dependencies'] = %w(python3-neutron-lbaas)
+    platform['neutron_openvswitch_packages'] = %w(openvswitch-switch bridge-utils)
     platform['neutron_openvswitch_build_packages'] =
       %w(
-        build-essential pkg-config fakeroot
-        libssl-dev openssl debhelper
-        autoconf dkms python-all
-        python-qt4 python-zopeinterface
+        autoconf
+        build-essential
+        debhelper
+        dkms
+        fakeroot
+        libssl-dev
+        openssl
+        pkg-config
+        python-all
+        python-qt4
         python-twisted-conch
+        python-zopeinterface
       )
-    platform['neutron_openvswitch_agent_packages'] =
-      %w(neutron-openvswitch-agent)
-    platform['neutron_linuxbridge_agent_packages'] =
-      %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent)
-    platform['neutron_linuxbridge_agent_service'] =
-      'neutron-plugin-linuxbridge-agent'
-    platform['neutron_metadata_agent_packages'] =
-      %w(neutron-metadata-agent)
-    platform['neutron_metering_agent_packages'] =
-      %w(neutron-metering-agent)
-    platform['neutron_server_packages'] =
-      %w(neutron-server)
-    platform['neutron_openvswitch_service'] =
-      'openvswitch-switch'
-    platform['neutron_openvswitch_agent_service'] =
-      'neutron-openvswitch-agent'
-    platform['package_overrides'] =
-      ''
+    platform['neutron_openvswitch_agent_packages'] = %w(neutron-openvswitch-agent)
+    platform['neutron_linuxbridge_agent_packages'] = %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent)
+    platform['neutron_linuxbridge_agent_service'] = 'neutron-plugin-linuxbridge-agent'
+    platform['neutron_metadata_agent_packages'] = %w(neutron-metadata-agent)
+    platform['neutron_metering_agent_packages'] = %w(neutron-metering-agent)
+    platform['neutron_server_packages'] = %w(neutron-server)
+    platform['neutron_openvswitch_service'] = 'openvswitch-switch'
+    platform['neutron_openvswitch_agent_service'] = 'neutron-openvswitch-agent'
+    platform['package_overrides'] = ''
   end
 end

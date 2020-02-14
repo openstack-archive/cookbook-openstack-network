@@ -24,12 +24,10 @@ describe 'openstack-network::_bridge_config_example' do
       let(:name) { 'create external network bridge' }
 
       it 'adds external network bridge' do
-        expect(chef_run).to run_execute(name)
-          .with(command: cmd_br)
+        expect(chef_run).to run_execute(name).with(command: cmd_br)
       end
       it 'adds external network bridge port' do
-        expect(chef_run).to run_execute("#{name} port")
-          .with(command: cmd_port)
+        expect(chef_run).to run_execute("#{name} port").with(command: cmd_port)
       end
     end
 
@@ -39,12 +37,10 @@ describe 'openstack-network::_bridge_config_example' do
       let(:name) { 'create vlan network bridge' }
 
       it 'adds vlan network bridge' do
-        expect(chef_run).to run_execute(name)
-          .with(command: cmd_br)
+        expect(chef_run).to run_execute(name).with(command: cmd_br)
       end
       it 'adds vlan network bridge port' do
-        expect(chef_run).to run_execute("#{name} port")
-          .with(command: cmd_port)
+        expect(chef_run).to run_execute("#{name} port").with(command: cmd_port)
       end
     end
 
@@ -53,8 +49,7 @@ describe 'openstack-network::_bridge_config_example' do
       let(:name) { 'create tunnel network bridge' }
 
       it 'adds tunnel network bridge' do
-        expect(chef_run).to run_execute(name)
-          .with(command: cmd_br)
+        expect(chef_run).to run_execute(name).with(command: cmd_br)
       end
     end
   end

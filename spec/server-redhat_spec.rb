@@ -13,11 +13,11 @@ describe 'openstack-network::server' do
     end
     include_context 'neutron-stubs'
 
-    it 'upgrades openstack-neutron packages' do
-      expect(chef_run).to upgrade_package 'openstack-neutron'
+    it do
+      expect(chef_run).to upgrade_package %w(ebtables iproute openstack-neutron openstack-neutron-ml2)
     end
 
-    it 'enables openstack-neutron server service' do
+    it do
       expect(chef_run).to enable_service 'neutron-server'
     end
 

@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 AllCops:
   Include:
     - metadata.rb
@@ -14,17 +12,3 @@ AllCops:
     - .cookbooks/**/*
     - berks-cookbooks/**/*
     - .bundle/**/*
-
-Encoding:
-  Exclude:
-    - metadata.rb
-    - Gemfile
-
-NumericLiterals:
-  Enabled: false
-
-LineLength:
-  Enabled: false
-
-WordArray:
-  MinSize: 3

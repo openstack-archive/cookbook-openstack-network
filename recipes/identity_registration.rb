@@ -1,10 +1,11 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: identity_registration
 #
-# Copyright 2013, AT&T
-# Copyright 2013, SUSE Linux GmbH
+# Copyright:: 2013, AT&T
+# Copyright:: 2013, SUSE Linux GmbH
+# Copyright:: 2019-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,11 +36,9 @@ interfaces = {
 }
 
 service_pass = get_password 'service', 'openstack-network'
-service_tenant_name =
-  node['openstack']['network']['conf']['keystone_authtoken']['project_name']
+service_tenant_name = node['openstack']['network']['conf']['keystone_authtoken']['project_name']
 
-service_user =
-  node['openstack']['network']['conf']['keystone_authtoken']['username']
+service_user = node['openstack']['network']['conf']['keystone_authtoken']['username']
 service_role = node['openstack']['network']['service_role']
 service_domain_name = node['openstack']['network']['conf']['keystone_authtoken']['user_domain_name']
 admin_user = node['openstack']['identity']['admin_user']
@@ -52,11 +51,11 @@ region = node['openstack']['region']
 # endpoint_type = node['openstack']['identity']['endpoint_type']
 
 connection_params = {
-  openstack_auth_url:      auth_url,
-  openstack_username:      admin_user,
-  openstack_api_key:       admin_pass,
-  openstack_project_name:  admin_project,
-  openstack_domain_name:   admin_domain,
+  openstack_auth_url: auth_url,
+  openstack_username: admin_user,
+  openstack_api_key: admin_pass,
+  openstack_project_name: admin_project,
+  openstack_domain_name: admin_domain,
   # openstack_endpoint_type: endpoint_type,
 }
 

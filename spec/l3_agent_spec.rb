@@ -12,18 +12,33 @@ describe 'openstack-network::l3_agent' do
     describe 'recipe' do
       include_context 'neutron-stubs'
 
-      it 'starts the l3 agent on boot' do
-        expect(chef_run).to enable_service('neutron-l3-agent')
+      it do
+        expect(chef_run).to enable_service('neutron-l3-agent').with(
+          service_name: 'neutron-l3-agent',
+          supports: {
+            status: true,
+            restart: true,
+          }
+        )
       end
 
-      it 'subscribes the l3 agent service to neutron.conf' do
-        expect(chef_run.service('neutron-l3-agent')).to subscribe_to('template[/etc/neutron/neutron.conf]').delayed
+      it do
+        expect(chef_run).to start_service('neutron-l3-agent')
       end
 
-      %w(neutron-l3-agent radvd keepalived).each do |pkg|
-        it "upgrades #{pkg} package" do
-          expect(chef_run).to upgrade_package(pkg)
-        end
+      it do
+        expect(chef_run.service('neutron-l3-agent')).to \
+          subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart)
+      end
+
+      pkgs =
+        %w(
+          keepalived
+          neutron-l3-agent
+          radvd
+        )
+      it do
+        expect(chef_run).to upgrade_package(pkgs)
       end
 
       describe 'l3_agent.ini' do
@@ -31,10 +46,20 @@ describe 'openstack-network::l3_agent' do
 
         it 'creates l3_agent.ini' do
           expect(chef_run).to create_template(file.name).with(
+            source: 'openstack-service.conf.erb',
+            cookbook: 'openstack-common',
             user: 'neutron',
             group: 'neutron',
-            mode: 0o640
+            mode: '640'
           )
+        end
+
+        [
+          /^interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver$/,
+        ].each do |line|
+          it do
+            expect(chef_run).to render_config_file('/etc/neutron/l3_agent.ini').with_section_content('DEFAULT', line)
+          end
         end
 
         context 'template contents' do
@@ -48,11 +73,15 @@ describe 'openstack-network::l3_agent' do
 
           it 'displays the external_network_bridge l3 attribute' do
             stub_command('ovs-vsctl br-exists network_l3_external_network_bridge_value').and_return(false)
-            expect(chef_run).to render_file(file.name).with_content(/^external_network_bridge = network_l3_external_network_bridge_value$/)
+            expect(chef_run).to render_config_file(file.name)
+              .with_section_content(
+                'DEFAULT',
+                /^external_network_bridge = network_l3_external_network_bridge_value$/
+              )
           end
         end
 
-        it 'notifies the l3 agent service' do
+        it do
           expect(file).to notify('service[neutron-l3-agent]').to(:restart).delayed
         end
       end

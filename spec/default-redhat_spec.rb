@@ -11,11 +11,26 @@ describe 'openstack-network' do
 
     include_context 'neutron-stubs'
 
-    it 'upgrades mysql python package' do
+    pkgs =
+      %w(
+        ebtables
+        iproute
+        openstack-neutron
+        openstack-neutron-ml2
+      )
+    it do
+      expect(chef_run).to upgrade_package(pkgs)
+    end
+    it do
       expect(chef_run).to upgrade_package('MySQL-python')
     end
-    it 'upgrades openstack-neutron-ml2 package' do
-      expect(chef_run).to upgrade_package('openstack-neutron-ml2')
+    it do
+      expect(chef_run).to create_cookbook_file('/usr/bin/neutron-enable-bridge-firewall.sh').with(
+        source: 'neutron-enable-bridge-firewall.sh',
+        owner: 'root',
+        group: 'wheel',
+        mode: '0755'
+      )
     end
   end
 end

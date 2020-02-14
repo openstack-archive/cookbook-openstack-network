@@ -1,10 +1,11 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: server
 #
-# Copyright 2013, AT&T
-# Copyright 2013, SUSE Linux GmbH
+# Copyright:: 2013, AT&T
+# Copyright:: 2013, SUSE Linux GmbH
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ template '/etc/default/neutron-server' do
   source 'neutron-server.erb'
   owner 'root'
   group 'root'
-  mode 0o0644
+  mode '644'
   variables(
     core_plugin_config: node['openstack']['network']['core_plugin_config_file']
   )
@@ -39,19 +40,15 @@ end
 
 platform_options = node['openstack']['network']['platform']
 
-platform_options['neutron_server_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package platform_options['neutron_server_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 db_type = node['openstack']['db']['network']['service_type']
-node['openstack']['db']['python_packages'][db_type].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package node['openstack']['db']['python_packages'][db_type] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 if node['openstack']['network']['policyfile_url']
@@ -59,20 +56,22 @@ if node['openstack']['network']['policyfile_url']
     source node['openstack']['network']['policyfile_url']
     owner node['openstack']['network']['platform']['user']
     group node['openstack']['network']['platform']['group']
-    mode 0o0644
+    mode '644'
   end
 end
 
 if node['openstack']['network_lbaas']['enabled']
-  # neutron-lbaas-agent may not running on network node, but on network node, neutron-server still need neutron_lbaas module
-  # when loading plugin if lbaas is list in service_plugins. In this case, we don't need include balance recipe for network node, but
-  # we need make sure neutron lbaas python packages get installed on network node before neutron-server start/restart, when lbaas is enabled.
-  # Otherwise neutron-server will crash for couldn't find lbaas plugin when invoking plugins from service_plugins.
-  platform_options['neutron_lbaas_python_dependencies'].each do |pkg|
-    package pkg do
-      options platform_options['package_overrides']
-      action :upgrade
-    end
+  # neutron-lbaas-agent may not running on network node, but on network
+  # node, neutron-server still need neutron_lbaas module when loading
+  # plugin if lbaas is list in service_plugins. In this case, we don't
+  # need include balance recipe for network node, but we need make sure
+  # neutron lbaas python packages get installed on network node before
+  # neutron-server start/restart, when lbaas is enabled. Otherwise
+  # neutron-server will crash for couldn't find lbaas plugin when
+  # invoking plugins from service_plugins.
+  package platform_options['neutron_lbaas_python_dependencies'] do
+    options platform_options['package_overrides']
+    action :upgrade
   end
 end
 

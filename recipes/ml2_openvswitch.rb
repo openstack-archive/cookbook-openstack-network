@@ -1,9 +1,9 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: ml2_opensvswitch
 #
-# Copyright 2013, AT&T
+# Copyright:: 2013, AT&T
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

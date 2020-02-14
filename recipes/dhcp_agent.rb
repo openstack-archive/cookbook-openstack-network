@@ -1,9 +1,10 @@
 # Encoding: utf-8
 #
-# Cookbook Name:: openstack-network
+# Cookbook:: openstack-network
 # Recipe:: dhcp_agent
 #
-# Copyright 2013, AT&T
+# Copyright:: 2013, AT&T
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,11 +23,9 @@ include_recipe 'openstack-network'
 
 platform_options = node['openstack']['network']['platform']
 
-platform_options['neutron_dhcp_packages'].each do |pkg|
-  package pkg do
-    options platform_options['package_overrides']
-    action :upgrade
-  end
+package platform_options['neutron_dhcp_packages'] do
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 # TODO: (jklare) this should be refactored and probably pull in the some dnsmasq
@@ -35,7 +34,7 @@ template '/etc/neutron/dnsmasq.conf' do
   source 'dnsmasq.conf.erb'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0644
+  mode '644'
 end
 
 service_config = merge_config_options 'network_dhcp'
@@ -44,7 +43,7 @@ template node['openstack']['network_dhcp']['config_file'] do
   cookbook 'openstack-common'
   owner node['openstack']['network']['platform']['user']
   group node['openstack']['network']['platform']['group']
-  mode 0o0644
+  mode '644'
   variables(
     service_config: service_config
   )
@@ -52,8 +51,7 @@ end
 
 # TODO: (jklare) this should be refactored and probably pull in the some dnsmasq
 # cookbook to do the proper configuration
-case node['platform']
-when 'centos'
+if platform?('centos')
   rpm_package 'dnsmasq' do
     action :upgrade
   end
@@ -65,7 +63,7 @@ service 'neutron-dhcp-agent' do
   action [:enable, :start]
   subscribes :restart, [
     'template[/etc/neutron/neutron.conf]',
-    'template [/etc/neutron/dnsmasq.conf]',
+    'template[/etc/neutron/dnsmasq.conf]',
     "template[#{node['openstack']['network_dhcp']['config_file']}]",
     'rpm_package[dnsmasq]',
   ]

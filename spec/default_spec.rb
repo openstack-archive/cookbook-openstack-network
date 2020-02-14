@@ -11,13 +11,29 @@ describe 'openstack-network' do
 
     include_context 'neutron-stubs'
 
-    %w(neutron-common python3-mysqldb).each do |package|
-      it do
-        expect(chef_run).to upgrade_package(package)
-      end
+    packages = %w(neutron-common python3-neutron)
+    it do
+      expect(chef_run).to upgrade_package(packages)
+    end
+
+    it do
+      expect(chef_run).to upgrade_package('python3-mysqldb')
+    end
+
+    it do
+      expect(chef_run).to_not create_cookbook_file('/usr/bin/neutron-enable-bridge-firewall.sh')
     end
 
     describe '/etc/neutron/rootwrap.conf' do
+      it do
+        expect(chef_run).to create_template('/etc/neutron/rootwrap.conf').with(
+          source: 'openstack-service.conf.erb',
+          cookbook: 'openstack-common',
+          owner: 'neutron',
+          group: 'neutron',
+          mode: '644'
+        )
+      end
       let(:file) { chef_run.template('/etc/neutron/rootwrap.conf') }
       [
         %r{^filters_path = /etc/neutron/rootwrap\.d,/usr/share/neutron/rootwrap$},
@@ -34,60 +50,92 @@ describe 'openstack-network' do
     end
 
     describe '/etc/neutron/neutron.conf' do
+      it do
+        expect(chef_run).to create_template('/etc/neutron/neutron.conf').with(
+          source: 'openstack-service.conf.erb',
+          cookbook: 'openstack-common',
+          owner: 'neutron',
+          group: 'neutron',
+          mode: '640',
+          sensitive: true
+        )
+      end
       let(:file) { chef_run.template('/etc/neutron/neutron.conf') }
       [
         %r{^log_dir = /var/log/neutron$},
         /^control_exchange = neutron$/,
         /^core_plugin = ml2$/,
-        %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
         /^bind_host = 127\.0\.0\.1$/,
         /^bind_port = 9696$/,
+        %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
       ].each do |line|
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('DEFAULT', line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', line)
         end
       end
+
+      context 'lbaas enabled' do
+        cached(:chef_run) do
+          node.override['openstack']['network_lbaas']['enabled'] = true
+          runner.converge(described_recipe)
+        end
+        [
+          /^service_plugins = neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2$/,
+        ].each do |line|
+          it do
+            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', line)
+          end
+        end
+      end
+
       [
         %r{^root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf$},
       ].each do |line|
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('agent', line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('agent', line)
         end
       end
       [
-        /^project_name = service$/,
+        /^auth_type = password$/,
+        /^region_name = RegionOne$/,
         /^username = neutron$/,
         /^user_domain_name = Default/,
         /^project_domain_name = Default/,
+        /^project_name = service$/,
+        /^auth_version = v3$/,
+        %r{^auth_url = http://127.0.0.1:5000/v3$},
         /^password = neutron-pass$/,
-        /^auth_type = v3password$/,
       ].each do |line|
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('keystone_authtoken', line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('keystone_authtoken', line)
         end
       end
       [
+        /^auth_type = password$/,
         /^region_name = RegionOne$/,
-        /^auth_type = v3password$/,
         /^username = nova$/,
         /^user_domain_name = Default/,
-        /^project_domain_name = Default/,
         /^project_name = service$/,
+        /^project_domain_name = Default/,
+        %r{^auth_url = http://127.0.0.1:5000/v3$},
+        /^password = nova-pass$/,
       ].each do |line|
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('nova', line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('nova', line)
+        end
+      end
+      [
+        %r{^lock_path = /var/lib/neutron/lock$},
+      ].each do |line|
+        it do
+          expect(chef_run).to render_config_file(file.name).with_section_content('oslo_concurrency', line)
         end
       end
       [
         %(connection = mysql+pymysql://neutron:neutron@127.0.0.1:3306/neutron?charset=utf8),
       ].each do |line|
         it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('database', line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('database', line)
         end
       end
     end

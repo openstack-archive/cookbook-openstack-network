@@ -18,13 +18,14 @@ describe 'openstack-network::ml2_linuxbridge' do
 
     include_context 'neutron-stubs'
 
-    it 'creates the /etc/neutron/plugins/linuxbridge agent directory' do
+    it do
       expect(chef_run).to create_directory('/etc/neutron/plugins/linuxbridge').with(
         owner: 'neutron',
         group: 'neutron',
-        mode: 0o700
+        mode: '700'
       )
     end
+
     it do
       expect(chef_run).to include_recipe('openstack-network::plugin_config')
     end
@@ -33,28 +34,47 @@ describe 'openstack-network::ml2_linuxbridge' do
       let(:file) do
         chef_run.template('/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini')
       end
+
       [
         /^firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver$/,
       ].each do |line|
-        it do
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('securitygroup', line)
+        it "[securitygroup] #{line}" do
+          expect(chef_run).to render_config_file(file.name).with_section_content('securitygroup', line)
         end
       end
     end
 
+    pkgs =
+      %w(
+        neutron-plugin-linuxbridge
+        neutron-plugin-linuxbridge-agent
+      )
+
     it do
-      %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent).each do |pkg|
-        expect(chef_run).to upgrade_package(pkg)
-      end
+      expect(chef_run).to upgrade_package(pkgs)
     end
 
     it do
-      expect(chef_run).to enable_service('neutron-plugin-linuxbridge-agent')
+      expect(chef_run).to enable_service('neutron-plugin-linuxbridge-agent').with(
+        service_name: 'neutron-plugin-linuxbridge-agent',
+        supports: {
+          status: true,
+          restart: true,
+        }
+      )
     end
+
     it do
-      service = chef_run.service('neutron-plugin-linuxbridge-agent')
-      expect(service).to(subscribe_to('template[/etc/neutron/neutron.conf]').on(:restart).delayed) && subscribe_to('template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]').on(:restart).delayed
+      expect(chef_run).to start_service('neutron-plugin-linuxbridge-agent')
+    end
+
+    %w(
+      template[/etc/neutron/neutron.conf]
+      template[/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini]
+    ).each do |resource|
+      it do
+        expect(chef_run.service('neutron-plugin-linuxbridge-agent')).to subscribe_to(resource).delayed
+      end
     end
   end
 end
