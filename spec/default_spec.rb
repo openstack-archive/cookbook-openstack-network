@@ -74,20 +74,6 @@ describe 'openstack-network' do
         end
       end
 
-      context 'lbaas enabled' do
-        cached(:chef_run) do
-          node.override['openstack']['network_lbaas']['enabled'] = true
-          runner.converge(described_recipe)
-        end
-        [
-          /^service_plugins = neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2$/,
-        ].each do |line|
-          it do
-            expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', line)
-          end
-        end
-      end
-
       [
         %r{^root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf$},
       ].each do |line|

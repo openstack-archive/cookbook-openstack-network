@@ -110,17 +110,6 @@ describe 'openstack-network::server' do
           %r{^NEUTRON_PLUGIN_CONFIG="/etc/neutron/plugins/ml2/ml2_conf.ini"$}
         )
       end
-      context 'enable lbaas' do
-        cached(:chef_run) do
-          node.override['openstack']['network_lbaas']['enabled'] = true
-          runner.converge('openstack-network::ml2_core_plugin', described_recipe)
-        end
-        it do
-          expect(chef_run).to render_file(file.name).with_content(
-            %r{^NEUTRON_PLUGIN_CONFIG="/etc/neutron/plugins/ml2/ml2_conf.ini --config-dir /etc/neutron/conf.d/neutron-server"$}
-          )
-        end
-      end
     end
   end
 end

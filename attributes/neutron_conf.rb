@@ -11,17 +11,6 @@ default['openstack']['network']['conf'].tap do |conf|
   end
   conf['DEFAULT']['control_exchange'] = 'neutron'
   conf['DEFAULT']['core_plugin'] = 'ml2'
-  if node['openstack']['network_lbaas']['enabled']
-    conf['DEFAULT']['service_plugins'] =
-      if conf['DEFAULT']['service_plugins'].empty?
-        'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2'
-      else
-        [
-          'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2',
-          conf['DEFAULT']['service_plugins'],
-        ].flatten.sort.join(',')
-      end
-  end
 
   # [agent] section
   if node['openstack']['network']['use_rootwrap']

@@ -51,7 +51,7 @@ default['openstack']['network']['service_type'] = 'network'
 default['openstack']['network']['description'] = 'OpenStack Networking service'
 default['openstack']['network']['rabbit_server_chef_role'] = 'rabbitmq-server'
 # The bridging interface driver.
-# This is used by the L3, DHCP and LBaaS agents.
+# This is used by the L3 and DHCP agents.
 # Options are:
 #
 #   - neutron.agent.linux.interface.OVSInterfaceDriver
@@ -132,43 +132,12 @@ default['openstack']['network_metering']['conf'].tap do |conf|
   conf['DEFAULT']['driver'] = 'neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver'
 end
 
-# ============================= LBaaS Agent Configuration ==================
-# To enable 'lbaas' as service_plugin, you need to add it to neutron.conf
-# ['default']['service_plugins']
-# Set to true to enable lbaas
-default['openstack']['network_lbaas']['enabled'] = false
-# Custom the lbaas neutron config file path
-default['openstack']['network_lbaas']['config_file'] =
-  case node['platform_family']
-  when 'rhel'
-    '/etc/neutron/neutron_lbaas.conf'
-  when 'debian'
-    '/etc/neutron/conf.d/neutron-server/neutron_lbaas.conf'
-  end
-default['openstack']['network_lbaas']['conf'].tap do |conf|
-  conf['service_providers']['service_provider'] =
-    'LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default'
-end
-# Custom the lbaas agent config file path
-default['openstack']['network_lbaas_agent']['config_file'] = '/etc/neutron/lbaas_agent.ini'
-default['openstack']['network_lbaas_agent']['conf'].tap do |conf|
-  conf['DEFAULT']['interface_driver'] = 'openvswitch'
-  conf['DEFAULT']['device_driver'] = 'neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver'
-  case node['platform_family']
-  when 'fedora', 'rhel'
-    conf['haproxy']['user_group'] = 'nobody'
-  when 'debian'
-    conf['haproxy']['user_group'] = 'nogroup'
-  end
-end
-
 # ============================= platform-specific settings ===========
 default['openstack']['network']['platform'].tap do |platform|
   platform['user'] = 'neutron'
   platform['group'] = 'neutron'
   platform['neutron_dhcp_agent_service'] = 'neutron-dhcp-agent'
   platform['neutron_l3_agent_service'] = 'neutron-l3-agent'
-  platform['neutron_lb_agent_service'] = 'neutron-lbaasv2-agent'
   platform['neutron_metadata_agent_service'] = 'neutron-metadata-agent'
   platform['neutron_metering_agent_service'] = 'neutron-metering-agent'
   platform['neutron_server_service'] = 'neutron-server'
@@ -191,13 +160,6 @@ default['openstack']['network']['platform'].tap do |platform|
         radvd
       )
     platform['neutron_plugin_package'] = 'neutron-plugin-ml2'
-    platform['neutron_lbaas_packages'] =
-      %w(
-        haproxy
-        iproute
-        openstack-neutron-lbaas
-      )
-    platform['neutron_lbaas_python_dependencies'] = %w(python-neutron-lbaas)
     platform['neutron_openvswitch_packages'] = %w(openvswitch)
     platform['neutron_openvswitch_agent_packages'] = %w(openstack-neutron-openvswitch iproute)
     platform['neutron_linuxbridge_agent_packages'] = %w(openstack-neutron-linuxbridge iproute)
@@ -217,14 +179,6 @@ default['openstack']['network']['platform'].tap do |platform|
         neutron-l3-agent
         radvd
       )
-    platform['neutron_lbaas_packages'] =
-      %w(
-        haproxy
-        neutron-lbaas-common
-        neutron-lbaasv2-agent
-        python3-neutron-lbaas
-      )
-    platform['neutron_lbaas_python_dependencies'] = %w(python3-neutron-lbaas)
     platform['neutron_openvswitch_packages'] = %w(openvswitch-switch bridge-utils)
     platform['neutron_openvswitch_build_packages'] =
       %w(

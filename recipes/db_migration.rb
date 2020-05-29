@@ -19,21 +19,10 @@
 # limitations under the License.
 #
 
-plugin_config_file = node['openstack']['network']['core_plugin_config_file']
-timeout = node['openstack']['network']['dbsync_timeout']
 # The node['openstack']['network']['plugin_config_file'] attribute is set in the default.rb recipe
 execute 'migrate network database' do
-  timeout timeout
+  timeout node['openstack']['network']['dbsync_timeout']
   command <<-EOF.gsub(/^ {4}/, '')
     neutron-db-manage --config-file /etc/neutron/neutron.conf upgrade head
   EOF
-end
-
-# Only if the lbaas is enabled, migrate the database.
-execute 'migrate lbaas database' do
-  timeout timeout
-  command <<-EOF.gsub(/^ {4}/, '')
-    neutron-db-manage --subproject neutron-lbaas --config-file /etc/neutron/neutron.conf --config-file #{plugin_config_file} upgrade head
-  EOF
-  only_if { node['openstack']['network_lbaas']['enabled'] }
 end

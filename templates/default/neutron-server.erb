@@ -3,8 +3,4 @@
 
 # path to config file corresponding to the core_plugin specified in
 # neutron.conf
-<% if node['openstack']['network_lbaas']['enabled'] -%>
-NEUTRON_PLUGIN_CONFIG="<%=@core_plugin_config%> --config-dir /etc/neutron/conf.d/neutron-server"
-<% else -%>
 NEUTRON_PLUGIN_CONFIG="<%=@core_plugin_config%>"
-<% end -%>
