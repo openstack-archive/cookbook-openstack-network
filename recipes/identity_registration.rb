@@ -20,15 +20,13 @@
 # limitations under the License.
 #
 
-require 'uri'
-
 # Make Openstack object available in Chef::Recipe
 class ::Chef::Recipe
   include ::Openstack
 end
 
 identity_endpoint = internal_endpoint 'identity'
-auth_url = ::URI.decode identity_endpoint.to_s
+auth_url = identity_endpoint.to_s
 
 interfaces = {
   public: { url: public_endpoint('network') },
