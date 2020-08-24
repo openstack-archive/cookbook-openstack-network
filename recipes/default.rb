@@ -70,7 +70,7 @@ if node['openstack']['mq']['service_type'] == 'rabbit'
 end
 
 identity_endpoint = internal_endpoint 'identity'
-auth_url = ::URI.decode identity_endpoint.to_s
+auth_url = identity_endpoint.to_s
 
 db_user = node['openstack']['db']['network']['username']
 db_pass = get_password 'db', 'neutron'
