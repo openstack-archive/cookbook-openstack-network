@@ -3,7 +3,7 @@ maintainer       'openstack-chef'
 maintainer_email 'openstack-discuss@lists.openstack.org'
 license          'Apache-2.0'
 description      'Installs and configures the OpenStack Network API Service and various agents and plugins'
-version          '19.1.0'
+version          '19.2.0'
 
 %w(ubuntu redhat centos).each do |os|
   supports os
