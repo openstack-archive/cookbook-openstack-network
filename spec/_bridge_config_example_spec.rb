@@ -1,4 +1,3 @@
-# Encoding: utf-8
 require_relative 'spec_helper'
 
 describe 'openstack-network::_bridge_config_example' do

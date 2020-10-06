@@ -1,4 +1,3 @@
-# Encoding: utf-8
 require_relative 'spec_helper'
 
 describe 'openstack-network::metadata_agent' do

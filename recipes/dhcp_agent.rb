@@ -1,4 +1,3 @@
-# Encoding: utf-8
 #
 # Cookbook:: openstack-network
 # Recipe:: dhcp_agent
