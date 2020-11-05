@@ -15,7 +15,6 @@ describe 'openstack-network::lbaas' do
       %w(
         haproxy
         neutron-lbaas-common
-        neutron-lbaasv2-agent
         python3-neutron-lbaas
       )
     it do

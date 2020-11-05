@@ -1,7 +1,7 @@
 # Encoding: utf-8
 #
 # Cookbook:: openstack-network
-# Recipe:: lbaas
+# Recipe:: lbaas_agent
 #
 # Copyright:: 2013, Mirantis IT
 # Copyright:: 2020, Oregon State University
@@ -30,7 +30,7 @@ class ::Chef::Recipe
 end
 
 platform_options = node['openstack']['network']['platform']
-package platform_options['neutron_lbaas_packages'] do
+package platform_options['neutron_lbaas_agent_packages'] do
   options platform_options['package_overrides']
   action :upgrade
 end

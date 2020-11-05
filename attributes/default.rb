@@ -197,6 +197,12 @@ default['openstack']['network']['platform'].tap do |platform|
         iproute
         openstack-neutron-lbaas
       )
+    platform['neutron_lbaas_agent_packages'] =
+      %w(
+        haproxy
+        iproute
+        openstack-neutron-lbaas
+      )
     platform['neutron_lbaas_python_dependencies'] = %w(python-neutron-lbaas)
     platform['neutron_openvswitch_packages'] = %w(openvswitch)
     platform['neutron_openvswitch_agent_packages'] = %w(openstack-neutron-openvswitch iproute)
@@ -218,6 +224,12 @@ default['openstack']['network']['platform'].tap do |platform|
         radvd
       )
     platform['neutron_lbaas_packages'] =
+      %w(
+        haproxy
+        neutron-lbaas-common
+        python3-neutron-lbaas
+      )
+    platform['neutron_lbaas_agent_packages'] =
       %w(
         haproxy
         neutron-lbaas-common
