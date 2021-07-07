@@ -37,14 +37,8 @@ package platform_options['neutron_linuxbridge_agent_packages'] do
 end
 
 node.default['openstack']['network']['plugins']['linuxbridge'].tap do |lb|
-  case node['platform_family']
-  when 'fedora', 'rhel'
-    lb['path'] = '/etc/neutron/plugins/ml2'
-    lb['filename'] = 'linuxbridge_agent.ini'
-  when 'debian'
-    lb['path'] = '/etc/neutron/plugins/linuxbridge'
-    lb['filename'] = 'linuxbridge_conf.ini'
-  end
+  lb['path'] = '/etc/neutron/plugins/ml2'
+  lb['filename'] = 'linuxbridge_agent.ini'
   lb['conf']['securitygroup']['firewall_driver'] = 'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver'
 end
 
