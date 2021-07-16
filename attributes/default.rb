@@ -195,8 +195,8 @@ default['openstack']['network']['platform'].tap do |platform|
         python-zopeinterface
       )
     platform['neutron_openvswitch_agent_packages'] = %w(neutron-openvswitch-agent)
-    platform['neutron_linuxbridge_agent_packages'] = %w(neutron-plugin-linuxbridge neutron-plugin-linuxbridge-agent)
-    platform['neutron_linuxbridge_agent_service'] = 'neutron-plugin-linuxbridge-agent'
+    platform['neutron_linuxbridge_agent_packages'] = %w(neutron-linuxbridge-agent)
+    platform['neutron_linuxbridge_agent_service'] = 'neutron-linuxbridge-agent'
     platform['neutron_metadata_agent_packages'] = %w(neutron-metadata-agent)
     platform['neutron_metering_agent_packages'] = %w(neutron-metering-agent)
     platform['neutron_server_packages'] = %w(neutron-server)
