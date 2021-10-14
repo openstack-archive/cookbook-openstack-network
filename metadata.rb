@@ -15,4 +15,4 @@ depends 'openstack-identity', '>= 20.0.0'
 
 issues_url 'https://launchpad.net/openstack-chef'
 source_url 'https://opendev.org/openstack/cookbook-openstack-network'
-chef_version '>= 15.0'
+chef_version '>= 16.0'

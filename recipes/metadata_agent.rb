@@ -2,8 +2,8 @@
 # Cookbook:: openstack-network
 # Recipe:: metadata_agent
 #
-# Copyright:: 2013, AT&T
-# Copyright:: 2020, Oregon State University
+# Copyright:: 2013-2021, AT&T
+# Copyright:: 2020-2021, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
