@@ -142,7 +142,7 @@ default['openstack']['network']['platform'].tap do |platform|
   platform['neutron_server_service'] = 'neutron-server'
   platform['neutron_rpc_server_service'] = 'neutron-rpc-server'
   case node['platform_family']
-  when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
+  when 'rhel'
     platform['neutron_packages'] =
       %w(
         ebtables
